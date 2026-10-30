@@ -1,0 +1,83 @@
+{
+ "_说明": "DRS_MT03（Trial ID DTS_MT03，关卡资产 DRS_MT03_B00，地图 DowntownRiotSewers）。两条交付任务：MT03_GatherAndDeliver_ObjCoord_BP_Drugs（毒品 HeroinPackage，FixedMaxCount=4，提示 'Deliver drugs across the map. Locations are marked near the start of the track.'）与 ..._Money（钱箱 Briefcase_BP_C，DesiredCount=4 / FixedMaxCount=5，提示 'Bring the money to the gangster van at the end of the track.'，ObjectiveActors = DTS_MT03_GangsterVan_BP）。交易窗口是 TradeWindows-02_BP_C 共 8 个（每个带 TradeWindow_LargePickup_InteractionPanel + 2 个按压按钮）；钱箱 Briefcase_BP_C 共 11 个候选位；面包车 1 辆。分区按房间划，方便先找房间再找窗口/钱箱。",
+ "level": "DRS_MT03",
+ "map": "DowntownRiotSewers",
+ "title": "DRS_MT03 · 下水道街区 交易窗口与钱箱",
+ "subtitle": "两条交付线：毒品（4 个）送到交易窗口，钱箱（Briefcase，最多 5 个）送到终点那辆黑帮面包车。图上标出 8 个交易窗口（钱箱交付口）、11 个钱箱候选位和 1 辆面包车；分区按房间划，先看线索指的房间在哪。",
+ "sources": [
+  "DRS_MT03_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "trade_window",
+   "pattern": "^TradeWindows-0[12]_BP_C$",
+   "match": "type",
+   "label": "交易窗口",
+   "short": "Window"
+  },
+  {
+   "key": "briefcase",
+   "pattern": "^Briefcase_BP_C$",
+   "match": "type",
+   "label": "钱箱",
+   "short": "Case"
+  },
+  {
+   "key": "van",
+   "pattern": "^DTS_MT03_GangsterVan_BP_C$",
+   "match": "type",
+   "label": "黑帮面包车（钱箱交付点）",
+   "short": "Van",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "交易窗口（8 个）",
+   "name_en": "Trade windows",
+   "color": "#7c3aed",
+   "note": "交付毒品的交易窗口，房间：HairDresserWaitingRoom、MotelLaundry Master、Room 10-21、Room 2-5、Room 4-3、StreetsConcessionnaire Slave01、下水道主走廊主区、下水道主走廊副区01",
+   "actors": [
+    "TradeWindows-01_BP8",
+    "TradeWindows-02_BP2_4",
+    "TradeWindows-02_BP4_10",
+    "TradeWindows-02_BP6_16",
+    "TradeWindows-02_BP7_19",
+    "TradeWindows-02_BP8",
+    "TradeWindows-02_BP9_22",
+    "TradeWindows-02_BP_2"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "钱箱（11 个候选位）",
+   "name_en": "Money briefcases",
+   "color": "#b45309",
+   "note": "每局随机刷 4 个（最多 5 个），房间：HairDresser Master、MotelLobby Master、MotelRoom101、Room 1、Room 20-51、Room 24-10、Room 26-6、Room 27-6、工人时装店主区、车库、酒吧厨房",
+   "actors": [
+    "MT03_Briefcase_AutoParts",
+    "MT03_Briefcase_BP_CommunityCenter",
+    "MT03_Briefcase_BP_Firestation",
+    "MT03_Briefcase_BP_Garage",
+    "MT03_Briefcase_BP_HairDresser",
+    "MT03_Briefcase_BP_IrishPub_2F",
+    "MT03_Briefcase_BP_MotelReception",
+    "MT03_Briefcase_BP_MotelRoom",
+    "MT03_Briefcase_BP_PoliceStation",
+    "MT03_Briefcase_BP_SexShop",
+    "MT03_Briefcase_BP_SnackBar"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "黑帮面包车（交付点）",
+   "name_en": "Gangster van (money drop)",
+   "color": "#0f766e",
+   "note": "把钱箱送到这里，位置：街区工人时装店",
+   "actors": [
+    "DTS_MT03_GangsterVan_BP"
+   ]
+  }
+ ]
+}

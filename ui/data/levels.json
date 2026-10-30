@@ -90,5 +90,9 @@
  "DRS_MT01": {
   "map": "DowntownRiotSewers",
   "name": "下水道街区 · 调频器与人偶模型（Trial DTS_MT01）"
+ },
+ "DRS_MT03": {
+  "map": "DowntownRiotSewers",
+  "name": "下水道街区 · 交易窗口与钱箱（Trial DTS_MT03）"
  }
 }
