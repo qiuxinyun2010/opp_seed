@@ -1,0 +1,74 @@
+{
+ "_说明": "TFS_MT02「把推车送入焚化炉」：任务点 = 钥匙。两条推车线（Green 西侧 / Pink 东侧），每辆车都要穿 2 道钥匙门：Green = KeyItemDestination_*_GreenGate（要 ToyFactory_QuestItem_B）+ GreenGate2_1/GreenGate3_3 二选一（要 QuestItem_A）；Pink = PinkGate（要 QuestItem_D）+ PinkGate2/PinkGate3 二选一（要 QuestItem_C）。钥匙候选位用 TFS_KeyModule_Spawner_A/B/C/D_BP_C（A=12、B=29 在 Green 侧；C=10、D=17 在 Pink 侧），实例名里带 Green/Pink 前缀，分区直接按实例名归类。钥匙门与推车点是参考标记，画空心。",
+ "level": "TFS_MT02",
+ "map": "ToyFactoryShipping",
+ "title": "TFS_MT02 · 玩具工厂 推车与钥匙门",
+ "subtitle": "两条推车线：Green（西）与 Pink（东），每辆车都要穿 2 道钥匙门 —— Green 固定门要钥匙 B（29 个候选位）+ 二选一门要钥匙 A（12 个）；Pink 固定门要钥匙 D（17 个）+ 二选一门要钥匙 C（10 个）。图上实心点是钥匙候选位，空心方点是钥匙门，空心点是推车起点/轨道终点。",
+ "sources": [
+  "TFS_LD_MT02_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "key_a",
+   "pattern": "^TFS_KeyModule_Spawner_A_BP_C$",
+   "match": "type",
+   "label": "钥匙 A · Green 二选一门",
+   "short": "KeyA"
+  },
+  {
+   "key": "key_b",
+   "pattern": "^TFS_KeyModule_Spawner_B_BP_C$",
+   "match": "type",
+   "label": "钥匙 B · Green 固定门",
+   "short": "KeyB"
+  },
+  {
+   "key": "key_c",
+   "pattern": "^TFS_KeyModule_Spawner_C_BP_C$",
+   "match": "type",
+   "label": "钥匙 C · Pink 二选一门",
+   "short": "KeyC"
+  },
+  {
+   "key": "key_d",
+   "pattern": "^TFS_KeyModule_Spawner_D_BP_C$",
+   "match": "type",
+   "label": "钥匙 D · Pink 固定门",
+   "short": "KeyD"
+  },
+  {
+   "key": "key_gate",
+   "pattern": "^KeyItemDestination_Device_Base_BP_C$",
+   "match": "type",
+   "label": "钥匙门",
+   "short": "Gate",
+   "style": "clue"
+  },
+  {
+   "key": "cart",
+   "pattern": "^RBPushCartSpawner$",
+   "match": "type",
+   "label": "推车点",
+   "short": "Cart",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "1 区 · Green（西侧）推车线",
+   "name_en": "Section 1 - Green (west) cart line",
+   "color": "#7c3aed",
+   "note": "钥匙 B 29 个候选位（固定门）+ 钥匙 A 12 个（二选一门）；推车起点/轨道终点各 1 个",
+   "actors": ["*Green*"]
+  },
+  {
+   "id": "B",
+   "name": "2 区 · Pink（东侧）推车线",
+   "name_en": "Section 2 - Pink (east) cart line",
+   "color": "#b45309",
+   "note": "钥匙 D 17 个候选位（固定门）+ 钥匙 C 10 个（二选一门）；推车起点/轨道终点各 1 个",
+   "actors": ["*Pink*"]
+  }
+ ]
+}

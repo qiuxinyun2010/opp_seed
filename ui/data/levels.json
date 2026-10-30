@@ -11,6 +11,10 @@
   "map": "ToyFactoryShipping",
   "name": "玩具工厂 · 开启六个阀门"
  },
+ "TFS_MT02": {
+  "map": "ToyFactoryShipping",
+  "name": "玩具工厂 · 把推车送入焚化炉"
+ },
  "FPI_MT02": {
   "map": "FunParkIllusion",
   "name": "游乐场 · 在真人秀中幸存"
