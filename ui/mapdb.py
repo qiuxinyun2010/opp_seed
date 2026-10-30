@@ -431,7 +431,8 @@ def assign_zones(rooms, points, specs):
     """点位所在房间优先，其次按 zones[].rooms 通配（支持 ! 排除）。"""
     owner = {}
     for p in points:
-        if p.get('room') and p.get('zone'):
+        # merge_room=False 的点位只给自己上色，不把所在房间划进自己的分区
+        if p.get('room') and p.get('zone') and p.get('merge_room', True):
             owner[p['room']] = p['zone']
     for spec in specs:
         raw = list(spec.get('rooms') or [])
