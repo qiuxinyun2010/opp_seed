@@ -7,3 +7,9 @@ __pycache__/
 
 # 打包产物（ui/ 目录本身已入库）
 /ui.zip
+
+# tools/bundle.py 生成的单文件包
+*.bundle.txt
+
+# Web 版（mapweb.py）运行时生成的 Edge 配置目录
+ui/data/cache/web_profile/
