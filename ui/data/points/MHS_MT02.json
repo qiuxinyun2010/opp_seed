@@ -1,0 +1,71 @@
+{
+ "_说明": "MHS_MT02「Poison the Cattle 给牲畜下毒」：任务点 = 毒气桶 PoisonBucket_BP_C，共 29 个，全部集中在同一片牲畜/屠宰区域，不需要再分区。另有 1 个毒气泵 MHS_PoisonPump_BP_C（交付/灌注点）和 1 个 MHS_PoisonContainer_BP_C 容器，画空心参考。地图目录 MobsterHideoutSyndicate，关卡文件 MHS_LD_MT02_B00.json。",
+ "level": "MHS_MT02",
+ "map": "MobsterHideoutSyndicate",
+ "title": "MHS_MT02 · 黑帮据点 毒气桶",
+ "subtitle": "任务点全部是毒气桶（PoisonBucket，29 个），集中在同一片牲畜区，不用分区；空心点是毒气泵与容器（灌注/交付处）。",
+ "sources": [
+  "MHS_LD_MT02_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "poison_bucket",
+   "pattern": "^PoisonBucket_BP_C$",
+   "match": "type",
+   "label": "毒气桶",
+   "short": "Bucket"
+  },
+  {
+   "key": "poison_pump",
+   "pattern": "^(MHS_PoisonPump_BP_C|MHS_PoisonContainer_BP_C)$",
+   "match": "type",
+   "label": "毒气泵 / 容器（灌注点）",
+   "short": "Pump",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "毒气桶区 · 毒品实验室",
+   "name_en": "Poison bucket area - Drug lab",
+   "color": "#7c3aed",
+   "note": "29 个毒气桶集中在毒品实验室（2F 厨房/烹饪/转角厨房/步道房/实验室03 + 1F 化学品储藏室），全部在同一片区域，不分轮次",
+   "rooms": [
+    "RBRoom_DrugLab*",
+    "RBRoom_DrugLub*"
+   ],
+   "actors": [
+    "MT02_PoisonBucket_BP_Tutorial",
+    "PoisonBucket_BP2_2",
+    "PoisonBucket_BP3_5",
+    "PoisonBucket_BP4_8",
+    "PoisonBucket_BP5_11",
+    "PoisonBucket_BP6_14",
+    "PoisonBucket_BP7_17",
+    "PoisonBucket_BP8_20",
+    "PoisonBucket_BP9_23",
+    "PoisonBucket_BP10_26",
+    "PoisonBucket_BP11_29",
+    "PoisonBucket_BP12_32",
+    "PoisonBucket_BP13_35",
+    "PoisonBucket_BP14_38",
+    "PoisonBucket_BP15",
+    "PoisonBucket_BP16_44",
+    "PoisonBucket_BP17_47",
+    "PoisonBucket_BP18_50",
+    "PoisonBucket_BP19_53",
+    "PoisonBucket_BP20_56",
+    "PoisonBucket_BP21_59",
+    "PoisonBucket_BP22_62",
+    "PoisonBucket_BP23_65",
+    "PoisonBucket_BP24_68",
+    "PoisonBucket_BP25_71",
+    "PoisonBucket_BP26_74",
+    "PoisonBucket_BP29_83",
+    "PoisonBucket_BP30_86",
+    "PoisonBucket_BP_2"
+   ]
+  }
+ ]
+}

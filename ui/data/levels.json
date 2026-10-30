@@ -98,5 +98,9 @@
  "SRR_MT03": {
   "map": "SuburbRiotResidential",
   "name": "郊区住宅区 · 砸图案翻牌器（3 轮 3 区）"
+ },
+ "MHS_MT02": {
+  "map": "MobsterHideoutSyndicate",
+  "name": "黑帮据点 · 给牲畜下毒（毒气桶）"
  }
 }
