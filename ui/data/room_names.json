@@ -1,0 +1,26 @@
+{
+  "RBRoom_Casino_2F_Vault": {
+    "zh": "金库",
+    "en": "Vault"
+  },
+  "RBRoom_Casino_2F_Gambling_2": {
+    "zh": "赌场2F赌博区2",
+    "en": "Casino 2F Gambling 2"
+  },
+  "RBRoom_Casino_1F_BackDock": {
+    "zh": "后坞（交付/撤离）",
+    "en": "BackDock (deliver/exit)"
+  },
+  "RBRoom_Casino_1F_BackDock_SAS": {
+    "zh": "后坞 SAS",
+    "en": "BackDock SAS"
+  },
+  "RBRoom_Shipyard_Tower_FrancoRoom": {
+    "zh": "塔楼 Franco 办公室",
+    "en": "Tower Franco Room"
+  },
+  "RBRoom_Train_2ndFloor_LootRoom": {
+    "zh": "2F 赃物房",
+    "en": "2F Loot Room"
+  }
+}

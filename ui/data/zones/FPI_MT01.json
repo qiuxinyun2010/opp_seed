@@ -1,0 +1,135 @@
+{
+ "_说明": "FPI_MT01(FunParkIllusion 放映机) 分区地图配置。zones 按任务分区；objective_index = 关卡里放映机的 ObjectiveIndex 分组(缺省视为 0)；actors 里的名字优先；rooms 支持 * 通配；room_names 把原始房间名改成攻略用名。",
+ "map": "FunParkIllusion",
+ "level": "MT01",
+ "title": "FunPark Illusion · MT01 放映机分区图",
+ "title_en": "FunPark Illusion · MT01 projector zones",
+ "subtitle": "4 台生效放映机 = 中庭固定 1 台 + 三组各随机 1 台；按组划分区域，便于逐区排查录像盘。",
+ "subtitle_en": "4 active projectors = 1 fixed in the Courtyard + 1 random from each of 3 objective groups.",
+ "sources": ["FunParkIllusion_B00.json"],
+ "point_types": [
+  {
+   "key": "projector",
+   "pattern": "^Code_DiaporamaProjector_BP[0-9_]*$",
+   "label": "放映机",
+   "label_en": "Projector",
+   "glyph": "P",
+   "props": ["ObjectiveIndex"]
+  }
+ ],
+ "zones": [
+  {
+   "id": "H",
+   "name": "中庭 · 固定放映机",
+   "name_en": "Courtyard · fixed projector",
+   "color": "#0f766e",
+   "note": "固定保留，盘序号 1；三组都要经过中庭，先在这里拿第一台。",
+   "note_en": "Always active, reel 1. All three groups connect through the Courtyard.",
+   "actors": ["Code_DiaporamaProjector_BP_2"],
+   "rooms": [
+    "RBRoom_Courtyard_Master",
+    "RBRoom_IllusionTunnelCastleEntrance",
+    "RBRoom_CorridorCourtyard_Slave_*",
+    "RBRoom_BalconCourtyard_Slave"
+   ]
+  },
+  {
+   "id": "A",
+   "name": "第 0 组 · 兔子洞（地下）",
+   "name_en": "Group 0 · Rabbit Hole",
+   "color": "#7c3aed",
+   "objective_index": 0,
+   "note": "候选 3 台：Carrots Storage / Rabbit Torture / Lounge。地下整片，入口在楼梯间。",
+   "note_en": "3 candidates: Carrots Storage / Rabbit Torture / Lounge (underground wing).",
+   "rooms": [
+    "RBRoom_RabbitHole_*",
+    "RBRoom_RabbitHoleCorridor_*",
+    "RBRoom_RabbitTortur",
+    "RBRoom_StairsUnderground",
+    "RBRoom_StairsUnderground_1Level"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "第 1 组 · 厨房与颠倒教堂",
+   "name_en": "Group 1 · Kitchen & upside-down",
+   "color": "#b45309",
+   "objective_index": 1,
+   "note": "候选 4 台：Kitchen / Upside-down Church / Upside-down Storm / Storm。西侧厨房与东侧上下颠倒区各一半。",
+   "note_en": "4 candidates: Kitchen / Upside-down Church / Upside-down Storm / Storm.",
+   "rooms": [
+    "RBRoom_Kitchen",
+    "RBRoom_SmallKitchen",
+    "RBRoom_UpsideDown_Church",
+    "RBRoom_UpsideDownStorm",
+    "RBRoom_Storm",
+    "RBRoom_CorridorRedFlag",
+    "RBRoom_CorridorUpsideDown_Slave",
+    "RBRoom_UpsideDownStairsRoom_Master",
+    "RBRoom_2ndFloorCorridorUpsideDown",
+    "RBRoom8_50",
+    "RBRoom_Library"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "第 2 组 · 上层幻想区",
+   "name_en": "Group 2 · illusion floor",
+   "color": "#1d4ed8",
+   "objective_index": 2,
+   "note": "候选 8 台：Wall of Eyes / Room 31-12 / Tesseract / Void / Dining / Big Clock / Showroom / Upside-up Church。",
+   "note_en": "8 candidates: Wall of Eyes / Room 31-12 / Tesseract / Void / Dining / Big Clock / Showroom / Upside-up Church.",
+   "rooms": [
+    "RBRoom_Eyes",
+    "RBRoom31_12",
+    "RBRoom_Tesseract",
+    "RBRoom_VoidIllusion",
+    "RBRoom_DinningIllusion",
+    "RBRoom_BigHorloge",
+    "RBRoom_ShowRoom_Master",
+    "RBRoom_UpsideUp_Church",
+    "RBRoom_FallenBell",
+    "RBRoom_CorridorBigObject",
+    "RBRoom_CorridorSmallobject_Master",
+    "RBRoom_UpperStairsHall_Slave_1",
+    "RBRoom_DarkMannequin",
+    "RBRoom_QueenTrone"
+   ]
+  }
+ ],
+ "room_names": {
+  "RBRoom_Eyes": "Wall of Eyes",
+  "RBRoom31_12": "Room 31-12",
+  "RBRoom_Courtyard_Master": "Courtyard",
+  "RBRoom_IllusionTunnelCastleEntrance": "Illusion Tunnel",
+  "RBRoom_BalconCourtyard_Slave": "Courtyard Balcony",
+  "RBRoom_UpsideDown_Church": "Upside-down Church",
+  "RBRoom_UpsideUp_Church": "Upside-up Church",
+  "RBRoom_UpsideDownStorm": "Upside-down Storm",
+  "RBRoom_Storm": "Storm",
+  "RBRoom_DinningIllusion": "Dining Illusion",
+  "RBRoom_VoidIllusion": "Void Illusion",
+  "RBRoom_BigHorloge": "Big Clock",
+  "RBRoom_ShowRoom_Master": "Showroom",
+  "RBRoom_Tesseract": "Tesseract",
+  "RBRoom_RabbitHole_CarrotsStorage": "Carrots Storage",
+  "RBRoom_RabbitHole_Lounge_Slave": "Rabbit Lounge",
+  "RBRoom_RabbitTortur": "Rabbit Torture",
+  "RBRoom_QueenTrone": "Queen Throne",
+  "RBRoom_FallenBell": "Fallen Bell",
+  "RBRoom_DarkMannequin": "Dark Mannequin",
+  "RBRoom_CorridorBigObject": "Big Object Corridor",
+  "RBRoom_CorridorSmallobject_Master": "Small Object Corridor",
+  "RBRoom_UpperStairsHall_Slave_1": "Upper Stairs Hall",
+  "RBRoom_CorridorRedFlag": "Red Flag Corridor",
+  "RBRoom_CorridorUpsideDown_Slave": "Upside-down Corridor",
+  "RBRoom_UpsideDownStairsRoom_Master": "Upside-down Stairs",
+  "RBRoom_2ndFloorCorridorUpsideDown": "2F Upside-down Corridor",
+  "RBRoom8_50": "Room 8-50",
+  "RBRoom_Library": "Library",
+  "RBRoom_Kitchen": "Kitchen",
+  "RBRoom_SmallKitchen": "Small Kitchen",
+  "RBRoom_StairsUnderground": "Underground Stairs",
+  "RBRoom_StairsUnderground_1Level": "Underground Stairs 1F"
+ }
+}

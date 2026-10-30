@@ -1,0 +1,80 @@
+{
+ "_说明": "SRR_MT02（郊区住宅区 · 调频 + 发电机）。三类任务点位：①调频器 = FrequencyMatchBlacklit_BP（关卡里 49 台候选，靠黑光显形）；②显示屏 = FrequencyClue_TvChannel_BP，共 9 块、每 3 块一组（富豪区入口 / 学校停车场入口 / 学校后院 SAS 出口），屏上显示图案；③发电机 = Timed_GeneratorObjective_BP（关卡里 5 台）。每组的调频器由 OrderedClueFrequency_Coord 的三个协调器决定：RichDistrict=4 台全用、SasExit=19 选 6、School=26 选 6，即本局共 16 台需要调频；三个协调器名与地理不完全对应（School 组调频器在住宅区、SasExit 组在学校里），分区按地理实际范围命名。",
+ "level": "SRR_MT02",
+ "map": "SuburbRiotResidential",
+ "title": "SRR_MT02 · 郊区住宅区 调频与发电机",
+ "subtitle": "先到三组显示屏（每组 3 块）看图案 → 到对应区域用黑光找调频器（富豪区 4 台 / 住宅区 26 选 6 / 学校 19 选 6）→ 5 台发电机位置在图上，本局需要启动 3 台。",
+ "sources": [
+  "SRR_MT02_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "tuner",
+   "pattern": "^FrequencyMatchBlacklit_BP_C$",
+   "match": "type",
+   "label": "调频器",
+   "short": "Tuner",
+   "style": "clue"
+  },
+  {
+   "key": "screen",
+   "pattern": "^FrequencyClue_TvChannel_BP_C$",
+   "match": "type",
+   "label": "显示屏",
+   "short": "Screen"
+  },
+  {
+   "key": "generator",
+   "pattern": "^Timed_GeneratorObjective_BP_C$",
+   "match": "type",
+   "label": "发电机",
+   "short": "Generator"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "Villa & garage (screens: Rich District entrance)",
+   "name_zh": "A 区 · 别墅与车库（屏：富豪区入口）",
+   "color": "#7c3aed",
+   "note": "别墅入口/车库/厕所、豪宅一层厨房与彩蛋房。富豪区入口那一组 3 块显示屏在 VillaEntrance；本组的 4 台调频器全在 GarageVilla，4 台全都要调。",
+   "rooms": [
+    "RBRoom_Villa*",
+    "RBRoom_GarageVilla",
+    "RBRoom_Mansion1st_Kitchen",
+    "RBRoom_EasterEgg"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "Houses & school entrance (screens: school parking)",
+   "name_zh": "B 区 · 住宅区与学校入口（屏：学校停车场）",
+   "color": "#b45309",
+   "note": "Rich House 1~4、House2/House5、施工房与住宅枢纽（Rich Hub 明/暗）——调频器最密集的一片，26 台候选里本局随机 6 台。学校入口那组 3 块屏在 School Parking，紧挨学校正门；这里有 2 台发电机（Rich Hub 明/暗）。",
+   "rooms": [
+    "RBRoom_Rich_House*",
+    "RBRoom_Rich_Hub*",
+    "RBRoom_Rich_SAS*",
+    "RBRoom_House*",
+    "RBRoom_ConstructionHouse*",
+    "RBRoom_School_Parking",
+    "School_Entrance"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "School campus (screens: SAS exit)",
+   "name_zh": "C 区 · 学校校区（屏：后院 SAS 出口）",
+   "color": "#0f766e",
+   "note": "教学楼 01~04、图书馆、食堂/厨房、秘书处、庭院走廊、体育馆走廊与后院 SAS。后院那组 3 块屏就在 SAS 出口旁；19 台调频器候选，本局随机 6 台；学校后院与食堂各 1 台发电机，撤离结算键也在 School SAS。",
+   "rooms": [
+    "RBRoom_School*",
+    "RBRoom3_School*",
+    "RbRoom_School*",
+    "RBRoom_Exterior_*",
+    "RBRoom_CorridorEntrance_Gym",
+    "RBRoom_MusicClassroomStorage"
+   ]
+  }
+ ]
+}

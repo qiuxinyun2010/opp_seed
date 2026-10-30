@@ -1,0 +1,146 @@
+{
+ "_说明": "手写维护。match=type 按蓝图类名匹配，match=name 按实例名匹配；style=clue 画空心（线索）",
+ "level": "TSR_MT01",
+ "map": "TelevisionStudioRooftop",
+ "sources": [
+  "TSR_LD_MT01_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "simple_obj_coord",
+   "pattern": "^Simple_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "Simple Obj Coord",
+   "props": [
+    "ObjectiveIndex"
+   ]
+  },
+  {
+   "key": "delay_obj_coord",
+   "pattern": "^Delay_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "Delay Obj Coord",
+   "props": [
+    "ObjectiveIndex"
+   ]
+  },
+  {
+   "key": "exit_stage_obj_coord",
+   "pattern": "^ExitStage_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "Exit Stage Obj Coord",
+   "props": [
+    "ObjectiveIndex"
+   ]
+  },
+  {
+   "key": "goto_obj_coord",
+   "pattern": "^Goto_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "Goto Obj Coord",
+   "props": [
+    "ObjectiveIndex"
+   ]
+  },
+  {
+   "key": "simple_quest_item_obj_coord",
+   "pattern": "^SimpleQuestItem_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "Simple Quest Item Obj Coord",
+   "props": [
+    "ObjectiveIndex"
+   ]
+  },
+  {
+   "key": "single_item_dispenser_container",
+   "pattern": "^SingleItemDispenser_Container_BP_C$",
+   "match": "type",
+   "label": "Single Item Dispenser Container",
+   "style": "clue"
+  },
+  {
+   "key": "stage_end_button",
+   "pattern": "^StageEnd_Button_BP_C$",
+   "match": "type",
+   "label": "Stage End Button"
+  }
+ ],
+ "_candidates": [
+  "Simple_ObjCoord_BP_C  (n=2, base=0)",
+  "Delay_ObjCoord_BP_C  (n=1, base=0)",
+  "ExitStage_ObjCoord_BP_C  (n=1, base=0)",
+  "Goto_ObjCoord_BP_C  (n=1, base=0)",
+  "SimpleQuestItem_ObjCoord_BP_C  (n=1, base=0)",
+  "SingleItemDispenser_Container_BP_C  (n=1, base=0)",
+  "StageEnd_Button_BP_C  (n=1, base=0)",
+  "OrientedDecalActor_C  (n=512, base=2240)",
+  "Clue_BlackLightable_SwitchBoard_BP_C  (n=80, base=0)",
+  "CeilingCageBulb-02_C  (n=12, base=23)",
+  "NarrativeScreenOnly_BP_C  (n=8, base=0)",
+  "tvChannel_BP_C  (n=8, base=0)",
+  "PlaceableRechargeableStation_BP_C  (n=10, base=0)",
+  "Biter_CableRestraint_BP_C  (n=5, base=0)",
+  "NPC_Spawn_Biter_C  (n=5, base=0)",
+  "Avellanos-01_BP_C  (n=4, base=0)",
+  "BlacklightDetectorWide_QuestItemSpawn_BP_C  (n=4, base=0)",
+  "TextSign-Vertical_BP_C  (n=7, base=15)",
+  "NPC_Ambient_HeadSmash_C  (n=2, base=0)",
+  "NPC_Spawn_SleeperScreamer_Stand_C  (n=2, base=0)",
+  "Controllable_SpotLight_BP_C  (n=1, base=0)",
+  "NPC_Spawn_Blind_C  (n=1, base=0)",
+  "NPC_Spawn_NightHunter_C  (n=1, base=1)",
+  "Orp_Movable_Button_BP_C  (n=1, base=0)",
+  "SwitchesBoard_Base_BP_C  (n=1, base=0)",
+  "TextSignBase_BP_C  (n=1, base=0)",
+  "TutorialZone_C  (n=1, base=0)",
+  "MannequinBP_SinglePose_C  (n=83, base=231)",
+  "SwitchBoardPlugComponent_BP_C  (n=30, base=0)",
+  "GlassFloorTrap-01_BP_C  (n=15, base=803)",
+  "SplineGroupeWire_BP_C  (n=12, base=0)",
+  "RBRechargeableInventoryItemComponent_BP_C  (n=10, base=0)",
+  "SoundTrap-Cans-01_BP_C  (n=10, base=786)",
+  "NightHunterActivityMarker_Default_BP_C  (n=8, base=0)",
+  "Cart_LedgeMarker_BP_C  (n=5, base=20)",
+  "GlassFloorTrap-02_BP_C  (n=5, base=151)",
+  "SP-DirectSurface_BP_C  (n=5, base=460)",
+  "SoundTrap_RandomGroup_C  (n=5, base=391)",
+  "Wall_Plywood-01_BP_C  (n=5, base=1538)",
+  "Base_PropagandaPoster_InteractionComponent_BP_C  (n=3, base=374)",
+  "Otto_PropagandaPoster_BP_C  (n=3, base=374)",
+  "RBWorldSettings_BP_C  (n=3, base=46)",
+  "ReviveSyringeSpawner_BP_C  (n=3, base=0)",
+  "RollingDoor-DoubleDoor_BP_C  (n=3, base=17)",
+  "SJ_ElectricSpark-01_BP_C  (n=3, base=352)",
+  "SP-Throw-Bottle-Surface_BP_C  (n=3, base=205)",
+  "SleeperActivityMarker_Ground_BP_C  (n=3, base=0)",
+  "TS_CameraRecordLight_BP_C  (n=3, base=8)",
+  "TS_StairSign-01_C  (n=3, base=6)",
+  "BP_FX_Trial_03_OPH_01_BloodSprayTrigger_C  (n=2, base=0)",
+  "Base_ButtonPress_InteractionComponent_BP_C  (n=2, base=0)",
+  "CeilingIndustrialLamp-07_C  (n=2, base=18)",
+  "FluidPipeBase_BP_C  (n=2, base=0)",
+  "Placeable_PsychosisMine_BP_C  (n=2, base=206)",
+  "SP-Throw-Brick-Surface_CustomRotation_BP_C  (n=2, base=49)",
+  "StencilText_BP_C  (n=2, base=7)",
+  "Wire-01_BP_C  (n=2, base=99)",
+  "CeilingFluorescent-02_C  (n=1, base=131)",
+  "CeilingLamp-07_C  (n=1, base=14)",
+  "ControllableSpotlight_PointableComponent_BP_C  (n=1, base=0)",
+  "GarageDoorOperatable-02_BP_C  (n=1, base=0)",
+  "GroupeCableConduitSline-01_BP1_C  (n=1, base=1)",
+  "Hidespot_Barrel_ThrashCan_DynData_BP_C  (n=1, base=1)",
+  "MannequinBP_SimpleAnimation_C  (n=1, base=38)",
+  "MiddleMoldingInt_10_BP_C  (n=1, base=57)",
+  "SP-Document-Surface_BP_C  (n=1, base=34)",
+  "SP-Health-Antidote-Surface_BP_C  (n=1, base=53)",
+  "SP-Throw-Brick-Surface_BP_C  (n=1, base=86)",
+  "SP-Utility-Lockpick-Pile-B-Surface_BP_C  (n=1, base=21)",
+  "SplineCable_BP_C  (n=1, base=128)",
+  "Stairs_BP_C  (n=1, base=24)",
+  "SwitchBoardConfirmationButtonComponent_BP_C  (n=1, base=0)",
+  "SwitchBoard_PanelComponent_BP_C  (n=1, base=0)",
+  "TF_TextSign-01_BP_C  (n=1, base=0)",
+  "TSR_StainedGlassLight_BP_C  (n=1, base=0)",
+  "Tile_Plywood-01_BP_C  (n=1, base=58)"
+ ]
+}

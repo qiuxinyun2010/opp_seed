@@ -1,0 +1,123 @@
+{
+  "map": "MobsterHideoutSyndicate",
+  "level": "MT01",
+  "title": "Mobster Hideout Syndicate · MT01 金库分区图",
+  "title_en": "Mobster Hideout Syndicate · MT01 vault zones",
+  "subtitle": "Break into the Vault / Deliver the Loot —— 三个密码区各藏 10 个投影符号，找齐后在对应密码盘开门；上赌场 2F 开金库取赃物，回后坞交付并撤离。",
+  "subtitle_en": "Break into the Vault / Deliver the Loot — 10 projection symbols per locked area, then open the vault on Casino 2F, grab the loot and deliver it at the BackDock.",
+  "sort_points": "natural",
+  "sources": [
+    "MHS_LD_MT01_B00.json",
+    "MHS_LD_SHARED_MT01_MT02.json",
+    "MHS_LD_SHARED_MT01_MT02_MT04.json"
+  ],
+  "point_types": [
+    {
+      "key": "symbol",
+      "pattern": "^MT01_ProjectionSymbol_BP_",
+      "label": "投影符号",
+      "style": "clue"
+    },
+    {
+      "key": "gate",
+      "pattern": "^MT01_PasscodeTriggerable",
+      "label": "密码门"
+    },
+    {
+      "key": "objective",
+      "pattern": "^MT01_(Goto_ObjCoord|Simple_ObjCoord|GatherAndDeliver|Orp_Movable|StageEnd|ExitStage|Avellanos|SpotLight|ValuablesBox)",
+      "label": "任务点"
+    },
+    {
+      "key": "loot",
+      "pattern": "^ValuablesSafeDrop_BP_\\d+$",
+      "label": "交付点"
+    }
+  ],
+  "zones": [
+    {
+      "id": "A",
+      "name": "船厂（投影符号 ×10）",
+      "name_en": "Shipyard (10 symbols)",
+      "color": "#7c3aed",
+      "note": "符号散布在船厂主楼、塔楼 1F/阳台、火车车厢顶和楼梯间；密码盘在船厂主楼里。",
+      "note_en": "Symbols are spread over the shipyard halls, tower, train-car roofs and stairs; the keypad sits in the shipyard building.",
+      "actors": [
+        "MT01_ProjectionSymbol_BP_Shipyard_*"
+      ],
+      "rooms": [
+        "RBRoom_Shipyard_*"
+      ]
+    },
+    {
+      "id": "B",
+      "name": "货运场（投影符号 ×10）",
+      "name_en": "Train yard (10 symbols)",
+      "color": "#b45309",
+      "note": "货运场跨度最大：1F 车场、车顶桥、2F 车厢与瞭望台都有符号，注意上下层来回。",
+      "note_en": "Largest area: yard on 1F, bridges, 2F train cars and the lookout — expect to move between floors.",
+      "actors": [
+        "MT01_ProjectionSymbol_BP_TrainDepot_*"
+      ],
+      "rooms": [
+        "RBRoom_Train*"
+      ]
+    },
+    {
+      "id": "C",
+      "name": "毒品实验室（投影符号 ×10）",
+      "name_en": "Drug lab (10 symbols)",
+      "color": "#0f766e",
+      "note": "实验室 1F 化学品库、走廊与 2F 厨房、天桥、步道房；密码盘在实验楼内。",
+      "note_en": "Chemical storage and corridors on 1F, kitchen/skybridge/walkway on 2F; the keypad is inside the lab.",
+      "actors": [
+        "MT01_ProjectionSymbol_BP_DrugLab_*"
+      ],
+      "rooms": [
+        "RBRoom_DrugLab_*",
+        "RBRoom_DrugLub_*"
+      ]
+    },
+    {
+      "id": "D",
+      "name": "赌场 · 金库（主目标）",
+      "name_en": "Casino & vault (main objective)",
+      "color": "#1d4ed8",
+      "note": "目标链：先在赌场 2F 的三个密码盘输入三组符号密码 → 到金库 → 按下开金库按钮 → 取走赃物箱。",
+      "note_en": "Chain: three keypads on Casino 2F unlock the three locked areas, then reach the vault, press the button and loot the box.",
+      "actors": [
+        "MT01_PasscodeTriggerable_Base_BP_*",
+        "MT01_Goto_ObjCoord_BP_GoTo_ReachVault",
+        "MT01_Simple_ObjCoord_BP_OpenVault",
+        "MT01_Orp_Movable_Button_BP_OpenVault",
+        "MT01_Avellanos-01_BP_Vault",
+        "MT01_ValuablesBox_BP"
+      ],
+      "rooms": [
+        "RBRoom_Casino_*",
+        "!RBRoom_Casino_1F_BackDock*"
+      ]
+    },
+    {
+      "id": "E",
+      "name": "后坞 · 交付与撤离",
+      "name_en": "Back dock (deliver & extract)",
+      "color": "#be123c",
+      "note": "拿到赃物后回到后坞：先在交付点交赃物，再按结束键并从撤离点离开。",
+      "note_en": "Back at the dock: drop the loot at the delivery point, press the stage-end button and take the exit.",
+      "actors": [
+        "MT01_Goto_ObjCoord_BP_Goto_Boatman",
+        "MT01_SpotLight_Boatman",
+        "MT01_Avellanos-01_BP_CasinoBackDock",
+        "MT01_GatherAndDeliver_ObjCoord_BP",
+        "ValuablesSafeDrop_BP_*",
+        "MT01_StageEnd_Button_BP",
+        "MT01_ExitStage_ObjCoord_BP"
+      ],
+      "rooms": [
+        "RBRoom_Casino_1F_BackDock*"
+      ]
+    }
+  ],
+  "room_names": {}
+}

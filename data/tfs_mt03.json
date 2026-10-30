@@ -1,0 +1,93 @@
+{
+  "_source": "paks/MAP/Maps/ToyFactoryShipping/TFS_LD_MT03_B00.json + plan.json",
+  "_note": "sections[].valves 保持关卡 JSON 里的原始顺序（第二次抽取基于 RemoveAtSwap 之后的池，顺序不能改）；section_order 也是原始 Sections[].Valves 顺序。valve_coordinates 是阀门面板 RootComponent 坐标。",
+  "section_order": ["B3", "B2", "B1", "A3", "A1", "A2"],
+  "sections": {
+    "A1": [
+      ["01", "RBRoom_West_Storage"],
+      ["02", "RBRoom_West_Sorting"],
+      ["03", "RBRoom_West_Storage"],
+      ["04", "RBRoom_East_Painting"],
+      ["05", "RBRoom_East_Painting"],
+      ["06", "RBRoom_West_Sorting"]
+    ],
+    "A2": [
+      ["01", "RBRoom_West_Processing"],
+      ["02", "RBRoom_West_Processing"],
+      ["03", "RBRoom_West_ForemansOffice_01"],
+      ["04", "RBRoom_West_ForemansOffice_02"],
+      ["05", "RBRoom_West_PuppetWorshop"],
+      ["06", "RBRoom_West_PuppetWorshop"]
+    ],
+    "A3": [
+      ["1", "RBRoom_Ext_ReceivingDocks_Stairs_Slave_1"],
+      ["2", "RBRoom_Ext_ReceivingDocks"],
+      ["3", "RBRoom_ReceivingDocks_2ndFloor"],
+      ["5", "RBRoom_ReceivingDocks_OfficeBuilding"],
+      ["6", "RBRoom_ReceivingDocks_OfficeBuilding"],
+      ["7", "RBRoom_ReceivingDocks_OfficeBuilding_CenterRoom"]
+    ],
+    "B1": [
+      ["02", "RBRoom_East_Electrical"],
+      ["03", "RBRoom_East_Electrical"],
+      ["04", "RBRoom_East_Construction"],
+      ["08", "RBRoom_East_Storage"]
+    ],
+    "B2": [
+      ["07", "RBRoom_East_Laundry"],
+      ["01", "RBRoom_East_ToyStorage"],
+      ["02", "RBRoom_East_ToyStorage"],
+      ["03", "RBRoom_East_Bathroom_Master"],
+      ["04", "RBRoom_East_Bathroom_Slave"],
+      ["5", "RBRoom_East_Bathroom_Slave"],
+      ["05", "RBRoom_East_Bathroom_Master"],
+      ["06", "RBRoom_East_Laundry"]
+    ],
+    "B3": [
+      ["1", "RBRoom_Ext_LoadingDocks_OfficeTrailer"],
+      ["2", "RBRoom_Ext_LoadingDocks_OfficeTrailer"],
+      ["3", "RBRoom_Ext_LoadingDocks_Shack_4"],
+      ["4", "RBRoom_Ext_LoadingDocks_Shack_4"],
+      ["6", "RBRoom_Ext_LoadingDocks_Storage"],
+      ["5", "RBRoom_Ext_LoadingDocks_Storage"]
+    ]
+  },
+  "valve_coordinates": {
+    "MT03_TF_Gas_ValvePanel_BP_Section_A1_01": [-1595.0, 1435.0, 0.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A1_02": [-1581.73, 777.3, 0.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A1_03": [-780.0, 1365.0, 1.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A1_04": [-2192.99, -212.77, -21.98],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A1_05": [-2626.65, 38.5, -30.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A1_06": [-977.12, -437.46, 0.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A2_01": [-3422.62, 231.0, -25.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A2_02": [-3834.56, -238.99, -25.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A2_03": [-4851.94, 1525.07, -25.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A2_04": [-5040.0, 515.0, -25.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A2_05": [-5075.0, -1329.89, -25.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A2_06": [-4100.0, -1195.0, -25.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A3_1": [-1280.0, -2250.0, 150.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A3_2": [-2565.61, -1521.92, 315.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A3_3": [-2770.0, -1970.0, 300.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A3_5": [-3970.61, -2360.0, 250.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A3_6": [-3970.0, -3065.0, 250.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_A3_7": [-3970.0, -2535.0, 250.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B1_02": [469.23, 4209.2, 0.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B1_03": [-40.0, 3890.0, 0.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B1_04": [-30.0, 2975.0, 0.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B1_08": [-480.0, 3230.0, 0.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B2_01": [-2486.1, 2784.16, 0.78],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B2_02": [-3280.0, 3015.0, 0.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B2_03": [-2025.0, 4665.0, -5.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B2_04": [-2825.0, 4705.0, -5.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B2_05": [-2885.15, 4572.04, -5.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B2_06": [-1395.0, 4780.0, 0.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B2_07": [-795.0, 3920.0, 0.78],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B2_5": [-3275.0, 4705.0, -5.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B3_1": [-2555.0, 5890.0, 98.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B3_2": [-2296.89, 6126.81, 98.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B3_3": [-680.0, 6775.0, 200.69],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B3_4": [-710.0, 7070.0, 200.69],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B3_5": [1435.0, 6635.0, 200.0],
+    "MT03_TF_Gas_ValvePanel_BP_Section_B3_6": [1234.86, 7117.02, 200.0]
+  }
+}

@@ -1,0 +1,101 @@
+{
+ "_说明": "RES_MT02 焚毁莉莉娅的遗物：点位 = 莉莉娅人偶（宝石容器）；分区 = 协调器的 4 个 section + 2 个固定房。人偶分布在 RES_LD_T10_B04 / RES_LD_AI / RES_LD_Traps / 若干 ART 子关卡里，运行时都注册到同一张图的房间，所以 sources 要全部列上",
+ "level": "RES_MT02",
+ "map": "ResortSpa",
+ "sources": [
+  "RES_LD_T10_B04.json",
+  "RES_LD_AI.json",
+  "RES_LD_Traps.json",
+  "ResortSpa_Backyard_ART.json",
+  "ResortSpa_GroundRight_ART.json",
+  "ResortSpa_Lobby_ART.json"
+ ],
+ "point_types": [
+  {
+   "key": "gem_mannequin",
+   "pattern": "^RE_MannequinTrap_Setup_BP_C$",
+   "match": "type",
+   "label": "Gem Mannequin",
+   "short": "M"
+  },
+  {
+   "key": "gem_mannequin_tutorial",
+   "pattern": "^RE_MannequinTrap_Tutorial_BP_C$",
+   "match": "type",
+   "label": "Gem Mannequin (tutorial)",
+   "short": "T",
+   "style": "clue"
+  },
+  {
+   "key": "mannequin_trap_base",
+   "pattern": "^MannequinTrap_Setup_Base_BP_C$",
+   "match": "type",
+   "label": "Mannequin Trap (base)",
+   "short": "b",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "1 区 · 西翼 1F 拍卖厅",
+   "color": "#7c3aed",
+   "note": "6 颗；房间按 seed 排序后轮流派发",
+   "rooms": [
+    "RBRoom_West1F_Hub",
+    "RBRoom_West1F_Cloak_RewardRoom",
+    "RBRoom_Hub",
+    "RBRoom_LiveAuction",
+    "RBRoom_SilentAuction",
+    "RBRoom_West1F_SilentAuction_B",
+    "RBRoom_West1F_GameRoom"
+   ],
+   "name_en": "Section 1 - West wing 1F auction"
+  },
+  {
+   "id": "B",
+   "name": "2 区 · 室外 / 泳池院子",
+   "color": "#b45309",
+   "note": "6 颗；RBRoom_UnderBalcony 恒无可用人偶，抽到它会少一颗",
+   "rooms": [
+    "RBRoom_OutsideGarage_Master",
+    "RBRoom_OutsideRestaurant_Master",
+    "RBRoom_UnderBalcony",
+    "RBRoom_FirePlace_Exterior",
+    "RBRoom_TunnelSpa",
+    "RBRoom_UpperOutsideSpa_Master",
+    "RBRoom_Exterior_3",
+    "RBRoom_Exterior_5",
+    "RBRoom_ServietteRoom"
+   ],
+   "name_en": "Section 2 - Exterior spa yard"
+  },
+  {
+   "id": "C",
+   "name": "3 区 · 客房楼 3F",
+   "color": "#0f766e",
+   "note": "6 颗；Building_Room3 另有固定 1 颗（恒 Ruby）",
+   "rooms": [
+    "RBRoom_Building_Room1",
+    "RBRoom_Building_Room2",
+    "RBRoom_Building_Room3",
+    "RBRoom_SaunaSpa"
+   ],
+   "name_en": "Section 3 - Guest building 3F"
+  },
+  {
+   "id": "D",
+   "name": "4 区 · 水疗与餐厅层",
+   "color": "#1d4ed8",
+   "note": "7 颗；RestaurantLounge_Master 另有固定 1 颗（恒 Ruby）",
+   "rooms": [
+    "RBRoom_SpaHall_Master",
+    "RBRoom_MenLocker_Master",
+    "RBRoom_RestaurantLounge_Master",
+    "RBRoom_Kitchen",
+    "RBRoom_WomenLocker_Master"
+   ],
+   "name_en": "Section 4 - Spa and restaurant floor"
+  }
+ ]
+}

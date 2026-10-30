@@ -1,0 +1,9 @@
+# Python 缓存
+__pycache__/
+*.py[cod]
+
+# 运行时日志
+*.log
+
+# 打包产物（ui/ 目录本身已入库）
+/ui.zip

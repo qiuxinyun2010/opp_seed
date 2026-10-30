@@ -1,0 +1,69 @@
+{
+ "_说明": "CHJ_MT03（法院 · 贿赂其余可收买的法官）。任务点位只要法官：关卡里 9 个坐着的 MannequinBP（1 个 Male_Judge-01 + 8 个 Male_Suit-01）就是法官席位，每个席位正前方 ~50uu 都有一个 ClueBriefcaseDropZone（行贿交付点），所以只标法官即可定位。第一笔贿赂固定送庭院法官（CHJ_MT03_FirstBribe 的 ObjectiveActors 就是 DropZone_4），其余 8 个席位里随机 5 个需要行贿（RemainingBribes DesiredCount=5）；4 个公文包在庭院里等玩家去拿。",
+ "level": "CHJ_MT03",
+ "map": "CourthouseJudicial",
+ "title": "CHJ_MT03 · 法院 法官位置图",
+ "subtitle": "Bribe the Remaining Judges —— 先启动发电机让符号显形，到庭院拿公文包（4 个都在庭院），匹配公文包上的符号后送给对应法官：第一笔固定送庭院法官，其余 8 个法官席位里本局随机 5 个（有的法官没有对应公文包）。图上 9 个圆点就是全部法官席位。",
+ "sources": [
+  "CHJ_LD_MT03_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "judge",
+   "pattern": "^MannequinBP_(SinglePose|SimpleAnimation)_C$",
+   "match": "type",
+   "label": "法官",
+   "short": "Judge"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "West wing (3 judges)",
+   "name_zh": "西翼（3 个法官席位）",
+   "color": "#7c3aed",
+   "note": "西侧办公区：Blueprints（图纸室）、Private Office（私人办公室）、Construction Gore（施工现场）各坐着 1 个法官；西侧走廊、维修间、档案/施工储物也在这一片。",
+   "rooms": [
+    "RBRoom_West*",
+    "RBRoom_GF_West*"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "East wing (4 judges)",
+   "name_zh": "东翼（4 个法官席位）",
+   "color": "#b45309",
+   "note": "东侧：Judges Office（法官办公室）、Courtroom 1、Courtroom 2、Museum（博物馆）各 1 个法官；另有法官档案室、东侧休息室与走廊。",
+   "rooms": [
+    "RBRoom_East*",
+    "RBRoom_GF_East*"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "Courtyard & courtrooms (1 judge)",
+   "name_zh": "庭院与法庭（1 个法官席位）",
+   "color": "#0f766e",
+   "note": "庭院地面/回廊/阳台、主法庭与雕像中庭：庭院里的法官是第一笔贿赂的固定目标，4 个公文包（A~D）也都在庭院里；2F 阳台可以俯瞰中庭。",
+   "rooms": [
+    "RBRoom_Courtyard*",
+    "RBRoom_Courtroom*",
+    "RBRoom_MainCourtroom*",
+    "RBRoom_Statue*",
+    "RBRoom_MainHall*"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "Back entrance, parking & street (1 judge)",
+   "name_zh": "后门/停车场/街道（1 个法官席位）",
+   "color": "#1d4ed8",
+   "note": "后门楼梯厅与档案室（法官档案室里坐着 1 个法官）、地下停车场/停车巷与撤离 SAS、以及法院外的临街店铺。",
+   "rooms": [
+    "RBRoom_BackEntrance*",
+    "RBRoom_Exterior*",
+    "RBRoom_Parking*"
+   ]
+  }
+ ]
+}

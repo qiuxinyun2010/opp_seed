@@ -1,0 +1,148 @@
+{
+  "map": "ShoppingMallCarrefour",
+  "level": "MT02",
+  "out_tag": "SMC_MT02",
+  "title": "购物中心 · MT02 拍照任务分区图",
+  "title_en": "Shopping Mall · MT02 photo trial zones",
+  "subtitle": "12 台照片机分布在中庭两侧的店铺走廊和东西百货楼里；拍完回中央大厅 SAS 撤离。",
+  "subtitle_en": "12 photo dispensers along the east/west store corridors and in the two department-store towers; extract at Central SAS.",
+  "sort_points": "natural",
+  "layout_cols": 2,
+  "max_map_h": 820,
+  "sources": [
+    "SMC_LD_MT02_B00.json"
+  ],
+  "point_types": [
+    {
+      "key": "photo",
+      "pattern": "^SMC_MT02_TriggerablePhotoDispenser",
+      "label": "照片机",
+      "style": "clue"
+    },
+    {
+      "key": "exit",
+      "pattern": "^SMC_MT02_ExitStage",
+      "label": "撤离点"
+    }
+  ],
+  "zones": [
+    {
+      "id": "A",
+      "name": "中庭大厅（1F/2F）",
+      "name_en": "Main hall (1F/2F)",
+      "color": "#0f766e",
+      "label_all": true,
+      "note": "商场正中的挑空大厅、2F 平台与收银后台，两侧连通东西走廊；本身没有任务点，用来认路。",
+      "note_en": "Central void hall and 2F platforms linking both corridors; no objective here, just orientation.",
+      "rooms": [
+        "RBRoom_MainHall*",
+        "RBRoom_BackstoreCashier"
+      ]
+    },
+    {
+      "id": "B",
+      "name": "中央百货 · 撤离点",
+      "name_en": "Central store & exit",
+      "color": "#2563eb",
+      "label_all": true,
+      "note": "中央百货 2F 楼面、保安室（1 台照片机）和中央 SAS（撤离点），另有贵重品办公室。",
+      "note_en": "Central department store 2F, security room (1 dispenser) and Central SAS (exit); plus the prime asset office.",
+      "actors": [
+        "SMC_MT02_TriggerablePhotoDispenser_BP_3",
+        "SMC_MT02_ExitStage_ObjCoord_BP"
+      ],
+      "rooms": [
+        "RBRoom_DepartmentStore_Central*",
+        "RBRoom_PrimeAssetOffice",
+        "RBRoom_ServiceRoom*"
+      ]
+    },
+    {
+      "id": "C",
+      "name": "东侧店铺与走廊",
+      "name_en": "East stores & corridors",
+      "color": "#7c3aed",
+      "label_all": true,
+      "note": "东侧 1F 店铺（Store1~Store4、StoreClosed）、东侧服务走廊与东南服务走廊；5 台照片机。",
+      "note_en": "East 1F shops (Store1-4, StoreClosed) plus east service corridors; 5 dispensers.",
+      "actors": [
+        "SMC_MT02_TriggerablePhotoDispenser_BP11_20",
+        "SMC_MT02_TriggerablePhotoDispenser_BP4_5",
+        "SMC_MT02_TriggerablePhotoDispenser_BP5_2",
+        "SMC_MT02_TriggerablePhotoDispenser_BP6_5",
+        "SMC_MT02_TriggerablePhotoDispenser_BP12_2"
+      ],
+      "rooms": [
+        "RBRoom_EastCorridorRDC_*",
+        "RBRoom_EastHall*",
+        "RBRoom_EastServiceCorridorRDC_*",
+        "RBRoom_SouthEastServiceCorridorRDC_*"
+      ]
+    },
+    {
+      "id": "D",
+      "name": "东侧百货楼（1F/2F）",
+      "name_en": "East department store (1F/2F)",
+      "color": "#0891b2",
+      "label_all": true,
+      "note": "东侧百货 1F 卖场、2F 楼面、停车场、理货间与药品冷库；2 台照片机。",
+      "note_en": "East store 1F/2F, parking lot, back room and pharm cold storage; 2 dispensers.",
+      "actors": [
+        "SMC_MT02_TriggerablePhotoDispenser_BP3_2",
+        "SMC_MT02_TriggerablePhotoDispenser_BP2_2"
+      ],
+      "rooms": [
+        "RBRoom_DepartmentStore_EastSide*"
+      ]
+    },
+    {
+      "id": "E",
+      "name": "西侧店铺与走廊",
+      "name_en": "West stores & corridors",
+      "color": "#b45309",
+      "label_all": true,
+      "note": "西侧 1F 店铺（Store1~Store3）与西侧服务走廊；3 台照片机。",
+      "note_en": "West 1F shops (Store1-3) plus west service corridors; 3 dispensers.",
+      "actors": [
+        "SMC_MT02_TriggerablePhotoDispenser_BP7_8",
+        "SMC_MT02_TriggerablePhotoDispenser_BP8_11",
+        "SMC_MT02_TriggerablePhotoDispenser_BP9_14"
+      ],
+      "rooms": [
+        "RBRoom_WestCorridorRDC_*",
+        "RBRoom_WestHall*",
+        "RBRoom_WestServiceCorridorRDC_*",
+        "RBRoom_SouthWestServiceCorridorRDC_*"
+      ]
+    },
+    {
+      "id": "F",
+      "name": "西侧百货楼",
+      "name_en": "West department store",
+      "color": "#be123c",
+      "label_all": true,
+      "note": "西侧百货楼：1F 卖场、2F 楼面、SAS、卸货码头与库房；1 台照片机。",
+      "note_en": "West department store (SAS, dock, storage), cashier backstore and SE/SW service corridors; 1 dispenser.",
+      "actors": [
+        "SMC_MT02_TriggerablePhotoDispenser_BP10_17"
+      ],
+      "rooms": [
+        "RBRoom_DepartmentStore_WestSide*"
+      ]
+    }
+  ],
+  "room_names": {
+    "RBRoom_DepartmentStore_Central_SAS": {
+      "zh": "中央大厅 SAS（撤离）",
+      "en": "Central SAS (exit)"
+    },
+    "RBRoom_DepartmentStore_Central_SecurityRoom": {
+      "zh": "中央保安室",
+      "en": "Central security room"
+    },
+    "RBRoom_MainHallRDC_Master": {
+      "zh": "中庭 1F 主厅",
+      "en": "Main hall 1F"
+    }
+  }
+}

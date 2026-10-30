@@ -1,0 +1,62 @@
+{
+  "_source": "paks/MAP/Maps/FunParkIllusion/FPI_LD_MT01_B00.json + plan.json",
+  "_note": "groups 的候选顺序来自关卡 JSON（不能排序）；projector_coordinates 是放映机 RootComponent 的世界坐标。fixed_projector 是不参与随机的那台放映机（固定为第 1 盘）。",
+  "fixed_projector": {
+    "actor": "Code_DiaporamaProjector_BP_2",
+    "room": "RBRoom_Courtyard_Master",
+    "objective_index": 0
+  },
+  "groups": [
+    [
+      ["Code_DiaporamaProjector_BP11", "RBRoom_RabbitHole_CarrotsStorage"],
+      ["Code_DiaporamaProjector_BP12", "RBRoom_RabbitTortur"],
+      ["Code_DiaporamaProjector_BP14", "RBRoom_RabbitHole_Lounge_Slave"]
+    ],
+    [
+      ["Code_DiaporamaProjector_BP13", "RBRoom_Kitchen"],
+      ["Code_DiaporamaProjector_BP2", "RBRoom_UpsideDown_Church"],
+      ["Code_DiaporamaProjector_BP8", "RBRoom_UpsideDownStorm"],
+      ["Code_DiaporamaProjector_BP9", "RBRoom_Storm"]
+    ],
+    [
+      ["Code_DiaporamaProjector_BP15", "RBRoom_Tesseract"],
+      ["Code_DiaporamaProjector_BP16", "RBRoom_DinningIllusion"],
+      ["Code_DiaporamaProjector_BP17", "RBRoom_VoidIllusion"],
+      ["Code_DiaporamaProjector_BP3", "RBRoom_UpsideUp_Church"],
+      ["Code_DiaporamaProjector_BP4", "RBRoom_ShowRoom_Master"],
+      ["Code_DiaporamaProjector_BP5", "RBRoom_BigHorloge"],
+      ["Code_DiaporamaProjector_BP6", "RBRoom_Eyes"],
+      ["Code_DiaporamaProjector_BP7", "RBRoom31_12"]
+    ]
+  ],
+  "symbols": ["Bunny", "Club", "Crown", "Diamond", "Eye", "Fire", "Hearth", "Moon", "Spade"],
+  "symbol_names_zh": {
+    "Bunny": "兔子",
+    "Club": "梅花",
+    "Crown": "王冠",
+    "Diamond": "方块",
+    "Eye": "眼睛",
+    "Fire": "火焰",
+    "Hearth": "红心",
+    "Moon": "月亮",
+    "Spade": "黑桃"
+  },
+  "projector_coordinates": {
+    "Code_DiaporamaProjector_BP11": [1020.91, 2155.0, -250.0],
+    "Code_DiaporamaProjector_BP12": [340.0, 2302.13, -250.0],
+    "Code_DiaporamaProjector_BP13": [-1229.03, 4285.12, 150.0],
+    "Code_DiaporamaProjector_BP14": [812.69, 3753.86, -250.0],
+    "Code_DiaporamaProjector_BP15": [2266.21, 5417.74, 650.0],
+    "Code_DiaporamaProjector_BP16": [460.97, 6214.52, 616.75],
+    "Code_DiaporamaProjector_BP17": [-1321.51, 4295.97, 600.0],
+    "Code_DiaporamaProjector_BP2": [3435.61, 2142.11, 149.0],
+    "Code_DiaporamaProjector_BP3": [3860.68, 2180.11, 644.0],
+    "Code_DiaporamaProjector_BP4": [3757.55, 4418.58, 651.95],
+    "Code_DiaporamaProjector_BP5": [1125.47, 5769.56, 650.0],
+    "Code_DiaporamaProjector_BP6": [2917.85, 4625.43, 650.0],
+    "Code_DiaporamaProjector_BP7": [-1752.82, 3622.44, 599.94],
+    "Code_DiaporamaProjector_BP8": [3606.69, 3280.92, 149.97],
+    "Code_DiaporamaProjector_BP9": [3606.41, 4487.97, 150.0],
+    "Code_DiaporamaProjector_BP_2": [1073.63, 2832.94, 150.0]
+  }
+}

@@ -1,0 +1,14 @@
+{
+ "_说明": "提取哪些图层。doors=各种门，points=任务点位，items=藏身点/血包等交互物品；item_cats 为空表示不限制类别（仅在 items=true 时生效）。floors 是楼层聚类参数。",
+ "layers": {
+  "doors": true,
+  "points": true,
+  "items": false
+ },
+ "item_cats": [],
+ "floors": {
+  "min_sep": 250.0,
+  "min_rooms": 3,
+  "span": 400.0
+ }
+}

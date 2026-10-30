@@ -1,0 +1,120 @@
+{
+  "_source": "游戏内实测样本（release/coop/**/*.md 里记录的截图与直播局）",
+  "_note": "--selftest 用。这里的数组在 seeddata.py 里会还原成 tuple / int 键，因为自检是拿预测值和这些字面值做 == 比较；改格式时注意别打乱类型。",
+  "chj_mt01": [
+    [987987, {
+      "RBRoom_West_Bureau": "3894",
+      "RBRoom_West_Maintenance": "7481",
+      "RBRoom_East_JudgesOffice": "7319"
+    }],
+    [592592, {
+      "RBRoom_West_PrivateOffice": "2671",
+      "RBRoom_East_Museum": "4815",
+      "RBRoom_West_Blueprints": "2351"
+    }]
+  ],
+  "chj_mt02": [
+    [713713, {
+      "Skull": "736", "Spiral": "486", "Pentagram": "861",
+      "Sun": "470", "TriangleCircle": "139"
+    }],
+    [620620, {
+      "Skull": "067", "Spiral": "704", "Pentagram": "429",
+      "Sun": "398"
+    }],
+    [20020, {
+      "Skull": "017", "Spiral": "752", "Pentagram": "037",
+      "Sun": "136", "TriangleCircle": "973"
+    }]
+  ],
+  "mhs_mt01": [
+    [884884, "DrugLab", "4", "806"],
+    [884884, "Shipyard", "2", "869"],
+    [884884, "TrainDepot", "7", "245"],
+    [759759, "DrugLab", "2", "854"],
+    [759759, "Shipyard", "2", "460"],
+    [771771, "DrugLab", "5", "342"],
+    [771771, "Shipyard", "1", "123"],
+    [771771, "TrainDepot", "5", "015"],
+    [707707, "DrugLab", "9", "384"],
+    [707707, "Shipyard", "6", "102"],
+    [707707, "TrainDepot", "2", "863"]
+  ],
+  "mhs_mt01_pick": [
+    [759759, "DrugLab", "2"],
+    [759759, "Shipyard", "2"],
+    [759759, "TrainDepot", "2"],
+    [884884, "DrugLab", "4"],
+    [884884, "Shipyard", "2"],
+    [884884, "TrainDepot", "7"],
+    [771771, "DrugLab", "5"],
+    [771771, "Shipyard", "1"],
+    [771771, "TrainDepot", "5"],
+    [707707, "DrugLab", "9"],
+    [707707, "Shipyard", "6"],
+    [707707, "TrainDepot", "2"]
+  ],
+  "res_mt01": [
+    [339339, [{"room": 7, "weapon": 1, "killer": 6}, "ClueRoom_BreakRoom"]]
+  ],
+  "smc_mt02": [
+    [453453, {
+      "Red": "RBRoom_EastCorridorRDC_Store4_3",
+      "Green": "RBRoom_DepartmentStore_EastSide_2F",
+      "Blue": "RBRoom_WestCorridorRDC_Store1",
+      "Tutorial": "RBRoom_DepartmentStore_Central_SecurityRoom"
+    }]
+  ],
+  "fpi_mt02": [
+    [189189, {
+      "1": {"RBRoom_Circus": ["Sharing", 9]},
+      "2": {"RBRoom_SpaceConsoleStation": ["Dumbbells", 5],
+            "RBRoom_Eyes": ["Sharing", 5]},
+      "3": {"RBRoom_RabbitHole_CarrotsStorage": ["Apple", 4],
+            "RBRoom_DarkMannequin": ["Book", 6]}
+    }],
+    [346346, {
+      "1": {"RBRoom_Circus": ["Sharing", 9]},
+      "2": {"RBRoom_RabbitHole_DinnerTable": ["Sharing", 5],
+            "RBRoom_CreepyHands": ["Water", 9]},
+      "3": {"RBRoom_UpsideDownStorm": ["Dumbbells", 4],
+            "RBRoom_DinningIllusion": ["Water", 9]}
+    }]
+  ],
+  "tsr_mt01": [
+    [695695, ["J-21", "M-05", "B-11"]]
+  ],
+  "fpi_mt01": [
+    [335335, [
+      ["RBRoom_Courtyard_Master", 1, "Crown"],
+      ["RBRoom_RabbitHole_CarrotsStorage", 2, "Hearth"],
+      ["RBRoom31_12", 3, "Bunny"],
+      ["RBRoom_UpsideDown_Church", 4, "Diamond"]
+    ]]
+  ],
+  "tfs_mt03": [
+    [14014, [
+      ["B3", "MT03_TF_Gas_ValvePanel_BP_Section_B3_2"],
+      ["B2", "MT03_TF_Gas_ValvePanel_BP_Section_B2_07"],
+      ["B1", "MT03_TF_Gas_ValvePanel_BP_Section_B1_04"],
+      ["A3", "MT03_TF_Gas_ValvePanel_BP_Section_A3_6"],
+      ["A1", "MT03_TF_Gas_ValvePanel_BP_Section_A1_04"],
+      ["A2", "MT03_TF_Gas_ValvePanel_BP_Section_A2_02"]
+    ]]
+  ],
+  "tfs_mt03_rooms": {
+    "B3": "RBRoom_Ext_LoadingDocks_OfficeTrailer",
+    "B2": "RBRoom_East_Laundry",
+    "B1": "RBRoom_East_Construction",
+    "A3": "RBRoom_ReceivingDocks_OfficeBuilding",
+    "A1": "RBRoom_East_Painting",
+    "A2": "RBRoom_West_Processing"
+  },
+  "psa_mt01": [
+    [219219, [
+      ["Club", "RBRoom_ReelStorage", [307.3, 624.8, 1087.9]],
+      ["Star", "RBRoom25_2", [-1318.8, 806.3, 139.2]],
+      ["FilmReel", "RBRoom_DetectiveOffices03_50", [1590.3, 630.1, 407.5]]
+    ]]
+  ]
+}

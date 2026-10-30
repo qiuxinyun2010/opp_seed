@@ -1,0 +1,122 @@
+{
+  "_source": "paks/MAP/Maps/PoliceStationAttic/PSA_MT01_B00.json（KeyLockedRooms_ObjCoord_BP_2）+ PSA_LD_Rooms.json（RBKeyLockedRoomComponent）+ release/seed/ui/data/cache/PoliceStationAttic.points.PSA_MT01.json（点位坐标）",
+  "_note": "symbols = KeyLockedRooms_ObjCoord_BP_2.QuestItemClasses 的数组顺序（10 个，字母序，不是 Trial2 那套顺序）。start_key 来自 StartingKeySpawner + StartingKeyRoom（节点 1 固定，不随机）。room_positions 是每个 RBRoom 的 Brush 根组件坐标，即原生距离过滤用的那个点；room_spawners 是每房钥匙生成点的 actor 与坐标（导出点位里 RBRoom_Morgue_Master 只有 1 个）；film_reels 来自 KeyLockedRoomComponent.FinalRoomActors 里的 DiaporamaWheel（根房没有录像盘）。room_aliases 是内部 RBRoom 名 → 玩家/点位图用的显示名。",
+  "symbols": ["Bunny", "Club", "Crown", "Diamond", "Eye", "Fire", "Heart", "Moon", "Spade", "Star"],
+  "symbol_names_zh": {
+    "Bunny": "兔子",
+    "Club": "梅花",
+    "Crown": "王冠",
+    "Diamond": "方块",
+    "Eye": "眼睛",
+    "Fire": "火焰",
+    "Heart": "红心",
+    "Moon": "月亮",
+    "Spade": "黑桃",
+    "Star": "五角星",
+    "FilmReel": "录像盘"
+  },
+  "start_room": "RBRoom_ReelStorage",
+  "start_key": {
+    "actor": "PSA_MT01_KeySpawner_FirstKey_1",
+    "room": "RBRoom_ReelStorage",
+    "coordinates": [-259.0, 2879.1, 1489.3]
+  },
+  "room_aliases": {
+    "RBRoom_ChiefOfficeSideRoom_22": "RBRoom_OfficeBathroom_24",
+    "RBRoom_Infirmary_7": "RBRoom_3"
+  },
+  "room_positions": {
+    "RBRoom14_12": [-1744.0865, -456.54102, 750.1665],
+    "RBRoom25_2": [-1464.7479, 456.32285, 99.65025],
+    "RBRoom6_6": [-1613.904, 2912.0154, 1050.4243],
+    "RBRoom7_9": [-1606.9672, 1943.3916, 1050.2352],
+    "RBRoom_2ndFloorCafeteria": [705.6417, 743.5349, 1049.9722],
+    "RBRoom_CafeteriaBreakRoom_17": [-1397.0144, 398.55035, 399.6241],
+    "RBRoom_ChiefOfficeSideRoom_22": [-3750.028, 2373.6821, 464.63348],
+    "RBRoom_ChiefOffice_27": [-3844.5745, 2854.8433, 400.2],
+    "RBRoom_DetectiveOffices03_50": [1305.4845, 15.114014, 400.00073],
+    "RBRoom_Generator": [-2565.2915, 2253.7273, 128.94824],
+    "RBRoom_Infirmary_7": [-77.42565, 351.68613, 400.3535],
+    "RBRoom_InterrogationRoom02_1": [2245.2808, 1858.9752, 400.09998],
+    "RBRoom_Morgue_Master": [-26.670425, 2127.8098, 128.06154],
+    "RBRoom_ReelStorage": [87.80759, 536.36743, 1080.2],
+    "RBRoom_ShootingRange": [-3731.0142, -167.93793, 128.06158]
+  },
+  "room_spawners": {
+    "RBRoom14_12": [
+      {"actor": "PSA_MT01_KeySpawner_Locker_1", "coordinates": [-1917.9, -654.2, 789.1]},
+      {"actor": "PSA_MT01_KeySpawner_Locker_2", "coordinates": [-1916.2, -533.3, 789.1]}
+    ],
+    "RBRoom25_2": [
+      {"actor": "PSA_MT01_KeySpawner_Basement_1", "coordinates": [-1318.8, 806.3, 139.2]},
+      {"actor": "PSA_MT01_KeySpawner_Basement_2", "coordinates": [-1324.5, 617.7, 139.1]}
+    ],
+    "RBRoom6_6": [
+      {"actor": "PSA_MT01_KeySpawner_SecurityRoom_3", "coordinates": [-2264.3, 3209.8, 1089.1]},
+      {"actor": "PSA_MT01_KeySpawner_SecurityRoom_4", "coordinates": [-2386.3, 3215.3, 1089.2]}
+    ],
+    "RBRoom7_9": [
+      {"actor": "PSA_MT01_KeySpawner_VentilationRoom_1", "coordinates": [-1980.0, 1548.2, 1089.2]},
+      {"actor": "PSA_MT01_KeySpawner_VentilationRoom_2", "coordinates": [-1758.1, 1552.7, 1089.3]}
+    ],
+    "RBRoom_2ndFloorCafeteria": [
+      {"actor": "PSA_MT01_KeySpawner_Research_1", "coordinates": [1719.7, 86.6, 1139.2]},
+      {"actor": "PSA_MT01_KeySpawner_Research_2", "coordinates": [1716.3, 208.6, 1139.4]}
+    ],
+    "RBRoom_CafeteriaBreakRoom_17": [
+      {"actor": "PSA_MT01_KeySpawner_CafeteriaBreakRoom_1", "coordinates": [-831.1, 312.6, 439.2]},
+      {"actor": "PSA_MT01_KeySpawner_CafeteriaBreakRoom_2", "coordinates": [-830.5, 170.4, 439.2]}
+    ],
+    "RBRoom_ChiefOfficeSideRoom_22": [
+      {"actor": "PSA_MT01_KeySpawner_ChiefOfficeSideRoom_0", "coordinates": [-3811.7, 2084.2, 439.2]},
+      {"actor": "PSA_MT01_KeySpawner_ChiefOfficeSideRoom_1", "coordinates": [-3674.4, 2083.1, 439.3]}
+    ],
+    "RBRoom_ChiefOffice_27": [
+      {"actor": "PSA_MT01_KeySpawner_ChiefOffice_1", "coordinates": [-3570.7, 3403.4, 439.2]},
+      {"actor": "PSA_MT01_KeySpawner_ChiefOffice_2", "coordinates": [-3327.2, 3402.9, 439.2]}
+    ],
+    "RBRoom_DetectiveOffices03_50": [
+      {"actor": "PSA_MT01_KeySpawner_Detective_1", "coordinates": [1525.5, 591.0, 440.2]},
+      {"actor": "PSA_MT01_KeySpawner_Detective_2", "coordinates": [1647.6, 589.3, 440.1]}
+    ],
+    "RBRoom_Generator": [
+      {"actor": "PSA_MT01_KeySpawner_Generator_1", "coordinates": [-2961.6, 2103.1, 139.2]},
+      {"actor": "PSA_MT01_KeySpawner_Generator_2", "coordinates": [-2844.8, 2101.7, 139.1]}
+    ],
+    "RBRoom_Infirmary_7": [
+      {"actor": "PSA_MT01_KeySpawner_Infirmary_1", "coordinates": [-335.1, 719.1, 439.2]},
+      {"actor": "PSA_MT01_KeySpawner_Infirmary_2", "coordinates": [-445.0, 717.7, 439.4]}
+    ],
+    "RBRoom_InterrogationRoom02_1": [
+      {"actor": "PSA_MT01_KeySpawner_InterrogationRoom_1", "coordinates": [2316.5, 2033.7, 439.1]},
+      {"actor": "PSA_MT01_KeySpawner_InterrogationRoom_2", "coordinates": [2315.0, 2157.9, 439.3]}
+    ],
+    "RBRoom_Morgue_Master": [
+      {"actor": "PSA_MT01_KeySpawner_Morgue_1", "coordinates": [-790.7, 1993.2, 139.2]}
+    ],
+    "RBRoom_ReelStorage": [
+      {"actor": "PSA_MT01_KeySpawner_ClassRoom_1", "coordinates": [308.8, 375.2, 1087.3]},
+      {"actor": "PSA_MT01_KeySpawner_ClassRoom_2", "coordinates": [307.3, 624.8, 1087.9]}
+    ],
+    "RBRoom_ShootingRange": [
+      {"actor": "PSA_MT01_KeySpawner_ShootingRange_1", "coordinates": [-3898.8, -353.9, 139.2]},
+      {"actor": "PSA_MT01_KeySpawner_ShootingRange_2", "coordinates": [-3895.9, -534.4, 139.3]}
+    ]
+  },
+  "film_reels": {
+    "RBRoom14_12": {"actor": "DiaporamaWheel_LargeObject_BP_3", "coordinates": [-1572.1, -805.0, 807.5]},
+    "RBRoom25_2": {"actor": "DiaporamaWheel_LargeObject_BP12_14", "coordinates": [-1615.7, 581.5, 107.5]},
+    "RBRoom6_6": {"actor": "DiaporamaWheel_LargeObject_BP3_6", "coordinates": [-2330.7, 3165.8, 1057.5]},
+    "RBRoom7_9": {"actor": "DiaporamaWheel_LargeObject_BP4_9", "coordinates": [-1849.1, 1675.1, 1057.5]},
+    "RBRoom_2ndFloorCafeteria": {"actor": "DiaporamaWheel_LargeObject_BP2_2", "coordinates": [1084.2, 24.7, 1057.5]},
+    "RBRoom_CafeteriaBreakRoom_17": {"actor": "DiaporamaWheel_LargeObject_BP7_18", "coordinates": [-1426.3, 420.8, 407.5]},
+    "RBRoom_ChiefOfficeSideRoom_22": {"actor": "DiaporamaWheel_LargeObject_BP6_15", "coordinates": [-3734.9, 2129.8, 407.5]},
+    "RBRoom_ChiefOffice_27": {"actor": "DiaporamaWheel_LargeObject_BP5_12", "coordinates": [-3453.7, 3263.4, 407.5]},
+    "RBRoom_DetectiveOffices03_50": {"actor": "DiaporamaWheel_LargeObject_BP9_5", "coordinates": [1590.3, 630.1, 407.5]},
+    "RBRoom_Generator": {"actor": "DiaporamaWheel_LargeObject_BP13_19", "coordinates": [-2707.7, 2303.0, 107.5]},
+    "RBRoom_Infirmary_7": {"actor": "DiaporamaWheel_LargeObject_BP8_2", "coordinates": [16.3, 100.1, 407.5]},
+    "RBRoom_InterrogationRoom02_1": {"actor": "DiaporamaWheel_LargeObject_BP10_8", "coordinates": [2270.4, 2094.7, 407.5]},
+    "RBRoom_Morgue_Master": {"actor": "DiaporamaWheel_LargeObject_BP14_22", "coordinates": [-420.5, 2700.8, 107.5]},
+    "RBRoom_ShootingRange": {"actor": "DiaporamaWheel_LargeObject_BP11_11", "coordinates": [-2661.7, -403.5, 107.5]}
+  }
+}

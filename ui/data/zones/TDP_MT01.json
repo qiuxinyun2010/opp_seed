@@ -1,0 +1,57 @@
+{
+  "map": "MobsterHideoutSyndicate",
+  "level": "MT01",
+  "title": "货运场分层图 · Train Depot（3 层）",
+  "title_en": "Train Depot floors · MT01 (3 levels)",
+  "subtitle": "把货运场按高度拆成 3 张：地面层 / 车厢与楼梯桥 / 二层。深色房是投影符号所在房间，加粗房名是重点核对的两个房间。",
+  "subtitle_en": "Same area split by height: ground / train cars & stair bridge / 2F. Dark rooms hold projection symbols; bold names are the rooms being checked.",
+  "sort_points": "natural",
+  "sources": [
+    "MHS_LD_MT01_B00.json"
+  ],
+  "point_types": [
+    {
+      "key": "symbol",
+      "pattern": "^MT01_ProjectionSymbol_BP_TrainDepot_",
+      "label": "投影符号",
+      "style": "clue"
+    }
+  ],
+  "zones": [
+    {
+      "id": "T",
+      "name": "货运场 · 按层拆开",
+      "name_en": "Train Depot · split by floors",
+      "color": "#b45309",
+      "note": "第 1 张：地面层；第 2 张：车厢内部与楼梯桥；第 3 张：二层（RBRoom_Train_2ndFloor_* 都在这一层）。",
+      "note_en": "Sheet 1: ground; sheet 2: train cars & stair bridge; sheet 3: 2F (all RBRoom_Train_2ndFloor_* live here).",
+      "actors": [
+        "MT01_ProjectionSymbol_BP_TrainDepot_*"
+      ],
+      "rooms": [
+        "RBRoom_Train*"
+      ],
+      "highlight": [
+        "RBRoom_Train_2ndFloor_Room01",
+        "RBRoom_Train_2ndFloor_Cooridor_01"
+      ],
+      "split_floors": true,
+      "bands": [
+        60,
+        300
+      ],
+      "label_all": true
+    }
+  ],
+  "room_names": {
+    "RBRoom_Train_2ndFloor_Room01": {
+      "zh": "Room01",
+      "en": "Room01"
+    },
+    "RBRoom_Train_2ndFloor_Cooridor_01": {
+      "zh": "Cooridor01",
+      "en": "Cooridor01"
+    }
+  },
+  "out_tag": "TDP_MT01"
+}

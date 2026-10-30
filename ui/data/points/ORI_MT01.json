@@ -1,0 +1,71 @@
+{
+ "_说明": "ORI_MT01（孤儿院附楼 · Gather the Children of God）。任务点位 = 小孩人偶 ORI_MannequinKid_OBJ_BP_C 共 12 个，正好 4 个区域 × 3 个：①Intro（1F 后楼梯底，挂在 ORI_ViolentKids_GroundStomp01_Prefab_Intro_A/B/C 上，位置固定，三具几乎重叠）；②girl room 宿舍区；③boy room 宿舍区；④婴儿房宿舍区。GatherAndDeliver_Mannequin_ObjCoord_BP 的 FixedMaxCount=3，本局只要往卡车（ORI_MannequinDropZoneTruck_OBJ_BP，在 Exterior_BackDoor_2）交 3 个。人偶都挂在 Prefab 上，坐标要靠 maplib 收 PrefabComponent 才算得出来。",
+ "level": "ORI_MT01",
+ "map": "OrphanageInstitution",
+ "title": "ORI_MT01 · 孤儿院附楼 收集小孩人偶",
+ "subtitle": "4 个区域各 3 具小孩人偶：Intro（1F，固定位置）、女童宿舍、男童宿舍、婴儿房；本局往卡车交 3 具。",
+ "sources": [
+  "ORI_MT01_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "kid",
+   "pattern": "^ORI_MannequinKid_OBJ_BP_C$",
+   "match": "type",
+   "label": "小孩人偶",
+   "short": "Kid"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "Intro (fixed)",
+   "name_zh": "A 区 · Intro 固定点（1F 后楼梯底）",
+   "color": "#7c3aed",
+   "note": "三具固定在 ORI_ViolentKids_GroundStomp01_Prefab_Intro_A/B/C 上，相距不到 1m，图上会叠成一个点；坐标固定，每局都一样。",
+   "rooms": [
+    "RBRoom_Halls_BackStairs_Bottom"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "Girls dorm",
+   "name_zh": "B 区 · 女童宿舍（girl room）",
+   "color": "#be123c",
+   "note": "女童宿舍整片：右侧宿舍、浴室、更衣室。人偶在 RightDorm / Bathroom / Locker 各一具。",
+   "rooms": [
+    "RBRoom_DormGirls_*"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "Boys dorm",
+   "name_zh": "C 区 · 男童宿舍（boy room）",
+   "color": "#1d4ed8",
+   "note": "男童宿舍整片：左右宿舍、浴室、更衣/走廊。人偶在 LeftDorms_Master_6 / RightDorms / Bathroom 各一具。",
+   "rooms": [
+    "RBRoom_DormBoys_*"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "Infants dorm",
+   "name_zh": "D 区 · 婴儿房（infants）",
+   "color": "#0f766e",
+   "note": "婴儿房整片：左右宿舍、活动场与阳台、走廊、浴室。人偶在 LeftDorm_Slave01 / LeftDorm_Slave02 / PlaygroundBalcony 各一具。",
+   "rooms": [
+    "RBRoom_DormInfants_*",
+    "RBRoom_InfantDorm_*"
+   ]
+  },
+  {
+   "id": "E",
+   "name": "Rest of the institution",
+   "name_zh": "E · 其它区域（没有人偶）",
+   "color": "#64748b",
+   "rooms": [
+    "RBRoom_*"
+   ]
+  }
+ ]
+}

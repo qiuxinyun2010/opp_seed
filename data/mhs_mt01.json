@@ -1,0 +1,69 @@
+{
+  "_source": "paks/MAP/Maps/MobsterHideoutSyndicate/MHS_LD_MT01_B00.json + release/map/out/MobsterHideoutSyndicate/plan.json",
+  "_note": "0x1436E95F0（RBProjectionCodeCoordinator）：每区先抽 clue 组（图案家族），再抽 1 个投影符号，最后生成 3 位密码。zones[].clue_groups 为字符串表示该区固定一组，为数组表示 PossibleClueGroups 的顺序（即抽取顺序）。zones[].limit_one_per_room 取自该协调器 CodeProjectorsRandomizationSetup.bLimitOneObjectivePerRoom。symbols 按【关卡 actor 顺序】排列（全名字典序 _1,_10,_2…_9），这就是抽取池顺序，不是 JSON 里 SpecificCodeProjectors 的 1..10。每项末位是符号落在哪些房间 hull 里（可能多个），判重用全部房间的交集；第 3 列的「主房间」只用于展示（取 z 跨度最接近的）。",
+  "symbol_names": {
+    "Skull": "骷髅",
+    "TriangleCircle": "三角",
+    "Spiral": "螺旋",
+    "Pentagram": "五角星",
+    "Sun": "太阳"
+  },
+  "zones": [
+    {
+      "zone": "DrugLab",
+      "coordinator": "MT01_Projections_Coordinator_BP_DrugLab",
+      "clue_groups": "Skull",
+      "limit_one_per_room": false
+    },
+    {
+      "zone": "Shipyard",
+      "coordinator": "MT01_Projections_Coordinator_BP_Shipyard",
+      "clue_groups": "TriangleCircle",
+      "limit_one_per_room": false
+    },
+    {
+      "zone": "TrainDepot",
+      "coordinator": "MT01_Projections_Coordinator_BP_TrainDepot_1",
+      "clue_groups": ["Spiral", "Pentagram", "Sun"],
+      "limit_one_per_room": true
+    }
+  ],
+  "symbols": {
+    "DrugLab": [
+      ["1", "MHS_MT01_Projection_02", "RBRoom_DrugLab_2F_Lab_03", [868.1, -2164.2, 450.0], ["RBRoom_DrugLab_2F_Lab_03"]],
+      ["10", "MHS_MT01_Projection_25", "RBRoom_DrugLab_2F_WalkwayRoom", [2215.2, -726.0, 450.0], ["RBRoom_DrugLab_2F_WalkwayRoom"]],
+      ["2", "MHS_MT01_Projection_01", "RBRoom_DrugLab_1F_ChemicalStorage", [1678.6, -671.2, 0.5], ["RBRoom_DrugLab_1F_ChemicalStorage", "RBRoom_DrugLab_2F_WalkwayRoom"]],
+      ["3", "MHS_MT01_Projection_06", "RBRoom_DrugLab_2F_Kitchen", [1141.7, -1663.1, 450.0], ["RBRoom_DrugLab_2F_Kitchen"]],
+      ["4", "MHS_MT01_Projection_07", "RBRoom_DrugLab_2F_WalkwayRoom", [1578.3, -849.9, 450.0], ["RBRoom_DrugLab_1F_ChemicalStorage", "RBRoom_DrugLab_2F_WalkwayRoom"]],
+      ["5", "MHS_MT01_Projection_16", "RBRoom_DrugLab_1F_Corridor", [2815.4, -1670.8, 0.5], ["RBRoom_Casino_2F_Roof_13", "RBRoom_DrugLab_1F_Corridor"]],
+      ["6", "MHS_MT01_Projection_17", "RBRoom_DrugLab_1F_Corridor", [2189.5, -1796.2, 0.5], ["RBRoom_DrugLab_1F_Corridor", "RBRoom_DrugLub_2F_Hallway_Master"]],
+      ["7", "MHS_MT01_Projection_22", "RBRoom_DrugLab_1F_ChemicalStorage", [799.5, -618.6, 0.5], ["RBRoom_DrugLab_1F_ChemicalStorage", "RBRoom_DrugLab_2F_WalkwayRoom"]],
+      ["8", "MHS_MT01_Projection_23", "RBRoom_DrugLab_1F_ChemicalStorage", [720.9, -426.1, 0.5], ["RBRoom_DrugLab_1F_ChemicalStorage"]],
+      ["9", "MHS_MT01_Projection_24", "RBRoom_DrugLub_2F_Hallway_Master", [1245.9, -2159.0, 450.0], ["RBRoom_DrugLub_2F_Hallway_Master"]]
+    ],
+    "Shipyard": [
+      ["1", "MHS_MT01_Projection_03", "RBRoom_Shipyard_Stairs", [4084.0, 1313.2, 250.5], ["RBRoom_Shipyard_Stairs"]],
+      ["10", "MHS_MT01_Projection_21", "RBRoom_Shipyard_01", [3554.1, 3567.7, 452.7], ["RBRoom_Shipyard_01", "RBRoom_Shipyard_Tower_Balcony"]],
+      ["2", "MHS_MT01_Projection_04", "RBRoom_Shipyard_01", [2407.0, 2623.5, 0.5], ["RBRoom_Shipyard_01"]],
+      ["3", "MHS_MT01_Projection_05", "RBRoom_Shipyard_01", [1896.7, 3894.6, 0.5], ["RBRoom_Shipyard_01"]],
+      ["4", "MHS_MT01_Projection_08", "RBRoom_Shipyard_01", [4258.4, 2215.5, 100.5], ["RBRoom_Shipyard_01", "RBRoom_Shipyard_Tower_Balcony"]],
+      ["5", "MHS_MT01_Projection_09", "RBRoom_Shipyard_02", [3306.4, 1451.1, 0.5], ["RBRoom_Shipyard_02"]],
+      ["6", "MHS_MT01_Projection_15", "RBRoom_Casino_Ext_Stairs_2F_Bridge", [4624.5, 766.7, 452.6], ["RBRoom_Casino_Ext_Dock_Corner_Slave", "RBRoom_Casino_Ext_Stairs_2F_Bridge"]],
+      ["7", "MHS_MT01_Projection_18", "RBRoom_Shipyard_01", [3514.0, 2328.6, 452.7], ["RBRoom_Shipyard_01", "RBRoom_Shipyard_Tower_Balcony"]],
+      ["8", "MHS_MT01_Projection_19", "RBRoom_Shipyard_TrainCar_Roof", [3116.0, 1701.6, 387.0], ["RBRoom_Shipyard_Train_Car_01_2", "RBRoom_Shipyard_TrainCar_Roof"]],
+      ["9", "MHS_MT01_Projection_20", "RBRoom_Shipyard_Tower_1F_Master", [4152.9, 3379.2, 95.5], ["RBRoom_Shipyard_Tower_FrancoRoom", "RBRoom_Shipyard_Tower_1F_Master"]]
+    ],
+    "TrainDepot": [
+      ["1", "MHS_MT01_Projection_10", "RBRoom_Train_Bridge_02", [592.9, 2723.3, 6.2], ["RBRoom_Train_Bridge_02"]],
+      ["10", "MHS_MT01_Projection_30", "RBRoom_Train_2ndFloor_Room09", [-2215.6, 1703.5, 450.0], ["RBRoom_Train_2ndFloor_Room09", "RBRoom_Train_Car_03"]],
+      ["2", "MHS_MT01_Projection_11", "RBRoom_TrainDepot2_StairBridge_Master", [638.7, 2153.9, 250.0], ["RBRoom_TrainDepot2_StairBridge_Master"]],
+      ["3", "MHS_MT01_Projection_12", "RBRoom_Train_2ndFloor_Lookout", [-1863.2, 2147.0, 448.4], ["RBRoom_Train_2ndFloor_Lookout", "RBRoom_Trainyard_1F_Hub"]],
+      ["4", "MHS_MT01_Projection_13", "RBRoom_Train_2ndFloor_Room02", [999.8, 2571.2, 451.4], ["RBRoom_Train_2ndFloor_Room02", "RBRoom_Train_Corridor_03"]],
+      ["5", "MHS_MT01_Projection_14", "RBRoom_Train_2ndFloor_Cooridor_05", [624.6, 1458.3, 450.0], ["RBRoom_Train_2ndFloor_Cooridor_05"]],
+      ["6", "MHS_MT01_Projection_26", "RBRoom_Train_2ndFloor_Cooridor_08", [-2366.1, 905.3, 450.0], ["RBRoom_Train_2ndFloor_Cooridor_08", "RBRoom_Train_Entrance"]],
+      ["7", "MHS_MT01_Projection_27", "RBRoom_Train_2ndFloor_Cooridor_01", [-2313.7, 2899.4, 450.0], ["RBRoom_Train_2ndFloor_Cooridor_01", "RBRoom_Train_Room_03"]],
+      ["8", "MHS_MT01_Projection_28", "RBRoom_Train_2ndFloor_Room01", [-1907.5, 3055.2, 450.0], ["RBRoom_Train_2ndFloor_Room01", "RBRoom_Train_Room_03"]],
+      ["9", "MHS_MT01_Projection_29", "RBRoom_Train_Bridge_02", [344.4, 2599.6, 4.2], ["RBRoom_Train_Bridge_02"]]
+    ]
+  }
+}

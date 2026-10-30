@@ -1,0 +1,58 @@
+{
+  "_source": "paks/MAP/Maps/CourthouseJudicial/CHJ_LD_MT02_B00.json + plan.json",
+  "_note": "前置候选过滤/补位尚未泛化：下面 actors 里的三个 seed 是已由密码与房间交叉验证的真实投影器，其他 seed 不输出未经验证的房间或密码。密码主链本身对三个 seed 的 14 个实测值全部一致。",
+  "coordinates": [
+    {
+      "actor": "MT02_Projections_Coordinator_BP_YellowSide",
+      "groups": ["Skull", "Spiral"],
+      "tutorial": false
+    },
+    {
+      "actor": "MT02_Projections_Coordinator_BP_BlueSIde",
+      "groups": ["Pentagram", "Sun"],
+      "tutorial": false
+    },
+    {
+      "actor": "MT02_Projections_Coordinator_BP_Tuto",
+      "groups": ["TriangleCircle"],
+      "tutorial": true
+    }
+  ],
+  "actors": {
+    "713713": {
+      "Skull": "CHJ_MT02_ProjectionSymbol_BP_A18",
+      "Spiral": "CHJ_MT02_ProjectionSymbol_BP_A2",
+      "Pentagram": "CHJ_MT02_ProjectionSymbol_BP_B23",
+      "Sun": "CHJ_MT02_ProjectionSymbol_BP_B16",
+      "TriangleCircle": "CHJ_MT02_ProjectionSymbol_BP_C_4"
+    },
+    "620620": {
+      "Skull": "CHJ_MT02_ProjectionSymbol_BP_A3",
+      "Spiral": "CHJ_MT02_ProjectionSymbol_BP_A13",
+      "Pentagram": "CHJ_MT02_ProjectionSymbol_BP_B19",
+      "Sun": "CHJ_MT02_ProjectionSymbol_BP_B2",
+      "TriangleCircle": "CHJ_MT02_ProjectionSymbol_BP_C_4"
+    },
+    "20020": {
+      "Skull": "CHJ_MT02_ProjectionSymbol_BP_A6",
+      "Spiral": "CHJ_MT02_ProjectionSymbol_BP_A3",
+      "Pentagram": "CHJ_MT02_ProjectionSymbol_BP_B24",
+      "Sun": "CHJ_MT02_ProjectionSymbol_BP_B16",
+      "TriangleCircle": "CHJ_MT02_ProjectionSymbol_BP_C_4"
+    }
+  },
+  "rooms_20020": {
+    "Spiral": "West_ConstructionGore",
+    "Skull": "RBRoom_West_PrivateOffice",
+    "Pentagram": "Main_CourtRoom_Balcony",
+    "Sun": "East_BathRoom_Crawlspace",
+    "TriangleCircle": "RBRoom_BackEntrance_Stairs"
+  },
+  "symbol_names": {
+    "Skull": "骷髅",
+    "Spiral": "螺旋",
+    "Pentagram": "五角星",
+    "Sun": "太阳",
+    "TriangleCircle": "三角"
+  }
+}

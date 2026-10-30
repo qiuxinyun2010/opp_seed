@@ -1,0 +1,4 @@
+{
+ "_说明": "每张地图的朝向（镜像方式）。none=原样(右=+X, 上=+Y)、x=左右镜像、y=上下翻转、xy=旋转180°。键名可以写地图名（CourthouseJudicial）或关卡（CHJ_MT01），地图名优先。没写的地图按 x（交付版默认左右镜像，与 release/map 的老图一致）；界面里按 X 或工具栏 Mirror X 可以随时切，底部右下角会显示当前 mirror 状态。",
+ "CourthouseJudicial": "x"
+}

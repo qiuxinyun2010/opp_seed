@@ -1,0 +1,142 @@
+{
+ "_说明": "PSA_MT01（警察局阁楼 · 钥匙房与训练录像盘）。点位规则手工维护：钥匙=钥匙生成点 KeySpawner（实例名带房间语义），录像盘=DiaporamaWheel_LargeObject；其余是任务目标坐标。match=type 按蓝图类名匹配；style=clue 画空心（线索/可交互物），不写=实心（目标）",
+ "level": "PSA_MT01",
+ "map": "PoliceStationAttic",
+ "title": "PSA_MT01 · 警察局阁楼 钥匙房与训练录像盘",
+ "subtitle": "Use the keys to unlock rooms until you find the training reel —— 起始钥匙开门 → 房中再捡钥匙 → 一路开下去，最终在某个钥匙房里找到训练录像盘，切换到录像机后撤离。钥匙 30 个生成点（16 个房间，多数房间 2 个候选位），录像盘 14 个（全部位于钥匙房内）。",
+ "sources": [
+  "PSA_MT01_B00.json",
+  "PSA_MT01_B01.json"
+ ],
+ "point_types": [
+  {
+   "key": "key_spawn",
+   "pattern": "^PSA_MT01_QuestItemSpawner_BP_C$",
+   "match": "type",
+   "label": "钥匙",
+   "style": "clue"
+  },
+  {
+   "key": "film_reel",
+   "pattern": "^DiaporamaWheel_LargeObject_BP_C$",
+   "match": "type",
+   "label": "录像盘"
+  },
+  {
+   "key": "key_locked_rooms",
+   "pattern": "^KeyLockedRooms_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "钥匙房目标"
+  },
+  {
+   "key": "deliver_reel",
+   "pattern": "^GatherAndDeliver_Diaporama_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "录像盘交付"
+  },
+  {
+   "key": "switch_reel",
+   "pattern": "^Simple_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "切换录像盘"
+  },
+  {
+   "key": "exit_stage",
+   "pattern": "^ExitStage_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "撤离点"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "Start · first key",
+   "name_zh": "起点 · 起始钥匙",
+   "color": "#7c3aed",
+   "note": "2F SAS 楼梯间的 KeySpawner_FirstKey：开局拿到的第一把钥匙在这里生成，从这里开始逐间开锁。",
+   "rooms": [
+    "RBRoom_2ndFloorSas*"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "Key rooms (key + film reel)",
+   "name_zh": "钥匙房（钥匙 + 录像盘）",
+   "color": "#b45309",
+   "note": "14 个锁房：房内既有下一把钥匙的生成点，也各放着 1 个录像盘；训练录像盘就在其中一间（每局随机），开错房就继续往下一间找。",
+   "rooms": [
+    "RBRoom25_2",
+    "RBRoom_Generator",
+    "RBRoom_Morgue_Master",
+    "RBRoom_ShootingRange",
+    "RBRoom14_12",
+    "RBRoom_CafeteriaBreakRoom_17",
+    "RBRoom_ChiefOffice_27",
+    "RBRoom_OfficeBathroom_24",
+    "RBRoom_DetectiveOffices03_50",
+    "RBRoom_InterrogationRoom02_1",
+    "RBRoom_ReelStorage",
+    "RBRoom6_6",
+    "RBRoom7_9",
+    "RBRoom_2ndFloorCafeteria"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "Key room (key only)",
+   "name_zh": "钥匙房（只有钥匙）",
+   "color": "#1d4ed8",
+   "note": "Room 3（医务室钥匙）：只有钥匙生成点、没有录像盘，属于纯中转的一环。",
+   "rooms": [
+    "RBRoom_3"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "Objectives & exit",
+   "name_zh": "任务目标与撤离",
+   "color": "#0f766e",
+   "note": "2F 教室是钥匙房目标/录像盘交付的目标坐标（拿到录像盘后去这里切换），Unloading Elevator 是撤离点。",
+   "rooms": [
+    "RBRoom_2ndFloor_Classroom",
+    "RBRoom_UnloadingElevator_Master"
+   ]
+  },
+  {
+   "id": "E",
+   "name": "Other areas",
+   "name_zh": "其他区域",
+   "color": "#475569",
+   "note": "行政通道、食堂、档案室、巡逻办公室、卫生间与各类走廊楼梯；用来认路，本身不是任务点。",
+   "rooms": [
+    "*"
+   ]
+  }
+ ],
+ "room_names": {
+  "RBRoom25_2": {
+   "en": "Room 25-2 (Basement key)",
+   "zh": "Room 25-2 · 地下室钥匙"
+  },
+  "RBRoom_3": {
+   "en": "Room 3 (Infirmary key)",
+   "zh": "Room 3 · 医务室钥匙"
+  },
+  "RBRoom14_12": {
+   "en": "Room 14-12 (Locker key)",
+   "zh": "Room 14-12 · 储物柜钥匙"
+  },
+  "RBRoom6_6": {
+   "en": "Room 6-6 (Security key)",
+   "zh": "Room 6-6 · 保安室钥匙"
+  },
+  "RBRoom7_9": {
+   "en": "Room 7-9 (Ventilation key)",
+   "zh": "Room 7-9 · 通风机房钥匙"
+  },
+  "RBRoom_OfficeBathroom_24": {
+   "en": "Office Bathroom 24 (Chief side room)",
+   "zh": "办公室卫生间 24 · 局长侧房"
+  }
+ }
+}

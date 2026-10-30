@@ -1,0 +1,76 @@
+{
+ "_说明": "TSR_MT02（电视台屋顶 · 接管并篡改电视广播）。只标任务点：刻录机 LimitedUseCassetteConverter_BP_C（关卡里 19 台，每台的录像带是从 SatelliteCassetteContainer 拿的，插进刻录机覆写后送播出）。其余协调器/容器/结束键本轮不标，规则留在 _ignored_point_types 里备用。",
+ "level": "TSR_MT02",
+ "map": "TelevisionStudioRooftop",
+ "title": "TSR_MT02 · 电视台屋顶 录像带覆写",
+ "subtitle": "图上 19 个点全是刻录机（LimitedUseCassetteConverter）：拿到录像带后到任意一台覆写，注意每台是有限次数使用。",
+ "sources": [
+  "TSR_LD_MT02_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "converter",
+   "pattern": "^LimitedUseCassetteConverter_BP_C$",
+   "match": "type",
+   "label": "刻录机",
+   "short": "Converter"
+  }
+ ],
+ "_ignored_point_types": [
+  {
+   "key": "satellite_cassette_container",
+   "pattern": "^SatelliteCassetteContainer_BP_C$",
+   "match": "type",
+   "label": "Satellite Cassette Container",
+   "style": "clue"
+  },
+  {
+   "key": "ts_puzzle_pushable_coord",
+   "pattern": "^TS_PuzzlePushableCoord_BP_C$",
+   "match": "type",
+   "label": "TS Puzzle Pushable Coord"
+  },
+  {
+   "key": "goto_obj_coord",
+   "pattern": "^Goto_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "Goto Obj Coord",
+   "props": [
+    "ObjectiveIndex"
+   ]
+  },
+  {
+   "key": "satellite_convert_obj_coord",
+   "pattern": "^SatelliteConvert_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "Satellite Convert Obj Coord",
+   "props": [
+    "ObjectiveIndex"
+   ]
+  },
+  {
+   "key": "exit_stage_obj_coord",
+   "pattern": "^ExitStage_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "Exit Stage Obj Coord",
+   "props": [
+    "ObjectiveIndex"
+   ]
+  },
+  {
+   "key": "simple_obj_coord",
+   "pattern": "^Simple_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "Simple Obj Coord",
+   "props": [
+    "ObjectiveIndex"
+   ]
+  },
+  {
+   "key": "stage_end_button",
+   "pattern": "^StageEnd_Button_BP_C$",
+   "match": "type",
+   "label": "Stage End Button"
+  }
+ ]
+}

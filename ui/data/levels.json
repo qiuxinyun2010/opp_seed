@@ -1,0 +1,70 @@
+{
+ "CHJ_MT01": {
+  "map": "CourthouseJudicial",
+  "name": "法院 · 让正义天平倾斜"
+ },
+ "FPI_MT01": {
+  "map": "FunParkIllusion",
+  "name": "游乐场 · 匹配录像盘与放映机"
+ },
+ "TFS_MT03": {
+  "map": "ToyFactoryShipping",
+  "name": "玩具工厂 · 开启六个阀门"
+ },
+ "FPI_MT02": {
+  "map": "FunParkIllusion",
+  "name": "游乐场 · 在真人秀中幸存"
+ },
+ "RES_MT01": {
+  "map": "ResortSpa",
+  "name": "水疗度假村 · 推理谋杀案"
+ },
+ "CHJ_MT02": {
+  "map": "CourthouseJudicial",
+  "name": "法院 · 判决被起诉者"
+ },
+ "MHS_MT01": {
+  "map": "MobsterHideoutSyndicate",
+  "name": "黑帮据点 · 找到 3 个投影房间"
+ },
+ "SMC_MT02": {
+  "map": "ShoppingMallCarrefour",
+  "name": "商场 · 4 个人偶按颜色配对下半身"
+ },
+ "TSR_MT01": {
+  "map": "TelevisionStudioRooftop",
+  "name": "电视台屋顶 · 密码接线面板"
+ },
+ "CHJ_MT03": {
+  "map": "CourthouseJudicial",
+  "name": "法院 · 贿赂其余可收买的法官"
+ },
+ "PSA_MT01": {
+  "map": "PoliceStationAttic",
+  "name": "警察局阁楼 · 钥匙房找训练录像盘"
+ },
+ "PSO_MT01": {
+  "map": "PoliceStationOffices",
+  "name": "警察局办公区 · 四区各一把钥匙"
+ },
+ "PSB_MT03": {
+  "map": "PoliceStationBasement",
+  "name": "警察局地下 · 限时投箱"
+ },
+ "ORI_MT01": {
+  "map": "OrphanageInstitution",
+  "name": "孤儿院附楼 · 收集小孩人偶"
+ },
+ "SRR_MT01": {
+  "map": "SuburbRiotResidential",
+  "name": "郊区住宅区 · 五组密码房"
+ },
+ "SRR_MT02": {
+  "map": "SuburbRiotResidential",
+  "name": "郊区住宅区 · 调频器与发电机"
+ },
+ "RES_MT02": {
+  "map": "ResortSpa",
+  "name": "水疗度假村 · 焚毁莉莉娅的遗物"
+ }
+}

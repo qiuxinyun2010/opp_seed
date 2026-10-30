@@ -1,0 +1,107 @@
+{
+ "_说明": "SRR_MT01（郊区住宅区 · 五组密码房）。任务点位两样：①密码盘 MultiroomPuzzleKeypad_BP_C × 5（House1~5 各一个，就是各组密码房的门）；②贴花 PasscodeDecal_BP_C × 131（全部摆在住宅内部，密码就写在贴花上）。随机规则来自 MultiroomPuzzle_Coordinator_BP_C（House1~5）：PuzzleRoomCount=4 表示每组本局从 Sections 里选 4 间房，NumberOfNormalDecals=4 表示每间用到 4 个贴花，其余贴花是干扰；哪几间、哪几个贴花由 RBRandomizableHelper 运行时决定，静态文件里分不出来，所以候选房和所有贴花都标。",
+ "level": "SRR_MT01",
+ "map": "SuburbRiotResidential",
+ "title": "SRR_MT01 · 郊区住宅区 五组密码房",
+ "subtitle": "5 组密码房（House1~5），每组本局开 4 间房，每间 4 个有效贴花（其余是干扰）；凑出 4 位密码后到该组的密码盘输入。",
+ "sources": [
+  "SRR_MT01_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "keypad",
+   "pattern": "^MultiroomPuzzleKeypad_BP_C$",
+   "match": "type",
+   "label": "密码盘",
+   "short": "Keypad"
+  },
+  {
+   "key": "decal",
+   "pattern": "^PasscodeDecal_BP_C$",
+   "match": "type",
+   "label": "贴花",
+   "short": "Decal",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "A 组 · Rich House 1",
+   "color": "#7c3aed",
+   "note": "候选 5 间（沙龙/卧室/走廊/卫生间/储藏），本局取 4 间。密码盘在沙龙。",
+   "rooms": [
+    "RBRoom_Rich_House1_Salon",
+    "RBRoom_Rich_House1_Chambre",
+    "RBRoom_Rich_House1_Corridor",
+    "RBRoom_Rich_House1_Bathroom",
+    "RBRoom_Rich_House1_Storage"
+   ],
+   "name_en": "Rich House 1"
+  },
+  {
+   "id": "B",
+   "name": "B 组 · Rich House 2",
+   "color": "#b45309",
+   "note": "候选 4 间（沙龙/卧室/储藏/厨房），全取。密码盘在厨房。",
+   "rooms": [
+    "RBRoom_Rich_House2_Salon",
+    "RBRoom_Rich_House2_Chambre",
+    "RBRoom_Rich_House2_Storage",
+    "RBRoom_House2_Kitchen"
+   ],
+   "name_en": "Rich House 2"
+  },
+  {
+   "id": "C",
+   "name": "C 组 · Rich House 3",
+   "color": "#0f766e",
+   "note": "候选 5 间（沙龙/大储藏 or 小储藏 二选一/卧室/卫生间），本局取 4 间。密码盘在沙龙。",
+   "rooms": [
+    "RBRoom_Rich_House3_Salon",
+    "RBRoom_Rich_House3_SmallStorage",
+    "RBRoom_Rich_House3_BigStorage",
+    "RBRoom_Rich_House3_Chambre",
+    "RBRoom_Rich_House3_Bathroom"
+   ],
+   "name_en": "Rich House 3"
+  },
+  {
+   "id": "D",
+   "name": "D 组 · Rich House 4（施工中）",
+   "color": "#1d4ed8",
+   "note": "候选 3 间（施工房1/施工房2/储藏）——关卡配置里 ConstructionRoom2 写了两遍，实际只有 3 间可用。密码盘在施工房2。",
+   "rooms": [
+    "RBRoom_Rich_House4_ConstrcutionRoom1",
+    "RBRoom_Rich_House4_ConstrcutionRoom2",
+    "RBRoom_Rich_House4_ConstructionRoom2",
+    "RBRoom_Rich_House4_Storage"
+   ],
+   "name_en": "Rich House 4 (construction)"
+  },
+  {
+   "id": "E",
+   "name": "E 组 · House 5",
+   "color": "#be123c",
+   "note": "候选 4 间（沙龙/卧室/储藏/玄关），全取。密码盘在玄关，贴花分布最散。",
+   "rooms": [
+    "RBRoom_House5_Salon",
+    "RBRoom_House5_Chambre",
+    "RBRoom_House5_Storage",
+    "RBRoom_House5_Entrance"
+   ],
+   "name_en": "House 5"
+  },
+  {
+   "id": "F",
+   "name": "F · 其它区域（与密码房无关）",
+   "color": "#64748b",
+   "rooms": [
+    "RBRoom_*",
+    "RBRoom3_*",
+    "School_Entrance"
+   ],
+   "name_en": "Rest of the district"
+  }
+ ]
+}

@@ -1,0 +1,17 @@
+{
+ "_说明": "log_path 留空=自动找 %LOCALAPPDATA%/OPP/Saved/Logs/OPP.log；hotkey 写 ctrl+a / M / F1~F12，写 none 关闭；seed_lib 留空=上级目录的 seed.py；font_scale 调字号（1.0 默认，嫌小就 1.15）；show_legend 图例默认关；flip 镜像方式（none/x/y/xy，空=按 data/orientation.json，缺省 x）；close_action=hide 时点窗口 X 只是收起（Ctrl+A 再叫出来），quit 才退出进程",
+ "log_path": null,
+ "hotkey": "ctrl+a",
+ "seed_lib": null,
+ "panel_width": 440,
+ "window": "1440x960",
+ "activate_on_hotkey": true,
+ "always_topmost": true,
+ "follow_game": true,
+ "poll_log": true,
+ "poll_interval_ms": 900,
+ "font_scale": 1.0,
+ "show_legend": false,
+ "flip": null,
+ "close_action": "hide"
+}
