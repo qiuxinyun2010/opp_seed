@@ -1,5 +1,5 @@
 {
- "_说明": "DRS_MT03（Trial ID DTS_MT03，关卡资产 DRS_MT03_B00，地图 DowntownRiotSewers）。两条交付任务：MT03_GatherAndDeliver_ObjCoord_BP_Drugs（毒品 HeroinPackage，FixedMaxCount=4，提示 'Deliver drugs across the map. Locations are marked near the start of the track.'）与 ..._Money（钱箱 Briefcase_BP_C，DesiredCount=4 / FixedMaxCount=5，提示 'Bring the money to the gangster van at the end of the track.'，ObjectiveActors = DTS_MT03_GangsterVan_BP）。交易窗口是 TradeWindows-02_BP_C 共 8 个（每个带 TradeWindow_LargePickup_InteractionPanel + 2 个按压按钮）；钱箱 Briefcase_BP_C 共 11 个候选位；面包车 1 辆。分区按房间划，方便先找房间再找窗口/钱箱。",
+ "_说明": "DRS_MT03（Trial ID DTS_MT03，地图 DowntownRiotSewers）钱箱任务。一局做 4 轮相同任务：第 1 轮固定在一个分区，第 2–4 轮从其余分区里随机抽 3 个。**分区 = 任务区域，标记就是钱箱位置**：11 个候选分区各有一个钱箱 Briefcase_BP_C（MT03_Briefcase_AutoParts 是命名不同的那个，判为第 1 轮固定区）。钱箱拿到后送到终点那辆黑帮面包车（DTS_MT03_GangsterVan_BP）。另外 8 个交易窗口 TradeWindows-02 属于毒品交付线，不是钱箱分区，所以不给它们分区（灰色标记）。",
  "level": "DRS_MT03",
  "map": "DowntownRiotSewers",
  "title": "DRS_MT03 · 下水道街区 交易窗口与钱箱",
@@ -34,49 +34,112 @@
  "zones": [
   {
    "id": "A",
-   "name": "交易窗口（8 个）",
-   "name_en": "Trade windows",
+   "name": "1 区 · 汽车配件店（车库）",
+   "name_en": "Zone 1 - AutoParts",
    "color": "#7c3aed",
-   "note": "交付毒品的交易窗口，房间：HairDresserWaitingRoom、MotelLaundry Master、Room 10-21、Room 2-5、Room 4-3、StreetsConcessionnaire Slave01、下水道主走廊主区、下水道主走廊副区01",
+   "note": "第 1 轮固定：钱箱就在这里（车库）",
    "actors": [
-    "TradeWindows-01_BP8",
-    "TradeWindows-02_BP2_4",
-    "TradeWindows-02_BP4_10",
-    "TradeWindows-02_BP6_16",
-    "TradeWindows-02_BP7_19",
-    "TradeWindows-02_BP8",
-    "TradeWindows-02_BP9_22",
-    "TradeWindows-02_BP_2"
+    "MT03_Briefcase_AutoParts"
    ]
   },
   {
    "id": "B",
-   "name": "钱箱（11 个候选位）",
-   "name_en": "Money briefcases",
+   "name": "2 区 · 社区中心",
+   "name_en": "Zone 2 - CommunityCenter",
    "color": "#b45309",
-   "note": "每局随机刷 4 个（最多 5 个），房间：HairDresser Master、MotelLobby Master、MotelRoom101、Room 1、Room 20-51、Room 24-10、Room 26-6、Room 27-6、工人时装店主区、车库、酒吧厨房",
+   "note": "第 2–4 轮随机候选：抽到本区时钱箱在 Room 20-51",
    "actors": [
-    "MT03_Briefcase_AutoParts",
-    "MT03_Briefcase_BP_CommunityCenter",
-    "MT03_Briefcase_BP_Firestation",
-    "MT03_Briefcase_BP_Garage",
-    "MT03_Briefcase_BP_HairDresser",
-    "MT03_Briefcase_BP_IrishPub_2F",
-    "MT03_Briefcase_BP_MotelReception",
-    "MT03_Briefcase_BP_MotelRoom",
-    "MT03_Briefcase_BP_PoliceStation",
-    "MT03_Briefcase_BP_SexShop",
-    "MT03_Briefcase_BP_SnackBar"
+    "MT03_Briefcase_BP_CommunityCenter"
    ]
   },
   {
    "id": "C",
-   "name": "黑帮面包车（交付点）",
-   "name_en": "Gangster van (money drop)",
+   "name": "3 区 · 消防站",
+   "name_en": "Zone 3 - Firestation",
    "color": "#0f766e",
-   "note": "把钱箱送到这里，位置：街区工人时装店",
+   "note": "第 2–4 轮随机候选：抽到本区时钱箱在 Room 26-6",
    "actors": [
-    "DTS_MT03_GangsterVan_BP"
+    "MT03_Briefcase_BP_Firestation"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "4 区 · 车库",
+   "name_en": "Zone 4 - Garage",
+   "color": "#1d4ed8",
+   "note": "第 2–4 轮随机候选：抽到本区时钱箱在 Room 24-10",
+   "actors": [
+    "MT03_Briefcase_BP_Garage"
+   ]
+  },
+  {
+   "id": "E",
+   "name": "5 区 · 理发店",
+   "name_en": "Zone 5 - HairDresser",
+   "color": "#be123c",
+   "note": "第 2–4 轮随机候选：抽到本区时钱箱在 HairDresser Master",
+   "actors": [
+    "MT03_Briefcase_BP_HairDresser"
+   ]
+  },
+  {
+   "id": "F",
+   "name": "6 区 · 爱尔兰酒吧 2F（酒吧厨房）",
+   "name_en": "Zone 6 - IrishPub_2F",
+   "color": "#0369a1",
+   "note": "第 2–4 轮随机候选：抽到本区时钱箱在 酒吧厨房",
+   "actors": [
+    "MT03_Briefcase_BP_IrishPub_2F"
+   ]
+  },
+  {
+   "id": "G",
+   "name": "7 区 · 汽车旅馆前台",
+   "name_en": "Zone 7 - MotelReception",
+   "color": "#4d7c0f",
+   "note": "第 2–4 轮随机候选：抽到本区时钱箱在 MotelLobby Master",
+   "actors": [
+    "MT03_Briefcase_BP_MotelReception"
+   ]
+  },
+  {
+   "id": "H",
+   "name": "8 区 · 汽车旅馆客房",
+   "name_en": "Zone 8 - MotelRoom",
+   "color": "#a16207",
+   "note": "第 2–4 轮随机候选：抽到本区时钱箱在 MotelRoom101",
+   "actors": [
+    "MT03_Briefcase_BP_MotelRoom"
+   ]
+  },
+  {
+   "id": "I",
+   "name": "9 区 · 警察局",
+   "name_en": "Zone 9 - PoliceStation",
+   "color": "#7e22ce",
+   "note": "第 2–4 轮随机候选：抽到本区时钱箱在 Room 27-6",
+   "actors": [
+    "MT03_Briefcase_BP_PoliceStation"
+   ]
+  },
+  {
+   "id": "J",
+   "name": "10 区 · 性用品店",
+   "name_en": "Zone 10 - SexShop",
+   "color": "#155e75",
+   "note": "第 2–4 轮随机候选：抽到本区时钱箱在 Room 1",
+   "actors": [
+    "MT03_Briefcase_BP_SexShop"
+   ]
+  },
+  {
+   "id": "K",
+   "name": "11 区 · 小吃店（工人时装店主区）",
+   "name_en": "Zone 11 - SnackBar",
+   "color": "#9f1239",
+   "note": "第 2–4 轮随机候选：抽到本区时钱箱在 工人时装店主区",
+   "actors": [
+    "MT03_Briefcase_BP_SnackBar"
    ]
   }
  ]
