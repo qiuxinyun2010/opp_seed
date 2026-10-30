@@ -86,5 +86,9 @@
  "PoliceStation_T02": {
   "map": "PoliceStation",
   "name": "警察局 · 杀死告密者（B05 找钥匙开门）"
+ },
+ "DRS_MT01": {
+  "map": "DowntownRiotSewers",
+  "name": "下水道街区 · 调频器与人偶模型（Trial DTS_MT01）"
  }
 }

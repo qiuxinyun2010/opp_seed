@@ -1,0 +1,195 @@
+{
+ "_说明": "DRS_MT01（Trial ID 写作 DTS_MT01，关卡资产 DRS_MT01_B00，地图 DowntownRiotSewers）。任务点 = 调频器 + 人偶模型。调频器：FrequencyMatchPanel_DTS_Child_C 共 20 个（19 个进随机池 + 1 个固定在警察局提供 Women 线索，坐标即 actor 位置）。人偶模型：DTR_MT01_ManneqinSetup_<武器>_BP_C 共 84 个出生点（注意蓝图名把 Mannequin 拼成了 Manneqin），一局只启用 30 个，按武器族分 6 类：Paddle 16 / Scythe 15 / Chainsaw 14 / FaceDrill 14 / HandDrill 14 / Whip 11。MannequinBP_SinglePose_C 是通用装饰模特，不收。",
+ "level": "DRS_MT01",
+ "map": "DowntownRiotSewers",
+ "title": "DRS_MT01 · 下水道街区 调频器与人偶模型",
+ "subtitle": "任务点分两类：调频器（FrequencyMatchPanel，20 个，出线索）和人偶模型（DTR_MT01_ManneqinSetup_*，84 个出生点、一局启用 30 个）。模型按武器族分 6 组，每组的候选位置就是本区的一批模型。",
+ "sources": [
+  "DRS_MT01_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "freq_panel",
+   "pattern": "^FrequencyMatchPanel_DTS_Child_C$",
+   "match": "type",
+   "label": "调频器",
+   "short": "Freq"
+  },
+  {
+   "key": "mannequin",
+   "pattern": "^DTR_MT01_ManneqinSetup_(Paddle|Scythe|Chainsaw|FaceDrill|HandDrill|Whip)_BP_C$",
+   "match": "type",
+   "label": "人偶模型",
+   "short": "Model"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "1 区 · 桨 Paddle 模型组",
+   "name_en": "Model batch 1 - Paddle",
+   "color": "#7c3aed",
+   "note": "16 个候选模型（全关 84 个里一局启用 30 个，按武器族分配配额）",
+   "actors": [
+    "DTR_MT01_ManneqinSetup_Paddle_BP2_6",
+    "DTR_MT01_ManneqinSetup_Paddle_BP3_9",
+    "DTR_MT01_ManneqinSetup_Paddle_BP4_2",
+    "DTR_MT01_ManneqinSetup_Paddle_BP5_8",
+    "DTR_MT01_ManneqinSetup_Paddle_BP6_11",
+    "DTR_MT01_ManneqinSetup_Paddle_BP7_5",
+    "DTR_MT01_ManneqinSetup_Paddle_BP8_11",
+    "DTR_MT01_ManneqinSetup_Paddle_BP9_14",
+    "DTR_MT01_ManneqinSetup_Paddle_BP10_2",
+    "DTR_MT01_ManneqinSetup_Paddle_BP11_17",
+    "DTR_MT01_ManneqinSetup_Paddle_BP12_20",
+    "DTR_MT01_ManneqinSetup_Paddle_BP13_2",
+    "DTR_MT01_ManneqinSetup_Paddle_BP14_5",
+    "DTR_MT01_ManneqinSetup_Paddle_BP15_8",
+    "DTR_MT01_ManneqinSetup_Paddle_BP16_11",
+    "DTR_MT01_ManneqinSetup_Paddle_BP_2"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "2 区 · 镰刀 Scythe 模型组",
+   "name_en": "Model batch 2 - Scythe",
+   "color": "#b45309",
+   "note": "15 个候选模型（全关 84 个里一局启用 30 个，按武器族分配配额）",
+   "actors": [
+    "DTR_MT01_ManneqinSetup_Scythe_BP2_6",
+    "DTR_MT01_ManneqinSetup_Scythe_BP3_9",
+    "DTR_MT01_ManneqinSetup_Scythe_BP4_2",
+    "DTR_MT01_ManneqinSetup_Scythe_BP5_5",
+    "DTR_MT01_ManneqinSetup_Scythe_BP6_11",
+    "DTR_MT01_ManneqinSetup_Scythe_BP7_2",
+    "DTR_MT01_ManneqinSetup_Scythe_BP8_5",
+    "DTR_MT01_ManneqinSetup_Scythe_BP9_8",
+    "DTR_MT01_ManneqinSetup_Scythe_BP11_11",
+    "DTR_MT01_ManneqinSetup_Scythe_BP12_17",
+    "DTR_MT01_ManneqinSetup_Scythe_BP13_2",
+    "DTR_MT01_ManneqinSetup_Scythe_BP14_2",
+    "DTR_MT01_ManneqinSetup_Scythe_BP15_5",
+    "DTR_MT01_ManneqinSetup_Scythe_BP16_8",
+    "DTR_MT01_ManneqinSetup_Scythe_BP_2"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "3 区 · 电锯 Chainsaw 模型组",
+   "name_en": "Model batch 3 - Chainsaw",
+   "color": "#0f766e",
+   "note": "14 个候选模型（全关 84 个里一局启用 30 个，按武器族分配配额）",
+   "actors": [
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP2_2",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP3_13",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP4_2",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP5_8",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP6_9",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP7_12",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP10_21",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP11_2",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP12_2",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP13_5",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP14_8",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP15_11",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP16_2",
+    "DTR_MT01_ManneqinSetup_Chainsaw_BP_2"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "4 区 · 面钻 FaceDrill 模型组",
+   "name_en": "Model batch 4 - FaceDrill",
+   "color": "#1d4ed8",
+   "note": "14 个候选模型（全关 84 个里一局启用 30 个，按武器族分配配额）",
+   "actors": [
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP3_9",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP4_2",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP5_8",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP6_11",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP7_2",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP8_5",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP11_2",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP12_15",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP13_2",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP14_5",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP15_8",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP16_11",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP17_2",
+    "DTR_MT01_ManneqinSetup_FaceDrill_BP_2"
+   ]
+  },
+  {
+   "id": "E",
+   "name": "5 区 · 手钻 HandDrill 模型组",
+   "name_en": "Model batch 5 - HandDrill",
+   "color": "#be123c",
+   "note": "14 个候选模型（全关 84 个里一局启用 30 个，按武器族分配配额）",
+   "actors": [
+    "DTR_MT01_ManneqinSetup_HandDrill_BP3_9",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP4_2",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP5_8",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP6_11",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP7_2",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP8_8",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP11_2",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP13_17",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP14_2",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP15_5",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP16_8",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP17_11",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP18_2",
+    "DTR_MT01_ManneqinSetup_HandDrill_BP_2"
+   ]
+  },
+  {
+   "id": "F",
+   "name": "6 区 · 鞭子 Whip 模型组",
+   "name_en": "Model batch 6 - Whip",
+   "color": "#0369a1",
+   "note": "11 个候选模型（全关 84 个里一局启用 30 个，按武器族分配配额）",
+   "actors": [
+    "DTR_MT01_ManneqinSetup_Whip_BP3_2",
+    "DTR_MT01_ManneqinSetup_Whip_BP4_8",
+    "DTR_MT01_ManneqinSetup_Whip_BP5_11",
+    "DTR_MT01_ManneqinSetup_Whip_BP6_2",
+    "DTR_MT01_ManneqinSetup_Whip_BP7_5",
+    "DTR_MT01_ManneqinSetup_Whip_BP10_2",
+    "DTR_MT01_ManneqinSetup_Whip_BP12_20",
+    "DTR_MT01_ManneqinSetup_Whip_BP13_2",
+    "DTR_MT01_ManneqinSetup_Whip_BP14_2",
+    "DTR_MT01_ManneqinSetup_Whip_BP15_5",
+    "DTR_MT01_ManneqinSetup_Whip_BP_2"
+   ]
+  },
+  {
+   "id": "G",
+   "name": "调频器（线索机）",
+   "name_en": "Frequency match panels",
+   "color": "#4d7c0f",
+   "note": "20 个调频器：19 个进随机池（每局抽 3 个）+ 1 个固定（警察局，恒 Women 线索）",
+   "actors": [
+    "FrequencyMatchPanel_DTS_Child2_5",
+    "FrequencyMatchPanel_DTS_Child4_2",
+    "FrequencyMatchPanel_DTS_Child5_5",
+    "FrequencyMatchPanel_DTS_Child6_8",
+    "FrequencyMatchPanel_DTS_Child9_26",
+    "FrequencyMatchPanel_DTS_Child10_14",
+    "FrequencyMatchPanel_DTS_Child11_37",
+    "FrequencyMatchPanel_DTS_Child12_11",
+    "FrequencyMatchPanel_DTS_Child13_2",
+    "FrequencyMatchPanel_DTS_Child14_5",
+    "FrequencyMatchPanel_DTS_Child15_8",
+    "FrequencyMatchPanel_DTS_Child16_2",
+    "FrequencyMatchPanel_DTS_Child17_2",
+    "FrequencyMatchPanel_DTS_Child18_5",
+    "FrequencyMatchPanel_DTS_Child19_8",
+    "FrequencyMatchPanel_DTS_Child20_14",
+    "FrequencyMatchPanel_DTS_Child21_17",
+    "FrequencyMatchPanel_DTS_Child22",
+    "FrequencyMatchPanel_DTS_Child23",
+    "FrequencyMatchPanel_DTS_Child_2"
+   ]
+  }
+ ]
+}
