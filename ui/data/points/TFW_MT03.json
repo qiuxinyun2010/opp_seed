@@ -1,0 +1,77 @@
+{
+ "_说明": "TFW_MT03「注满卫生处理罐」：4 条生产线区域（A/B/C/D），每区 1 个图案钥匙开关（KeyItemDestination_Device_Base_BP*，都在 ProdLineX_Master 里）+ 1 桶酸/毒气（AcidBottIe_BP*，锁在 AcidLockBox 里），生产线上的电视（Clue_NarrativeScreen 在开关上层、Clue_TvChannel 与开关同层）给出该区需要的图案。钥匙来源按游戏提示「Keys are in corpses on the second floor」= 尸体搜索点 CorpseSearch_PS_Trial02_*（比钥匙开关高一层）。所以点位 = 钥匙开关 + 尸体搜索点 + 电视线索 + 4 桶酸（帮定位区域）。",
+ "level": "TFW_MT03",
+ "map": "ToyFactoryWarehouse",
+ "title": "TFW_MT03 · 玩具工厂仓库 图案钥匙与卫生处理罐",
+ "subtitle": "4 条生产线（A/B/C/D），每区 1 个图案钥匙开关 + 1 桶酸（锁在锁盒里，用来定位区域）+ 2 台电视给图案线索；钥匙在尸体搜索点里（比开关高一层，游戏提示是 second floor），按电视上的图案找对应钥匙去开本区的开关。空心态 = 线索/参考，实心态 = 钥匙开关与酸桶。",
+ "sources": [
+  "TFW_LD_MT03_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "key_switch",
+   "pattern": "^KeyItemDestination_Device_Base_BP_C$",
+   "match": "type",
+   "label": "图案钥匙开关",
+   "short": "Lock"
+  },
+  {
+   "key": "acid_barrel",
+   "pattern": "^AcidBottIe_BP_C$",
+   "match": "type",
+   "label": "酸桶（毒气桶）",
+   "short": "Acid"
+  },
+  {
+   "key": "corpse",
+   "pattern": "^CorpseSearch_PS_Trial02.*_BP_C$",
+   "match": "type",
+   "label": "尸体搜索点（钥匙来源）",
+   "short": "Body",
+   "style": "clue"
+  },
+  {
+   "key": "tv",
+   "pattern": "^Clue_(NarrativeScreen|TvChannel)_BP_C$",
+   "match": "type",
+   "label": "生产线电视（图案线索）",
+   "short": "TV",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "1 区 · 生产线 A",
+   "name_en": "Section 1 - Production line A",
+   "color": "#7c3aed",
+   "note": "钥匙开关 1 · 酸桶 1 · 电视 2 · 尸体搜索点 8（含收货码头楼梯那处）",
+   "rooms": ["RBRoom_ProdLineA*"],
+   "actors": ["CorpseSearch_PS_Trial02_AgainstWall_BP4_14"]
+  },
+  {
+   "id": "B",
+   "name": "2 区 · 生产线 B",
+   "name_en": "Section 2 - Production line B",
+   "color": "#b45309",
+   "note": "钥匙开关 1 · 酸桶 1 · 电视 2 · 尸体搜索点 2",
+   "rooms": ["RBRoom_ProdLineB*"]
+  },
+  {
+   "id": "C",
+   "name": "3 区 · 生产线 C",
+   "name_en": "Section 3 - Production line C",
+   "color": "#0f766e",
+   "note": "钥匙开关 1 · 酸桶 1 · 电视 2 · 尸体搜索点 5（ForemanRoom ×3、Archives、Janitor）",
+   "rooms": ["RBRoom_ProdLineC*"]
+  },
+  {
+   "id": "D",
+   "name": "4 区 · 生产线 D",
+   "name_en": "Section 4 - Production line D",
+   "color": "#1d4ed8",
+   "note": "钥匙开关 1 · 酸桶 1 · 电视 2 · 尸体搜索点 3",
+   "rooms": ["RBRoom_ProdLineD*"]
+  }
+ ]
+}

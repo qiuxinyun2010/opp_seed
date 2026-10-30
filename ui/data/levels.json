@@ -74,5 +74,9 @@
  "RES_MT02": {
   "map": "ResortSpa",
   "name": "水疗度假村 · 焚毁莉莉娅的遗物"
+ },
+ "TFW_MT03": {
+  "map": "ToyFactoryWarehouse",
+  "name": "玩具工厂仓库 · 注满卫生处理罐"
  }
 }

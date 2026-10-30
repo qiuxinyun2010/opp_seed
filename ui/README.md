@@ -90,8 +90,8 @@ ui/
 | 只给人看地图 | `ui/`（+ Pillow） | 双击 `启动地图工具.bat`，或 `python mapview.py` |
 | 要能自己提取新关卡 | `ui/` + 游戏 `paks/MAP/Maps` | `python mapdb.py SMC_MT02 --paks "D:/.../paks/MAP/Maps"` |
 
-体积参考：代码 + 数据约 **1.4 MB**（`mapdb.py` 36 + `mapview.py` 74 + `maplib/` 55 +
-21 份地图数据 1165 + 点位/分区/译名表 96 + README 38）。`data/cache/`（约 2 MB）和
+体积参考：代码 + 数据约 **1.5 MB**（`mapdb.py` 36 + `mapview.py` 74 + `maplib/` 55 +
+22 份地图数据 1224 + 点位/分区/译名表 104 + README 38）。`data/cache/`（约 2 MB）和
 `data/preview/`（约 1 MB）是可再生的，交付时可以删掉，首次提取会自动重建。
 
 ---
