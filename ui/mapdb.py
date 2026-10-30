@@ -45,10 +45,22 @@ import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SEED_DIR = os.path.dirname(HERE)                  # release/seed
-RELEASE_DIR = os.path.dirname(SEED_DIR)           # release
-ROOT = os.path.dirname(RELEASE_DIR)               # 仓库根
-MAPS_DIR = os.environ.get('OUTLAST_MAPS_DIR') or os.path.join(ROOT, 'paks', 'MAP', 'Maps')
+SEED_DIR = os.path.dirname(HERE)                  # 仓库根（含 seed.py）
+ROOT = os.path.dirname(SEED_DIR)                  # 仓库的上级目录（paks 通常在这里）
+
+
+def _find_maps_dir():
+    """paks/MAP/Maps 的位置：环境变量 > 仓库内 > 仓库上级 > ui 内，取第一个存在的。"""
+    for cand in (os.environ.get('OUTLAST_MAPS_DIR'),
+                 os.path.join(SEED_DIR, 'paks', 'MAP', 'Maps'),
+                 os.path.join(ROOT, 'paks', 'MAP', 'Maps'),
+                 os.path.join(HERE, 'paks', 'MAP', 'Maps')):
+        if cand and os.path.isdir(cand):
+            return cand
+    return os.path.join(ROOT, 'paks', 'MAP', 'Maps')   # 都没有：报错信息里给出这个路径
+
+
+MAPS_DIR = _find_maps_dir()
 
 DATA_DIR = os.path.join(HERE, 'data')
 CACHE_DIR = os.path.join(DATA_DIR, 'cache')

@@ -55,6 +55,10 @@
   "map": "OrphanageInstitution",
   "name": "孤儿院附楼 · 收集小孩人偶"
  },
+ "ORS_MT01": {
+  "map": "OrphanageServices",
+  "name": "孤儿院服务区 · 把漂白剂倒进汤里"
+ },
  "SRR_MT01": {
   "map": "SuburbRiotResidential",
   "name": "郊区住宅区 · 五组密码房"

@@ -1,0 +1,105 @@
+{
+ "_说明": "ORS_MT01「把漂白剂倒进汤里」：任务点 = BleachBottle_BP*（漂白剂桶）。两个并发协调器 ORS_MT01_B02_GatherAndDeliver_Services / _Church 各自点名一批候选桶，对应游戏里的“两个区域，每区找 2 桶”。候选池全部上图（README §2 步骤 2：N 选 M 时 M 个候选全标）。点位的按实例名匹配（match=name），因为同一个蓝图类按区域分池。",
+ "level": "ORS_MT01",
+ "map": "OrphanageServices",
+ "sources": [
+  "ORS_MT01_B02.json"
+ ],
+ "point_types": [
+  {
+   "key": "bleach_services",
+   "pattern": "^(BleachBottle_BP11|BleachBottle_BP13|BleachBottle_BP15_3|BleachBottle_BP16|BleachBottle_BP18|BleachBottle_BP20|BleachBottle_BP21_2|BleachBottle_BP23_8|BleachBottle_BP25|BleachBottle_BP30|BleachBottle_BP36|BleachBottle_BP39_4|BleachBottle_BP40|BleachBottle_BP41|BleachBottle_BP55|BleachBottle_BP56|BleachBottle_BP58|BleachBottle_BP63|BleachBottle_BP7|BleachBottle_BP8)$",
+   "match": "name",
+   "label": "漂白剂 · 服务区",
+   "short": "B"
+  },
+  {
+   "key": "bleach_church",
+   "pattern": "^(BleachBottle_BP2|BleachBottle_BP24_23|BleachBottle_BP26|BleachBottle_BP3|BleachBottle_BP37|BleachBottle_BP38_15|BleachBottle_BP4|BleachBottle_BP42|BleachBottle_BP44|BleachBottle_BP45|BleachBottle_BP48_23|BleachBottle_BP50_27|BleachBottle_BP51|BleachBottle_BP52|BleachBottle_BP53|BleachBottle_BP6|BleachBottle_BP60|BleachBottle_BP61|BleachBottle_BP62|BleachBottle_BP9)$",
+   "match": "name",
+   "label": "漂白剂 · 教堂区",
+   "short": "B"
+  },
+  {
+   "key": "bleach_fixed",
+   "pattern": "^(BleachBottle_BP54)$",
+   "match": "name",
+   "label": "漂白剂 · 厨房固定",
+   "short": "BlchF",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "1 区 · 服务区（泳池 / 洗衣房）",
+   "color": "#7c3aed",
+   "name_en": "Section 1 - Services wing (pool / laundry)",
+   "note": "20 个候选桶，均藏在泳池、洗衣房、洗手间、工具走廊；另有 1 桶固定在厨房（空心标记）。本局随机 2 桶",
+   "rooms": [
+    "RBRoom_Pool*",
+    "RBRoom_Laundry*",
+    "RBRoom_BoysBathroom*",
+    "RBRoom_GirlsBathroom*",
+    "RBRoom_UtilityHallway*",
+    "RBRoom_Kitchen"
+   ],
+   "actors": [
+    "BleachBottle_BP11",
+    "BleachBottle_BP13",
+    "BleachBottle_BP15_3",
+    "BleachBottle_BP16",
+    "BleachBottle_BP18",
+    "BleachBottle_BP20",
+    "BleachBottle_BP21_2",
+    "BleachBottle_BP23_8",
+    "BleachBottle_BP25",
+    "BleachBottle_BP30",
+    "BleachBottle_BP36",
+    "BleachBottle_BP39_4",
+    "BleachBottle_BP40",
+    "BleachBottle_BP41",
+    "BleachBottle_BP55",
+    "BleachBottle_BP56",
+    "BleachBottle_BP58",
+    "BleachBottle_BP63",
+    "BleachBottle_BP7",
+    "BleachBottle_BP8",
+    "BleachBottle_BP54"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "2 区 · 教堂区（含地下室）",
+   "color": "#b45309",
+   "name_en": "Section 2 - Church (incl. basement)",
+   "note": "20 个候选桶，主要在教堂大厅与其地下室。本局随机 2 桶",
+   "rooms": [
+    "RBRoom_Church*",
+    "RBRoom_Presbyter*"
+   ],
+   "actors": [
+    "BleachBottle_BP2",
+    "BleachBottle_BP24_23",
+    "BleachBottle_BP26",
+    "BleachBottle_BP3",
+    "BleachBottle_BP37",
+    "BleachBottle_BP38_15",
+    "BleachBottle_BP4",
+    "BleachBottle_BP42",
+    "BleachBottle_BP44",
+    "BleachBottle_BP45",
+    "BleachBottle_BP48_23",
+    "BleachBottle_BP50_27",
+    "BleachBottle_BP51",
+    "BleachBottle_BP52",
+    "BleachBottle_BP53",
+    "BleachBottle_BP6",
+    "BleachBottle_BP60",
+    "BleachBottle_BP61",
+    "BleachBottle_BP62",
+    "BleachBottle_BP9"
+   ]
+  }
+ ]
+}
