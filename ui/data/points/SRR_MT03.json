@@ -1,0 +1,64 @@
+{
+ "_说明": "SRR_MT03（郊区住宅区 · 砸图案翻牌器）。任务点 = 图案翻牌器 FlipIcon_UnionTortureTarget_BP_C（共 18 个，随机显示图案，砸中给定图案的那个）。流程 3 轮、每轮一个区域，完成一轮才解锁下一轮，所以分区 = 每轮的区域。轮次由 UnionTortureObjectiveManager_C 串起来（Gate1 → Gate2 → Gate3 → FakeEscape），每轮 HitTriggers 里的 BaseLightCounter 数量分别是 2/3/4/3。",
+ "level": "SRR_MT03",
+ "map": "SuburbRiotResidential",
+ "title": "SRR_MT03 · 郊区住宅区 图案翻牌器",
+ "subtitle": "3 轮、3 个区域，完成一个区域才解锁下一个。每轮区域里有若干图案翻牌器（随机翻图案），按电视/提示给的图案去砸对应的那一个。图上实心点 = 翻牌器，空心点 = 轮次闸门。",
+ "sources": [
+  "SRR_MT03_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "flip_target",
+   "pattern": "^FlipIcon_UnionTortureTarget_BP_C$",
+   "match": "type",
+   "label": "图案翻牌器",
+   "short": "Flip"
+  },
+  {
+   "key": "gate",
+   "pattern": "^UnionTortureObjectiveManager_C$",
+   "match": "type",
+   "label": "轮次闸门",
+   "short": "Gate",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "1 区 · 富人区房屋",
+   "name_en": "Zone 1 - Rich houses",
+   "color": "#7c3aed",
+   "note": "6 个翻牌器（House1/2/3/5 + 施工房 ×2）；每轮按提示图案砸中命中的翻牌器，完成才开下一区的闸门",
+   "rooms": [
+    "RBRoom_Rich_House*",
+    "RBRoom_House*",
+    "RBRoom_ConstructionHouse"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "2 区 · 学校教学楼（教室 / 食堂 / 秘书处）",
+   "name_en": "Zone 2 - School building (classrooms, cafeteria, secreteria)",
+   "color": "#b45309",
+   "note": "6 个翻牌器（教室 02/03/04 共 4 个 + 食堂 + 秘书处）",
+   "rooms": [
+    "RBRoom_School_Classroom*",
+    "RbRoom_School_Cafeteria",
+    "RBRoom_School_Secreteria"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "3 区 · 学校后院（后院 / 厕所）",
+   "name_en": "Zone 3 - School backyard (yard, toilets)",
+   "color": "#0f766e",
+   "note": "6 个翻牌器（学校后院 4 个 + 男女厕所各 1 个）",
+   "rooms": [
+    "RBRoom_School_BackYard",
+    "RBRoom_Exterior_*Toilet"
+   ]
+  }
+ ]
+}
