@@ -114,5 +114,9 @@
  "ShoppingMall_LD_B00": {
   "map": "ShoppingMall",
   "name": "商场 · 保险丝与喷泉阀门"
+ },
+ "CHouse_T04": {
+  "map": "Courthouse",
+  "name": "法院 · 硫酸桶与密码房"
  }
 }

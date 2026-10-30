@@ -1,0 +1,34 @@
+{
+ "_说明": "CHouse_T04（法院大关，地图 Courthouse）只收录两个任务，都在 B02 阶段：①硫酸桶 AcidBottIe_BP_C（12 个候选；DesiredCount 2、1P/2P 只要 1 个，提示 'Search the second-floor construction area for acid.'）+ 教学桶 Tutorial_AcidBottle_BP_C，交付到 AcidReservoir_BP_C / AcidBath_InteractionPanel_BP_C（画空心）；②密码房 PuzzleRoomLargePickupBox-01_C（51 个）+ 教学密码房 TutorialPuzzleRoomLargePickupBox_BP_C（1 个）。密码按键是挂在箱子上的 PuzzleRoom_KeyPad_InteractionComponent（组件没有 RootComponent，坐标全为 0，不能当点位），PasscodeDecal_BP_C（106 个数字贴花）是房间里的数字线索，没上图以免过密。",
+ "level": "CHouse_T04",
+ "map": "Courthouse",
+ "title": "法院 · 硫酸桶与密码房",
+ "subtitle": "两个任务的点位：硫酸桶（12 个候选 + 1 个教学桶，1P/2P 只需 1 桶，交付到硫酸池面板）与密码房（51 个密码箱 + 1 个教学箱）。实心 = 硫酸桶与密码房，空心 = 硫酸池/灌注面板。",
+ "sources": [
+  "CHouse_T04_B02.json"
+ ],
+ "point_types": [
+  {
+   "key": "acid_barrel",
+   "pattern": "^(AcidBottIe_BP_C|Tutorial_AcidBottle_BP_C)$",
+   "match": "type",
+   "label": "硫酸桶",
+   "short": "Acid"
+  },
+  {
+   "key": "acid_dest",
+   "pattern": "^(AcidReservoir_BP_C|AcidBath_InteractionPanel_BP_C)$",
+   "match": "type",
+   "label": "硫酸池 / 灌注面板",
+   "short": "Pool",
+   "style": "clue"
+  },
+  {
+   "key": "puzzle_box",
+   "pattern": "^(PuzzleRoomLargePickupBox-01_C|TutorialPuzzleRoomLargePickupBox_BP_C)$",
+   "match": "type",
+   "label": "密码房（密码箱）",
+   "short": "Box"
+  }
+ ]
+}
