@@ -82,5 +82,9 @@
  "FPC_MT02": {
   "map": "FunParkCanal",
   "name": "运河游乐场 · 收集门票赎回自由"
+ },
+ "PoliceStation_T02": {
+  "map": "PoliceStation",
+  "name": "警察局 · 杀死告密者（B05 找钥匙开门）"
  }
 }

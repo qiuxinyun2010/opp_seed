@@ -1,0 +1,137 @@
+{
+ "_说明": "PoliceStation_T02（大关，B01–B07 多阶段）只收录 B05 的找钥匙环节。B05 有 4 道钥匙门（KeyItem_RollingGateDevice_BP_C ×4：KeyItemDestination_Device_BP4 是第一道，KeyItem_RollingGateDevice_BP / _BP_2 / _BP_4 是后三道），依次打开：先 PS_T02_B05_ObjCoord_QuestItem_FirstGateKeys（只要 1 把钥匙，固定刷在 CorpseSearch_PS_Trial02_AgainstWall_BP3_2 这具尸体里），再 PS_T02_B05_ObjCoord_QuestItem_AllGateKeys（从 60 具尸体里随机刷 9 把钥匙，9 种图案对应 9 种 QuestItem：Bunny/Club/Diamond/Fire/Spade/Crown/Eye/Moon/Star，电视上的图案决定用哪把开哪道门）。所以点位 = 4 道钥匙门 + 1 个固定钥匙尸体 + 60 个候选尸体。",
+ "level": "PoliceStation_T02",
+ "map": "PoliceStation",
+ "title": "PoliceStation_T02 · 警察局 B05 找钥匙开门",
+ "subtitle": "找钥匙阶段共 4 道钥匙门，依次打开：第一道门的钥匙固定刷在同一具尸体里；开门后从 60 具尸体里会随机刷出 9 把钥匙（9 种图案），对着电视上的图案找对应符号的尸体。实心大点 = 钥匙门与第一把钥匙，空心点 = 候选尸体。",
+ "sources": [
+  "PoliceStation_T02_B05.json"
+ ],
+ "point_types": [
+  {
+   "key": "first_key",
+   "pattern": "^CorpseSearch_PS_Trial02_AgainstWall_BP3_2$",
+   "match": "name",
+   "label": "第一道门的钥匙（固定尸体）",
+   "short": "Key1"
+  },
+  {
+   "key": "gate",
+   "pattern": "^KeyItem_RollingGateDevice_BP_C$",
+   "match": "type",
+   "label": "钥匙门",
+   "short": "Gate"
+  },
+  {
+   "key": "corpse",
+   "pattern": "^CorpseSearch_PS_Trial02.*_BP_C$",
+   "match": "type",
+   "label": "尸体（可能藏钥匙）",
+   "short": "Body",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "门 1 · Room 26-19",
+   "name_en": "Gate 1 - KeyItemDestination_Device_BP4",
+   "color": "#7c3aed",
+   "note": "第一道门：钥匙固定刷在 CorpseSearch_PS_Trial02_AgainstWall_BP3_2 这具尸体里（实心标记）；本区另有 6 具候选尸体",
+   "actors": [
+    "KeyItemDestination_Device_BP4",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP10_5",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP11",
+    "CorpseSearch_PS_Trial02_BP17",
+    "CorpseSearch_PS_Trial02_BP18",
+    "CorpseSearch_PS_Trial02_BP20",
+    "CorpseSearch_PS_Trial02_Desk_BP3_17",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP3_2"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "门 2 · Room 16",
+   "name_en": "Gate 2 - KeyItem_RollingGateDevice_BP",
+   "color": "#b45309",
+   "note": "这扇门附近有 22 具尸体（9 个房间）；钥匙从全部 60 具尸体里随机刷，图案对得上才开",
+   "actors": [
+    "KeyItem_RollingGateDevice_BP",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP2_5",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP4_14",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP6_20",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP9_2",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP12_10",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP14_5",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP15_8",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP18",
+    "CorpseSearch_PS_Trial02_BP14_8",
+    "CorpseSearch_PS_Trial02_BP15",
+    "CorpseSearch_PS_Trial02_Desk_BP2_14",
+    "CorpseSearch_PS_Trial02_Desk_BP5_2",
+    "CorpseSearch_PS_Trial02_Desk_BP8_5",
+    "CorpseSearch_PS_Trial02_Desk_BP9_8",
+    "CorpseSearch_PS_Trial02_OnChair_BP3_11",
+    "CorpseSearch_PS_Trial02_OnChair_BP4_2",
+    "CorpseSearch_PS_Trial02_OnChair_BP5_8",
+    "CorpseSearch_PS_Trial02_WallThroat_BP2_6",
+    "CorpseSearch_PS_Trial02_WallThroat_BP3_14",
+    "CorpseSearch_PS_Trial02_WallThroat_BP8_2",
+    "CorpseSearch_PS_Trial02_WallThroat_BP9_7",
+    "CorpseSearch_PS_Trial02_WallThroat_BP10_10"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "门 3 · Room 13",
+   "name_en": "Gate 3 - KeyItem_RollingGateDevice_BP_2",
+   "color": "#0f766e",
+   "note": "这扇门附近有 27 具尸体（12 个房间）；钥匙从全部 60 具尸体里随机刷，图案对得上才开",
+   "actors": [
+    "KeyItem_RollingGateDevice_BP_2",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP5_2",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP16_11",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP17_14",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP19",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP20",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP_2",
+    "CorpseSearch_PS_Trial02_BP3_8",
+    "CorpseSearch_PS_Trial02_BP4",
+    "CorpseSearch_PS_Trial02_BP7",
+    "CorpseSearch_PS_Trial02_BP13_2",
+    "CorpseSearch_PS_Trial02_BP16",
+    "CorpseSearch_PS_Trial02_BP19_17",
+    "CorpseSearch_PS_Trial02_Desk_BP4_23",
+    "CorpseSearch_PS_Trial02_Desk_BP6_5",
+    "CorpseSearch_PS_Trial02_Desk_BP10_11",
+    "CorpseSearch_PS_Trial02_Desk_BP11",
+    "CorpseSearch_PS_Trial02_Desk_BP12",
+    "CorpseSearch_PS_Trial02_OnChair_BP2_8",
+    "CorpseSearch_PS_Trial02_OnChair_BP6",
+    "CorpseSearch_PS_Trial02_OnChair_BP7_2",
+    "CorpseSearch_PS_Trial02_OnChair_BP8",
+    "CorpseSearch_PS_Trial02_OnChair_BP_5",
+    "CorpseSearch_PS_Trial02_WallThroat_BP7_2",
+    "CorpseSearch_PS_Trial02_WallThroat_BP11",
+    "CorpseSearch_PS_Trial02_WallThroat_BP12",
+    "CorpseSearch_PS_Trial02_WallThroat_BP13_4",
+    "CorpseSearch_PS_Trial02_WallThroat_BP_5"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "门 4 · Room 14",
+   "name_en": "Gate 4 - KeyItem_RollingGateDevice_BP_4",
+   "color": "#1d4ed8",
+   "note": "这扇门附近有 5 具尸体（3 个房间）；钥匙从全部 60 具尸体里随机刷，图案对得上才开",
+   "actors": [
+    "KeyItem_RollingGateDevice_BP_4",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP7_23",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP8_26",
+    "CorpseSearch_PS_Trial02_BP2_3",
+    "CorpseSearch_PS_Trial02_Desk_BP_2",
+    "CorpseSearch_PS_Trial02_WallThroat_BP6_9"
+   ]
+  }
+ ]
+}

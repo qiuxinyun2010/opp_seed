@@ -86,10 +86,11 @@ from maplib import extract as mp        # noqa: E402  解析 / 翻译 / 几何�
 from maplib import names as zm         # noqa: E402  房间命名 / 点位归属 / 分区匹配
 
 # 关卡 → 地图名：只读本项目 data/levels.json（用 --sync-levels 从 seed.py 同步）
+# key 统一按大写索引：大关编号形如 PoliceStation_T02，命令行/文件名都按大写归一
 LEVELS = {}
 if os.path.exists(LEVELS_JSON):
     with io.open(LEVELS_JSON, encoding='utf-8') as _fp:
-        LEVELS = json.load(_fp)
+        LEVELS = {k.upper(): v for k, v in json.load(_fp).items()}
 
 SCHEMA = 1
 
