@@ -106,5 +106,9 @@
  "MHS_MT03": {
   "map": "MobsterHideoutSyndicate",
   "name": "黑帮据点 · 把毒品藏进桶里（3 区 ×3）"
+ },
+ "PF_LD_T12": {
+  "map": "PrisonFarm",
+  "name": "监狱农场 · 猪头 / 阀门 / 四位密码"
  }
 }

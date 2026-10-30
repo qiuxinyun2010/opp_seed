@@ -1,0 +1,64 @@
+{
+ "_说明": "PF_LD_T12（监狱农场 PrisonFarm，多阶段大关）只收录三个任务：①猪头 PigHead_BP_C（17 个，B04）；②阀门 ValveSystem_BP_C（14 个 + 14 个面板组件，B04）；③密码数字贴花 PasscodeDecal_BP_C（82 个，B05）+ 密码键盘 MultiroomPuzzleKeypad_BP_C（1 个）。密码是四位数字，分两片区域各给 2 位，所以分区 = A 区 / B 区（密码任务区域）；猪头与阀门各自是独立任务、不按区域分，保留为无分区点位。",
+ "level": "PF_LD_T12",
+ "map": "PrisonFarm",
+ "title": "PF_LD_T12 · 监狱农场 猪头 / 阀门 / 密码",
+ "subtitle": "三个阶段的任务点位：猪头（17 个）、阀门（14 个）、密码数字贴花（82 个，四位密码分 A/B 两区各 2 位）。分区按密码任务的 A 区 / B 区划分；猪头与阀门是独立任务，不分区。",
+ "sources": [
+  "PF_LD_T12_B04.json",
+  "PF_LD_T12_B05.json"
+ ],
+ "point_types": [
+  {
+   "key": "pig_head",
+   "pattern": "^PigHead_BP_C$",
+   "match": "type",
+   "label": "猪头",
+   "short": "Pig"
+  },
+  {
+   "key": "valve",
+   "pattern": "^ValveSystem_BP_C$",
+   "match": "type",
+   "label": "阀门",
+   "short": "Valve"
+  },
+  {
+   "key": "passcode_decal",
+   "pattern": "^PasscodeDecal_BP_C$",
+   "match": "type",
+   "label": "密码数字贴花",
+   "short": "Digit",
+   "style": "clue"
+  },
+  {
+   "key": "keypad",
+   "pattern": "^MultiroomPuzzleKeypad_BP_C$",
+   "match": "type",
+   "label": "密码键盘",
+   "short": "Pad"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "A 区 · Block A（密码 2 位）",
+   "name_en": "Zone A - Block A (2 digits)",
+   "color": "#7c3aed",
+   "note": "Block A 牢房区：34 个密码数字贴花，四位密码的其中 2 位在这一区",
+   "rooms": [
+    "RBRoom_BlockA*"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "B 区 · Block B（密码 2 位）",
+   "name_en": "Zone B - Block B (2 digits)",
+   "color": "#b45309",
+   "note": "Block B 牢房区：48 个密码数字贴花，另外 2 位在这一区",
+   "rooms": [
+    "RBRoom_BlockB*"
+   ]
+  }
+ ]
+}
