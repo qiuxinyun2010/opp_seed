@@ -1,7 +1,9 @@
 {
- "_说明": "ORS_MT01「把漂白剂倒进汤里」：任务点 = BleachBottle_BP*（漂白剂桶）。两个并发协调器 ORS_MT01_B02_GatherAndDeliver_Services / _Church 各自点名一批候选桶，对应游戏里的“两个区域，每区找 2 桶”。候选池全部上图（README §2 步骤 2：N 选 M 时 M 个候选全标）。点位的按实例名匹配（match=name），因为同一个蓝图类按区域分池。",
+ "_说明": "ORS_MT01「把漂白剂倒进汤里」：任务点 = BleachBottle_BP*（漂白剂桶），一局共 5 桶 = 两个区域各随机 2 桶 + 厨房 1 桶固定（教学桶）。两个并发协调器 ORS_MT01_B02_GatherAndDeliver_Services / _Church 各自点名 20 个候选桶，父协调器 ORS_MT01_B02_GatherAndDeliver_Bleach 点名厨房那 1 桶。候选池全部上图（README §2 步骤 2：N 选 M 时 M 个候选全标）。点位按实例名匹配（match=name），因为同一个蓝图类按区域分池。",
  "level": "ORS_MT01",
  "map": "OrphanageServices",
+ "title": "ORS_MT01 · 孤儿院服务区 漂白剂",
+ "subtitle": "一局共 5 桶：1 区（服务区：泳池 / 洗衣房一带）随机 2 桶 + 2 区（教堂区，含地下室）随机 2 桶 + 厨房固定 1 桶（教学桶）。图上 41 个点全是候选位，实心=两区随机桶候选，空心=厨房固定桶。把漂白剂倒进汤里即可。",
  "sources": [
   "ORS_MT01_B02.json"
  ],
@@ -24,7 +26,7 @@
    "key": "bleach_fixed",
    "pattern": "^(BleachBottle_BP54)$",
    "match": "name",
-   "label": "漂白剂 · 厨房固定",
+   "label": "漂白剂 · 厨房固定（教学）",
    "short": "BlchF",
    "style": "clue"
   }
@@ -35,7 +37,7 @@
    "name": "1 区 · 服务区（泳池 / 洗衣房）",
    "color": "#7c3aed",
    "name_en": "Section 1 - Services wing (pool / laundry)",
-   "note": "20 个候选桶，均藏在泳池、洗衣房、洗手间、工具走廊；另有 1 桶固定在厨房（空心标记）。本局随机 2 桶",
+   "note": "20 个候选桶，藏在泳池、洗衣房、洗手间、工具走廊；本局随机 2 桶。厨房另有 1 桶固定（空心，教学桶）",
    "rooms": [
     "RBRoom_Pool*",
     "RBRoom_Laundry*",
@@ -73,7 +75,7 @@
    "name": "2 区 · 教堂区（含地下室）",
    "color": "#b45309",
    "name_en": "Section 2 - Church (incl. basement)",
-   "note": "20 个候选桶，主要在教堂大厅与其地下室。本局随机 2 桶",
+   "note": "20 个候选桶，主要在教堂大厅与其地下室；本局随机 2 桶",
    "rooms": [
     "RBRoom_Church*",
     "RBRoom_Presbyter*"
