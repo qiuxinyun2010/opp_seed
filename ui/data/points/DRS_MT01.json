@@ -1,5 +1,5 @@
 {
- "_说明": "DRS_MT01（Trial ID DTS_MT01，关卡资产 DRS_MT01_B00，地图 DowntownRiotSewers）。任务点 = 调频器 + 人偶模型。调频器 FrequencyMatchPanel_DTS_Child_C 共 20 个（19 进随机池 + 1 个固定警察局）。人偶模型 DTR_MT01_ManneqinSetup_<武器>_BP_C 共 84 个出生点（蓝图名把 Mannequin 拼成 Manneqin），一局启用 30 个。**分区按房间划**：线索只告诉你目标房间，玩家要先到房间再找对应武器的模型，所以一个任务房间 = 一个区，区内就是该房间的人偶模型候选位；调频器单独一个区。",
+ "_说明": "DRS_MT01（Trial ID DTS_MT01，关卡资产 DRS_MT01_B00，地图 DowntownRiotSewers）。任务点 = 调频器 + 人偶模型。调频器 FrequencyMatchPanel_DTS_Child_C 共 20 个（19 进随机池 + 1 个固定警察局）。人偶模型 DTR_MT01_ManneqinSetup_<武器>_BP_C 共 84 个出生点（蓝图名把 Mannequin 拼成 Manneqin），一局启用 30 个。**本关分区不按任务区域分，改按房间划**（特例，见 ZONES.md §2）：线索只告诉你目标房间，玩家要先到房间再找对应武器的模型，所以一个任务房间 = 一个区，区内就是该房间的人偶模型候选位；调频器单独一个区。",
  "level": "DRS_MT01",
  "map": "DowntownRiotSewers",
  "title": "DRS_MT01 · 下水道街区 调频器与人偶模型",
