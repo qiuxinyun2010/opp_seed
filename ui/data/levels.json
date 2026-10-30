@@ -118,5 +118,9 @@
  "CHouse_T04": {
   "map": "Courthouse",
   "name": "法院 · 硫酸桶与密码房"
+ },
+ "FPB_MT01": {
+  "map": "FunParkBarn",
+  "name": "游乐场谷仓 · 人偶与解锁开关"
  }
 }
