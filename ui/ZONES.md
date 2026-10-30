@@ -50,7 +50,7 @@
 | FPI_MT01 | FunParkIllusion | 16 | 4 | 中庭固定放映机 + 第 0/1/2 组 | ⚠ 中庭是固定点 |
 | CHJ_MT03 | CourthouseJudicial | 9 | 4 | 7 个法官按翼/庭院分布 | ⚠ 按地理切，不是按"每区几把钥匙" |
 | SRR_MT01 | SuburbRiotResidential | 136 | 6 | A–E 五组密码房 + F 其它 | ⚠ 多一个"其它"兜底区 |
-| FPB_MT01 | FunParkBarn | 53 | 4 | 4 个区域各 1 个人偶（每区 26 个候选里随机 1 个）+ 就近的解锁开关 | 关卡数据无 section 命名，分区按位置分 4 段 |
+| FPB_MT01 | FunParkBarn | 53 | 4 | **分区 = 人偶所在区域**：一局 4 个人偶、每区 1 个，26 个候选按所在房间聚成 4 片，每片带自己的解锁开关 | 关卡数据无 section 命名，区域名用序号 + 房间列表 |
 | PF_LD_T12 | PrisonFarm | 114 | 2 | 密码任务分 A / B 两区（四位密码各 2 位） | 猪头 17、阀门 14 是独立任务，不分区 |
 | MHS_MT03 | MobsterHideoutSyndicate | 20 | 3 | 3 片区域各藏 3 个毒品（共 9）：赌场 / Chemco 实验室 / 列车编组场 | 每区候选桶 6/8/5，每局各选 3 个 |
 | MHS_MT02 | MobsterHideoutSyndicate | 31 | 1 | 毒气桶全部集中在一片区域（毒品实验室），不分区 | 29 个桶 + 2 个泵/容器（泵在列车编组场，供灌注） |

@@ -1,9 +1,9 @@
 {
- "_说明": "FPB_MT01「Find and Grind the Bad Children 找到并碾碎坏孩子」：任务点 = 人偶 ViolentKid_Combined_Upper-01_BP_C（26 个候选）+ 每个人偶对应的解锁开关 ViolentKids_Button_BP_C（26 个，实例名 ChildMannequin_Button_BP*）。协调器 FPB_MT01_GatherAndDeliver_Mannequin_ObjCoord_BP 的 DesiredCount=4，提示 'There's a mannequin in each section. Check the map near the grinder.' → 一局 4 个人偶、每区 1 个，共 4 个区域。**4 个分区是按位置把人偶候选分成 4 段、并把开关就近配到对应人偶所在段**（关卡数据里没有 section 命名）；如果游戏内分区不同，改 zones[].actors 即可。粉碎机 ChildMannequin_Grinder_BP_C 画空心参考（ChildrenGrinder_InteractionPanel 是挂在粉碎机上的组件、坐标 0,0,0，不能当点位）。",
+ "_说明": "FPB_MT01「Find and Grind the Bad Children 找到并碾碎坏孩子」：任务点 = 人偶 ViolentKid_Combined_Upper-01_BP_C（26 个候选）+ 每个人偶对应的解锁开关 ViolentKids_Button_BP_C（26 个，实例名 ChildMannequin_Button_BP*）。协调器 FPB_MT01_GatherAndDeliver_Mannequin_ObjCoord_BP 的 DesiredCount=4，提示 'There's a mannequin in each section. Check the map near the grinder.' → 一局 4 个人偶、每区 1 个，共 4 个区域。**分区 = 人偶所在区域**：一局 4 个人偶、每片区域 1 个，所以按候选房间把人偶候选聚成 4 片区域，房间写进 zones[].rooms（整片区域上色），人偶与开关按房间归属进区；关卡数据里没有 section 命名，区域名用序号 + 房间列表描述。粉碎机 ChildMannequin_Grinder_BP_C 画空心参考（ChildrenGrinder_InteractionPanel 是挂在粉碎机上的组件、坐标 0,0,0，不能当点位）。",
  "level": "FPB_MT01",
  "map": "FunParkBarn",
  "title": "FPB_MT01 · 游乐场谷仓 人偶与解锁开关",
- "subtitle": "一局 4 个人偶（每区 1 个），每个人偶配一个解锁开关。实心 = 人偶候选位与开关，空心 = 粉碎机。分区按 4 个区域划分（按位置分 4 段，见备注）。",
+ "subtitle": "一局 4 个人偶，每片区域 1 个，每个人偶配一个解锁开关。实心 = 人偶候选位与开关，空心 = 粉碎机。分区 = 人偶所在区域（4 片，按候选房间聚类）。",
  "sources": [
   "FPB_MT01_B01.json"
  ],
@@ -34,90 +34,123 @@
  "zones": [
   {
    "id": "A",
-   "name": "1 区（6 个人偶）",
-   "name_en": "Section 1",
+   "name": "1 区（人偶 4 选 1）",
+   "name_en": "Section 1 - 4 mannequin candidates",
    "color": "#7c3aed",
-   "note": "本段 6 个人偶 + 6 个开关；房间：RBRoom14_12、RBRoom42_3、RBRoom45_6、RBRoom46_3、RBRoom48_25、RBRoom_1",
+   "note": "本区 4 个人偶候选 + 3 个开关；房间：RBRoom42_3、RBRoom45_6、RBRoom46_3、RBRoom_1",
+   "rooms": [
+    "RBRoom42_3",
+    "RBRoom45_6",
+    "RBRoom46_3",
+    "RBRoom_1"
+   ],
    "actors": [
     "ChildMannequin_Combined_Upper-01_BP_23",
     "ChildMannequin_Combined_Upper-01_BP_9",
     "ChildMannequin_Combined_Upper-01_BP_22",
     "ChildMannequin_Combined_Upper-01_BP_21",
-    "ChildMannequin_Combined_Upper-01_BP_24",
-    "ChildMannequin_Combined_Upper-01_BP_6",
-    "ViolentKids_Button_BP12",
     "ViolentKids_Button_BP9_2",
     "ViolentKids_Button_BP11_2",
-    "ChildMannequin_Button_BP2_5",
-    "ViolentKids_Button_BP10_2",
-    "ViolentKids_Button_BP_2"
+    "ViolentKids_Button_BP12"
    ]
   },
   {
    "id": "B",
-   "name": "2 区（7 个人偶）",
-   "name_en": "Section 2",
+   "name": "2 区（人偶 5 选 1）",
+   "name_en": "Section 2 - 5 mannequin candidates",
    "color": "#b45309",
-   "note": "本段 7 个人偶 + 7 个开关；房间：RBRoom10_6、RBRoom44_33、RBRoom47_3、RBRoom9_9、RBRoom_115、RBRoom_117",
+   "note": "本区 5 个人偶候选 + 7 个开关；房间：RBRoom10_6、RBRoom14_12、RBRoom44_33、RBRoom48_25、RBRoom_115",
+   "rooms": [
+    "RBRoom10_6",
+    "RBRoom14_12",
+    "RBRoom44_33",
+    "RBRoom48_25",
+    "RBRoom_115"
+   ],
    "actors": [
+    "ChildMannequin_Combined_Upper-01_BP_24",
+    "ChildMannequin_Combined_Upper-01_BP_6",
     "ChildMannequin_Combined_Upper-01_BP_5",
     "ChildMannequin_Combined_Upper-01_BP_2",
     "ChildMannequin_Combined_Upper-01_BP_7",
-    "ChildMannequin_Combined_Upper-01_BP_15",
-    "ChildMannequin_Combined_Upper-01_BP_20",
-    "ChildMannequin_Combined_Upper-01_BP_49",
-    "ChildMannequin_Combined_Upper-01_BP_8",
+    "ChildMannequin_Button_BP2_5",
+    "ViolentKids_Button_BP10_2",
+    "ViolentKids_Button_BP_2",
     "ChildMannequin_Button_BP4",
-    "ViolentKids_Button_BP14_2",
     "ViolentKids_Button_BP4_5",
     "ViolentKids_Button_BP8_2",
-    "ViolentKids_Button_BP3_2",
-    "ViolentKids_Button_BP13_2",
-    "ChildMannequin_Button_BP_2"
+    "ViolentKids_Button_BP14_2"
    ]
   },
   {
    "id": "C",
-   "name": "3 区（6 个人偶）",
-   "name_en": "Section 3",
+   "name": "3 区（人偶 8 选 1）",
+   "name_en": "Section 3 - 8 mannequin candidates",
    "color": "#0f766e",
-   "note": "本段 6 个人偶 + 8 个开关；房间：RBRoom11、RBRoom24、RBRoom4、RBRoom6_2、RBRoom_105、RBRoom_29",
+   "note": "本区 8 个人偶候选 + 8 个开关；房间：RBRoom24、RBRoom4、RBRoom47_3、RBRoom6_2、RBRoom9_9、RBRoom_117",
+   "rooms": [
+    "RBRoom24",
+    "RBRoom4",
+    "RBRoom47_3",
+    "RBRoom6_2",
+    "RBRoom9_9",
+    "RBRoom_117",
+    "RBRoom_29",
+    "RBRoom_39"
+   ],
    "actors": [
+    "ChildMannequin_Combined_Upper-01_BP_15",
+    "ChildMannequin_Combined_Upper-01_BP_20",
+    "ChildMannequin_Combined_Upper-01_BP_49",
     "ChildMannequin_Combined_Upper-01_BP_3",
+    "ChildMannequin_Combined_Upper-01_BP_8",
     "ChildMannequin_Combined_Upper-01_BP_59",
     "ChildMannequin_Combined_Upper-01_BP_4",
     "ChildMannequin_Combined_Upper-01_BP_12",
-    "ChildMannequin_Combined_Upper-01_BP_19",
-    "ChildMannequin_Combined_Upper-01_BP_10",
-    "ViolentKids_Button_BP2_2",
+    "ChildMannequin_Button_BP_2",
+    "ViolentKids_Button_BP3_2",
+    "ViolentKids_Button_BP13_2",
     "ChildMannequin_Button_BP3",
     "ChildMannequin_Button_BP7",
     "ChildMannequin_Button_BP13",
-    "ViolentKids_Button_BP6_2",
-    "ChildMannequin_Button_BP9",
-    "ViolentKids_Button_BP7_5",
-    "ViolentKids_Button_BP15_2"
+    "ViolentKids_Button_BP2_2",
+    "ViolentKids_Button_BP6_2"
    ]
   },
   {
    "id": "D",
-   "name": "4 区（7 个人偶）",
-   "name_en": "Section 4",
+   "name": "4 区（人偶 9 选 1）",
+   "name_en": "Section 4 - 9 mannequin candidates",
    "color": "#1d4ed8",
-   "note": "本段 7 个人偶 + 5 个开关；房间：RBRoom21、RBRoom39、RBRoom77_42、RBRoom7_3、RBRoom8、RBRoom_82",
+   "note": "本区 9 个人偶候选 + 8 个开关；房间：RBRoom11、RBRoom21、RBRoom39、RBRoom77_42、RBRoom7_3、RBRoom8",
+   "rooms": [
+    "RBRoom11",
+    "RBRoom21",
+    "RBRoom39",
+    "RBRoom77_42",
+    "RBRoom7_3",
+    "RBRoom8",
+    "RBRoom_105",
+    "RBRoom_82"
+   ],
    "actors": [
-    "ChildMannequin_Combined_Upper-01_BP_17",
-    "ChildMannequin_Combined_Upper-01_BP_0",
+    "ChildMannequin_Combined_Upper-01_BP_19",
     "ChildMannequin_Combined_Upper-01_BP_13",
+    "ChildMannequin_Combined_Upper-01_BP_17",
+    "ChildMannequin_Combined_Upper-01_BP_10",
     "ChildMannequin_Combined_Upper-01_BP_11",
+    "ChildMannequin_Combined_Upper-01_BP_0",
     "ChildMannequin_Combined_Upper-01_BP_14",
     "ChildMannequin_Combined_Upper-01_BP_1",
     "ChildMannequin_Combined_Upper-01_BP_18",
+    "ChildMannequin_Button_BP9",
+    "ViolentKids_Button_BP7_5",
+    "ViolentKids_Button_BP15_2",
     "ChildMannequin_Button_BP8",
-    "ChildMannequin_Button_BP14",
-    "ViolentKids_Button_BP5_5",
     "ChildMannequin_Button_BP12",
-    "ChildMannequin_Button_BP16_5"
+    "ChildMannequin_Button_BP14",
+    "ChildMannequin_Button_BP16_5",
+    "ViolentKids_Button_BP5_5"
    ]
   }
  ]
