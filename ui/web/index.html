@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OPP Map Tool</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-badge">OPP</span>
+      <select id="levelSelect" class="level-select" title="切换关卡地图"></select>
+      <label class="pill-toggle" title="自动跟随游戏日志切换关卡">
+        <input type="checkbox" id="chkFollow" checked />
+        <span>跟随游戏 (L)</span>
+      </label>
+    </div>
+
+    <div class="toolbar-group">
+      <div class="segmented" id="modeSwitch">
+        <button data-mode="overlay" class="active" title="叠加所有楼层 (快捷键 O)">叠加</button>
+        <button data-mode="floor" title="分层查看 (快捷键 1/2/3/4)">分层</button>
+      </div>
+      <div class="floor-buttons" id="floorButtons"></div>
+    </div>
+
+    <div class="toolbar-group">
+      <label class="pill-toggle" title="显示/隐藏门">
+        <input type="checkbox" id="chkDoors" checked />
+        <span>门</span>
+      </label>
+      <label class="pill-toggle" title="显示/隐藏任务点位">
+        <input type="checkbox" id="chkPoints" checked />
+        <span>点位</span>
+      </label>
+      <label class="pill-toggle" title="显示所有房间名（默认仅标重点房间）">
+        <input type="checkbox" id="chkAllNames" />
+        <span>全房间名</span>
+      </label>
+      <label class="pill-toggle seed-pill" title="显示/隐藏本局种子答案坐标标记 (快捷键 S)">
+        <input type="checkbox" id="chkSeed" checked />
+        <span id="lblSeedCount">本局标记 (0)</span>
+      </label>
+      <label class="pill-toggle" title="显示/隐藏左上角分区与门图例 (快捷键 H)">
+        <input type="checkbox" id="chkLegend" />
+        <span>图例 (H)</span>
+      </label>
+    </div>
+
+    <div class="toolbar-group right">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="搜索房间 / 点位 / RBRoom..." />
+      </div>
+      <button class="icon-btn" id="btnRotate" title="顺时针旋转 90° (快捷键 T)">↻ 旋转</button>
+      <button class="icon-btn" id="btnMirror" title="左右镜像翻转 (快捷键 X)">⇄ 镜像</button>
+      <button class="icon-btn" id="btnFit" title="适应窗口大小 (快捷键 F)">⛶ 复位</button>
+      <button class="icon-btn" id="btnTheme" title="切换深色/浅色主题">🌙</button>
+      <button class="icon-btn warn" id="btnHideWin" title="收起窗口并回到游戏 (或直接按全局快捷键)">收起</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="map-container" id="mapContainer">
+      <canvas id="mapCanvas"></canvas>
+
+      <aside class="legend-card hidden" id="legendCard">
+        <div class="legend-header">
+          <strong id="legendTitle">分区图例</strong>
+          <button class="link-btn" id="btnShowAllZones">全部显示</button>
+        </div>
+        <div id="zoneList" class="zone-list"></div>
+        <div class="legend-divider"></div>
+        <div class="legend-header"><strong>门类型</strong></div>
+        <div id="doorLegendList" class="door-legend-list"></div>
+      </aside>
+
+      <div id="hoverTooltip" class="hover-tooltip hidden"></div>
+      <div id="viewBadge" class="view-badge">Overlay</div>
+
+      <footer class="inspector-bar" id="inspectorBar">
+        <div class="inspector-main">
+          <div class="inspector-title" id="inspTitle">点击房间、点位或门查看详情（点击即自动复制原始名）</div>
+          <div class="inspector-sub" id="inspSub">滚轮缩放 · 左/右键拖拽平移 · 双击房间或点位添加自定义备注</div>
+        </div>
+        <div class="inspector-actions">
+          <span class="toast-msg" id="toastMsg"></span>
+          <button class="action-btn" id="btnCopyRaw" disabled>复制原始名</button>
+          <button class="action-btn primary" id="btnEditNote" disabled>编辑备注 (N)</button>
+        </div>
+      </footer>
+    </section>
+
+    <aside class="seed-panel" id="seedPanel">
+      <div class="seed-header">
+        <div class="seed-title-row">
+          <span class="seed-tag">SEED</span>
+          <span class="seed-status-badge" id="seedStatusBadge">等待对局</span>
+        </div>
+        <div class="seed-meta" id="seedMeta">正在监听 OPP.log…</div>
+      </div>
+
+      <div class="seed-markers-bar hidden" id="seedMarkersBar">
+        <div class="bar-label">本局答案坐标点（点击在图上高亮定位）：</div>
+        <div class="marker-chips" id="markerChips"></div>
+      </div>
+
+      <div class="seed-body">
+        <pre id="seedText" class="seed-text">等待游戏日志出现 Trial ID 与 Seed…</pre>
+      </div>
+
+      <div class="seed-footer">
+        <div class="seed-foot-btns">
+          <button class="action-btn" id="btnRefreshSeed">刷新日志 (R)</button>
+          <button class="action-btn" id="btnCopySeed">复制全部答案</button>
+        </div>
+        <div class="seed-foot-info" id="seedFootInfo"></div>
+      </div>
+    </aside>
+  </main>
+
+  <div class="modal-backdrop hidden" id="noteModal">
+    <div class="modal-card">
+      <h3 id="noteModalTitle">编辑备注</h3>
+      <p class="modal-hint">备注会直接写回关卡 JSON 文件并优先作为地图显示名；留空保存即可删除备注。</p>
+      <input type="text" id="noteModalInput" class="modal-input" placeholder="输入自定义名称或备注…" />
+      <div class="modal-actions">
+        <button class="action-btn" id="btnNoteCancel">取消 (Esc)</button>
+        <button class="action-btn primary" id="btnNoteSave">保存 (Enter)</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

@@ -3,16 +3,41 @@
 把 `paks/MAP/Maps/<地图>` 里的关卡 JSON 提取成**每关一份**的地图数据，再用 Tkinter 实时渲染。
 改分区、加点位、写备注都只改 JSON，不需要重新出图。
 
+## 两个前端：Web 版（默认）与 Tk 版（`--tk`）
+
+| 入口 | 说明 |
+|---|---|
+| `启动地图工具.bat` | 默认起 **Web 版**（`python mapweb.py`），双击即可 |
+| `启动地图工具.bat --tk` | 起旧的 Tk 版（等价于 `python mapview.py`） |
+| `python mapweb.py` | Web 版：本机 HTTP 服务 + Edge/Chrome 应用窗口，复用 `mapview` 的渲染与 `seedinfo` 的种子推理 |
+| `python mapview.py` | Tk 版：原窗口程序，功能不变 |
+
+Web 版把页面放在 `web/`（`index.html` / `style.css` / `app.js`），后端接口：
+`/api/state`、`/api/levels`、`/api/map?level=<关卡>`、`/api/note`、`/api/config`、
+`/api/window/hide`、`/api/window/quit`。常用参数：
+
+```powershell
+python mapweb.py --port 18765      # 固定端口（默认自动挑空闲端口）
+python mapweb.py --browser         # 用普通浏览器标签页打开，而不是应用窗口
+python mapweb.py PSA_MT01          # 指定初始关卡
+```
+
+- 默认模式下进程生命周期跟着浏览器窗口：**关掉窗口服务就退出**；`--browser` 时服务不随浏览器退出。
+- 运行会在 `data/cache/web_profile/` 生成 Edge 配置目录（已 gitignore，可随时删）。
+- Web 版只是新增入口，`mapdb.py` / `maplib/` / `data/` 与 Tk 版完全共用，`ui/` 仍然自包含。
+
 ```
 ui/
   mapdb.py                 提取器（paks → data/maps/<关卡>.json）
+  mapweb.py                Web 版入口（本地 HTTP 服务 + 浏览器窗口，默认）
+  web/                     前端（index.html / style.css / app.js，Canvas 渲染）
   mapview.py               渲染器（窗口 / --png 导出 / 右侧答案面板 / 全局快捷键）
   gamelog.py               读 OPP.log 里本局的关卡 + 种子（GameStageInfo / StageReady 都认）
   seedinfo.py              调 seed.py 推理（关卡 + 种子 → 答案文本，带缓存）
   seedpanel.py             右侧「本局答案」面板
   hotkey.py                全局快捷键（低级键盘钩子，只观察不吞键，支持 Ctrl+A）
   uifont.py                统一字体（整数像素字号，保证字清晰）
-  启动地图工具.bat         一键启动（双击即可，参数照旧可以跟在后头）
+  启动地图工具.bat         一键启动（双击默认起 Web 版，加 --tk 用 Tk 版，其余参数透传）
   config.json              日志路径 / 快捷键 / 面板宽度 / 字号等
   maplib/                  自带解析内核（extract.py 解析+翻译+门分类，names.py 房间命名+点位归属）
   data/extract.json        提取配置（要哪些图层，默认只要门 + 任务点位）
