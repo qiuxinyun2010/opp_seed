@@ -78,5 +78,9 @@
  "TFW_MT03": {
   "map": "ToyFactoryWarehouse",
   "name": "玩具工厂仓库 · 注满卫生处理罐"
+ },
+ "FPC_MT02": {
+  "map": "FunParkCanal",
+  "name": "运河游乐场 · 收集门票赎回自由"
  }
 }

@@ -1,0 +1,52 @@
+{
+ "_说明": "FPC_MT02「Redeem Your Freedom」：任务点 = 出票机。两个售票亭协调器各自指定一种出票机类（ItemSpawnerClass），本局从该类候选位里随机启用 5 个，每区要交 5 张票（FixedMaxCount=5、bUseFixedMaxCount=true）：MT02_SimpleTicketBooth_CoordBP_Canals → FPC_TriggerableTicketDispenser_01_A_BP_C（41 个候选，含 17 个 CanalA_* 命名和 1 个教学机 _Intro）；MT02_SimpleTicketBooth_CoordBP_Office → FPC_TriggerableTicketDispenser_01_B_BP_C（28 个候选）。bOnlyCountSpawnedItems=true，只有本局真正启用的出票机才计数。",
+ "level": "FPC_MT02",
+ "map": "FunParkCanal",
+ "title": "FPC_MT02 · 运河游乐场 收票出票机",
+ "subtitle": "两个区域（Canals / Offices），每区要交 5 张票。出票机分两套蓝图：A 型 41 个候选位（Canals 区，含教学机），B 型 28 个候选位（Offices 区）；每局每区随机启用 5 个，靠听机器发出的声音找。实心点 = 出票机候选位，空心点 = 交票的售票亭。",
+ "sources": [
+  "FPC_MT02_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "ticket_a",
+   "pattern": "^FPC_TriggerableTicketDispenser_01_A_BP_C$",
+   "match": "type",
+   "label": "出票机 · Canals 区",
+   "short": "TicketA"
+  },
+  {
+   "key": "ticket_b",
+   "pattern": "^FPC_TriggerableTicketDispenser_01_B_BP_C$",
+   "match": "type",
+   "label": "出票机 · Offices 区",
+   "short": "TicketB"
+  },
+  {
+   "key": "booth",
+   "pattern": "^SimpleTicketBooth_CoordBP_C$",
+   "match": "type",
+   "label": "售票亭（交票处）",
+   "short": "Booth",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "1 区 · Canals（运河）",
+   "name_en": "Section 1 - Canals",
+   "color": "#7c3aed",
+   "note": "41 个出票机候选位（A 型，含教学机）；本局随机启用 5 个，收集 5 张票交到 Canals 售票亭",
+   "actors": ["*TicketDispenser_01_A_BP*", "*_BP_CanalA_*", "*_BP_Intro", "*CoordBP_Canals"]
+  },
+  {
+   "id": "B",
+   "name": "2 区 · Offices（办公区）",
+   "name_en": "Section 2 - Offices",
+   "color": "#b45309",
+   "note": "28 个出票机候选位（B 型）；本局随机启用 5 个，收集 5 张票交到 Office 售票亭",
+   "actors": ["*TicketDispenser_01_B_BP*", "*CoordBP_Office"]
+  }
+ ]
+}
