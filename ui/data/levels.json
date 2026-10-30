@@ -110,5 +110,9 @@
  "PF_LD_T12": {
   "map": "PrisonFarm",
   "name": "监狱农场 · 猪头 / 阀门 / 四位密码"
+ },
+ "ShoppingMall_LD_B00": {
+  "map": "ShoppingMall",
+  "name": "商场 · 保险丝与喷泉阀门"
  }
 }

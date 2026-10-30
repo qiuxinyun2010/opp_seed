@@ -1,0 +1,44 @@
+{
+ "_说明": "ShoppingMall_LD_B00（商场大关，地图 ShoppingMall）只收录两个任务：①保险丝——B01 教学段 2 个 FuseContainer_BP_Tuto_C + B03 主段 13 个 FuseContainer_BP_Main_C（商店里的保险丝箱，B00 协调器的 SpecificItemSpawners 逐个点名），交付装置 2 个 FuseItemDestinationDevice_BP_C 画空心；②喷泉阀门——B05 的 8 个 SM_BalancedValveGroup_BP_C（任务计数 8，每局随机 4 个）+ 24 个 SM_ValvePanel_BP_C 面板。这两段任务没有区域分组，所以不设分区。",
+ "level": "ShoppingMall_LD_B00",
+ "map": "ShoppingMall",
+ "title": "商场 · 保险丝与喷泉阀门",
+ "subtitle": "两个任务的点位：保险丝箱（15 个候选：B01 教学段 2 个 + B03 主段 13 个，交付到保险丝面板）、喷泉阀门（8 个调节站 + 24 个面板，每局随机 4 站）。这两段没有区域划分，所以不分区。",
+ "sources": [
+  "ShoppingMall_LD_B01.json",
+  "ShoppingMall_LD_B03.json",
+  "ShoppingMall_LD_B05.json"
+ ],
+ "point_types": [
+  {
+   "key": "fuse_container",
+   "pattern": "^(FuseContainer_BP_Main_C|FuseContainer_BP_Tuto_C)$",
+   "match": "type",
+   "label": "保险丝箱",
+   "short": "Fuse"
+  },
+  {
+   "key": "fuse_dest",
+   "pattern": "^FuseItemDestinationDevice_BP_C$",
+   "match": "type",
+   "label": "保险丝交付面板",
+   "short": "Panel",
+   "style": "clue"
+  },
+  {
+   "key": "valve_group",
+   "pattern": "^SM_BalancedValveGroup_BP_C$",
+   "match": "type",
+   "label": "喷泉阀门调节站",
+   "short": "Valve"
+  },
+  {
+   "key": "valve_panel",
+   "pattern": "^SM_ValvePanel_BP_C$",
+   "match": "type",
+   "label": "阀门面板",
+   "short": "VPnl",
+   "style": "clue"
+  }
+ ]
+}
