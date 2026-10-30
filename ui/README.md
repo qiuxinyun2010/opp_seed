@@ -93,7 +93,7 @@ ui/
 | 要能自己提取新关卡 | `ui/` + 游戏 `paks/MAP/Maps` | `python mapdb.py SMC_MT02 --paks "D:/.../paks/MAP/Maps"` |
 
 体积参考：代码 + 数据约 **1.7 MB**（`mapdb.py` 36 + `mapview.py` 74 + `maplib/` 55 +
-28 份地图数据 1575 + 点位/分区/译名表 138 + README+ZONES 45）。`data/cache/`（约 2 MB）和
+29 份地图数据 1640 + 点位/分区/译名表 144 + README+ZONES 45）。`data/cache/`（约 2 MB）和
 `data/preview/`（约 1 MB）是可再生的，交付时可以删掉，首次提取会自动重建。
 
 ---

@@ -102,5 +102,9 @@
  "MHS_MT02": {
   "map": "MobsterHideoutSyndicate",
   "name": "黑帮据点 · 给牲畜下毒（毒气桶）"
+ },
+ "MHS_MT03": {
+  "map": "MobsterHideoutSyndicate",
+  "name": "黑帮据点 · 把毒品藏进桶里（3 区 ×3）"
  }
 }

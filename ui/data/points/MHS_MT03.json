@@ -1,0 +1,75 @@
+{
+ "_说明": "MHS_MT03「Hide the Drugs in Franco's Barrels 把毒品藏进桶里」。任务点 = 藏毒用的桶 DrugStuffing_Base_BP_C（19 个候选），分 3 片区域，每区每局随机选 3 个桶藏毒品（共 9 个）：赌场 Casino（6 个候选）、Chemco 实验室（8）、列车编组场 Train Depot（5）。三区的候选桶名单直接取自关卡里 3 个 MH_DrugDeliveryCoord_BP_C 协调器的 ObjectiveActors，DrugPacketBox 是毒品来源箱，画空心参考。",
+ "level": "MHS_MT03",
+ "map": "MobsterHideoutSyndicate",
+ "title": "MHS_MT03 · 黑帮据点 藏毒桶",
+ "subtitle": "3 片区域（赌场 / Chemco 实验室 / 列车编组场），每区随机选 3 个桶藏毒品，共 9 个。实心点 = 藏毒桶候选位，空心点 = 毒品来源箱。",
+ "sources": [
+  "MHS_LD_MT03_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "drug_bucket",
+   "pattern": "^DrugStuffing_Base_BP_C$",
+   "match": "type",
+   "label": "藏毒桶",
+   "short": "Barrel"
+  },
+  {
+   "key": "drug_box",
+   "pattern": "^DrugPacketBox_BP_C$",
+   "match": "type",
+   "label": "毒品来源箱",
+   "short": "Box",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "1 区 · 赌场 Casino",
+   "name_en": "赌场 Casino",
+   "color": "#7c3aed",
+   "note": "本区有 6 个候选桶，每局随机选 3 个藏毒（全区共 3 个毒品）",
+   "actors": [
+    "DrugStuffing_Base_BP3_16",
+    "DrugStuffing_Base_BP4_18",
+    "DrugStuffing_Base_BP5_20",
+    "DrugStuffing_Base_BP6_22",
+    "DrugStuffing_Base_BP9_9",
+    "DrugStuffing_Base_BP15_12"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "2 区 · Chemco 实验室",
+   "name_en": "Chemco 实验室",
+   "color": "#b45309",
+   "note": "本区有 8 个候选桶，每局随机选 3 个藏毒（全区共 3 个毒品）",
+   "actors": [
+    "DrugStuffing_Base_BP2_2",
+    "DrugStuffing_Base_BP8_30",
+    "DrugStuffing_Base_BP7_29",
+    "DrugStuffing_Base_BP11_33",
+    "DrugStuffing_Base_BP21_31",
+    "DrugStuffing_Base_BP22_34",
+    "DrugStuffing_Base_BP23_37",
+    "DrugStuffing_Base_BP24_40"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "3 区 · 列车编组场 Train Depot",
+   "name_en": "列车编组场 Train Depot",
+   "color": "#0f766e",
+   "note": "本区有 5 个候选桶，每局随机选 3 个藏毒（全区共 3 个毒品）",
+   "actors": [
+    "DrugStuffing_Base_BP12",
+    "DrugStuffing_Base_BP14",
+    "DrugStuffing_Base_BP13",
+    "DrugStuffing_Base_BP16",
+    "DrugStuffing_Base_BP_3"
+   ]
+  }
+ ]
+}
