@@ -252,6 +252,24 @@ def latest(path=None):
     return info
 
 
+def seed_line(info):
+    """拼成日志里 GameStageInfo 那一行的格式，方便直接贴给别人。
+
+    Trial ID: PSO_MT01, Program difficulty: Easy, Stage: PoliceStationOffices,
+    Mission: PSO_MT01, Seed: 329329, EffectiveNumberOfPlayers: 1
+    """
+    if not info:
+        return ''
+    return ('Trial ID: %s, Program difficulty: %s, Stage: %s, Mission: %s, '
+            'Seed: %s, EffectiveNumberOfPlayers: %s' % (
+                info.get('trial') or '',
+                info.get('difficulty') or 'Easy',
+                info.get('stage') or '',
+                info.get('mission') or info.get('trial') or '',
+                info.get('seed') if info.get('seed') is not None else '',
+                info.get('players') or 1))
+
+
 def summary(info):
     """一行摘要，给界面/命令行用。"""
     if not info:

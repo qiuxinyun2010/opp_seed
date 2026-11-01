@@ -15,6 +15,7 @@ import json
 import math
 import os
 import re
+import statistics
 import sys
 
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'data')
@@ -750,8 +751,9 @@ def merge_hulls(hulls, inset=3.0):
 
 # ---------------------------------------------------------------- 类型规则
 
-DOOR_RE = re.compile(r'Door|Gate', re.I)
-DOOR_SKIP = re.compile(r'Component|Light|Plane|Window|Sign|Destroyed|Broken', re.I)
+# Shutter(卷帘/闸门) 也是门; DoorWindow 这类"带窗的门"是门不是窗, 所以不再按 Window 排除
+DOOR_RE = re.compile(r'Door|Gate|Shutter', re.I)
+DOOR_SKIP = re.compile(r'Component|Light|Plane|Sign|Destroyed|Broken', re.I)
 
 # 关键物品分类: (key, 正则, 显示名)
 ITEM_RULES = [
@@ -803,6 +805,8 @@ KEEP_COMPONENT_TYPES = {
     'PrefabComponent',
 }
 COMP_TRIM_KEYS = ('RelativeLocation', 'RelativeRotation', 'AttachParent')
+# 楼梯标记只留定位/宽度/链指针; Prev/Next 用来把一串标记接成一道楼梯
+STAIR_TRIM_KEYS = ('RootComponent', 'StairsWidth', 'Prev', 'Next')
 
 
 def classify_item(tname):
@@ -840,6 +844,7 @@ class MapExtractor:
         self.door_objs = []
         self.item_objs = []
         self.spawn_objs = []
+        self.stair_objs = []
         self.scanned = []
 
     def log(self, *a):
@@ -866,6 +871,15 @@ class MapExtractor:
                     self.item_objs.append((fn, idx, obj))
                 elif t == 'PlayerStart':
                     self.spawn_objs.append((fn, idx, obj))
+                elif t == 'RBStairsMarker':
+                    self.stair_objs.append((fn, idx, obj))
+                    p = obj.get('Properties') or {}
+                    obj = {
+                        'Type': t,
+                        'Name': obj.get('Name'),
+                        'Outer': obj.get('Outer'),
+                        'Properties': {k: p[k] for k in STAIR_TRIM_KEYS if k in p},
+                    }
                 elif t in ('BodySetup', 'Model', 'BrushComponent'):
                     pass
                 elif t in KEEP_COMPONENT_TYPES:
@@ -994,6 +1008,57 @@ class MapExtractor:
                 'yaw': round(yaw, 2),
             })
         return out
+
+    # -- 楼梯
+    def extract_stairs(self):
+        """RBStairsMarker -> 一道楼梯(run): 低端、高端、踏步宽。
+
+        导出里一个标记对就是一级踏步(高差 16.7 / 33.3 ...), 一道楼梯是几十个
+        这样的踏步沿同一方向接力; 按端点邻近把它们串成 run, 取最低点与最高点
+        作为楼梯的两端, 宽度取整体最大值(扶手到扶手)。
+        """
+        steps = []
+        seen_files = set()
+        for fn, _idx, _obj in self.stair_objs:
+            if fn in seen_files:                # 每个文件只处理一次
+                continue
+            seen_files.add(fn)
+            info = {}
+            for idx, node in self.per_file.get(fn, {}).items():
+                if node.get('Type') != 'RBStairsMarker':
+                    continue
+                p = node.get('Properties') or {}
+                loc, _yaw = self.comp_transform(fn, p.get('RootComponent'))
+                info[idx] = {
+                    'name': node.get('Name') or '',
+                    'p': loc,
+                    'w': float(p.get('StairsWidth') or 0.0),
+                    'prev': ref_index(p.get('Prev')),
+                    'next': ref_index(p.get('Next')),
+                }
+            for head, node in info.items():
+                if node['prev'] in info:
+                    continue                    # 不是链头
+                chain, cur, seen = [], head, set()
+                while cur in info and cur not in seen:
+                    seen.add(cur)
+                    chain.append(cur)
+                    cur = info[cur]['next']
+                if len(chain) < 2:
+                    continue
+                pts = [info[i]['p'] for i in chain]
+                lo = min(pts, key=lambda q: q[2])
+                hi = max(pts, key=lambda q: q[2])
+                if hi[2] - lo[2] < 1.0:
+                    continue
+                widths = [info[i]['w'] for i in chain if info[i]['w'] > 0]
+                steps.append({
+                    'name': info[head]['name'], 'file': fn,
+                    'w': statistics.median(widths) if widths else 0.0,
+                    'a': [lo[0], lo[1], lo[2]],
+                    'b': [hi[0], hi[1], hi[2]],
+                })
+        return group_stair_runs(steps)
 
     def extract_items(self):
         items = []
@@ -1148,6 +1213,74 @@ def is_corridor(name):
 
 def is_connector(name):
     return bool(CONNECTOR_RE.search(name))
+
+
+# 楼梯段接力的判定: 上一段顶端与下一段底端在 XY 上够近、z 上连续
+STAIR_LINK_XY = 260.0
+STAIR_LINK_Z = 120.0
+
+
+def group_stair_runs(steps):
+    """把首尾相接的踏步并成一道楼梯(run)。
+
+    导出里一个标记对只覆盖一级台阶, 一道楼梯是几十级沿同一方向接力:
+    两级的端点 XY 够近、z 上连续, 就算同一道楼梯。
+    返回 [{id, a: 低端, b: 高端, w, zmin, zmax, steps}]。
+    """
+    n = len(steps)
+    parent = list(range(n))
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    def union(i, j):
+        ri, rj = find(i), find(j)
+        if ri != rj:
+            parent[rj] = ri
+
+    ends = [((s['a'][0], s['a'][1], s['a'][2]), (s['b'][0], s['b'][1], s['b'][2]))
+            for s in steps]
+    for i in range(n):
+        for j in range(i + 1, n):
+            linked = False
+            for pi in ends[i]:
+                for pj in ends[j]:
+                    if abs(pi[2] - pj[2]) > STAIR_LINK_Z:
+                        continue
+                    if math.hypot(pi[0] - pj[0], pi[1] - pj[1]) > STAIR_LINK_XY:
+                        continue
+                    linked = True
+                    break
+                if linked:
+                    break
+            if linked:
+                union(i, j)
+
+    buckets = collections.OrderedDict()
+    for i in range(n):
+        buckets.setdefault(find(i), []).append(i)
+
+    runs = []
+    for k, members in enumerate(buckets.values()):
+        pts = [p for i in members for p in (steps[i]['a'], steps[i]['b'])]
+        lo = min(pts, key=lambda q: q[2])
+        hi = max(pts, key=lambda q: q[2])
+        widths = [steps[i]['w'] for i in members if steps[i]['w'] > 0]
+        runs.append({
+            'id': k,
+            'file': steps[members[0]]['file'],
+            'name': steps[members[0]]['name'],
+            'a': [round(lo[0], 1), round(lo[1], 1), round(lo[2], 1)],
+            'b': [round(hi[0], 1), round(hi[1], 1), round(hi[2], 1)],
+            'w': round(max(widths), 1) if widths else 200.0,
+            'zmin': round(lo[2], 1),
+            'zmax': round(hi[2], 1),
+            'steps': len(members),
+        })
+    return runs
 
 
 def hull_dist(x, y, h):

@@ -1,31 +1,14 @@
 {
   "_source": "游戏内实测样本（release/coop/**/*.md 里记录的截图与直播局）",
-  "_note": "--selftest 用。这里的数组在 seeddata.py 里会还原成 tuple / int 键，因为自检是拿预测值和这些字面值做 == 比较；改格式时注意别打乱类型。",
+  "_note": "--selftest 用。这里的数组在 seeddata.py 里会还原成 tuple / int 键，因为自检是拿预测值和这些字面值做 == 比较；改格式时注意别打乱类型。 PSA_MT01 的 958958 是「停尸房第二个生成点(PSA_LD_Items/Morgue_2)缺失」那个缺口局的回归锁，房间与生成点见 release/home/PSA_MT01.md §6.1。 srr_mt01 的 3 条来自 release/home/SRR_MT01.md §3（选房 + 4 位密码 12/12）；只有 894894 记了密码盘所在房间，另两条房间为 null。",
   "chj_mt01": [
-    [987987, {
-      "RBRoom_West_Bureau": "3894",
-      "RBRoom_West_Maintenance": "7481",
-      "RBRoom_East_JudgesOffice": "7319"
-    }],
-    [592592, {
-      "RBRoom_West_PrivateOffice": "2671",
-      "RBRoom_East_Museum": "4815",
-      "RBRoom_West_Blueprints": "2351"
-    }]
+    [987987, {"RBRoom_West_Bureau": "3894", "RBRoom_West_Maintenance": "7481", "RBRoom_East_JudgesOffice": "7319"}],
+    [592592, {"RBRoom_West_PrivateOffice": "2671", "RBRoom_East_Museum": "4815", "RBRoom_West_Blueprints": "2351"}]
   ],
   "chj_mt02": [
-    [713713, {
-      "Skull": "736", "Spiral": "486", "Pentagram": "861",
-      "Sun": "470", "TriangleCircle": "139"
-    }],
-    [620620, {
-      "Skull": "067", "Spiral": "704", "Pentagram": "429",
-      "Sun": "398"
-    }],
-    [20020, {
-      "Skull": "017", "Spiral": "752", "Pentagram": "037",
-      "Sun": "136", "TriangleCircle": "973"
-    }]
+    [713713, {"Skull": "736", "Spiral": "486", "Pentagram": "861", "Sun": "470", "TriangleCircle": "139"}],
+    [620620, {"Skull": "067", "Spiral": "704", "Pentagram": "429", "Sun": "398"}],
+    [20020, {"Skull": "017", "Spiral": "752", "Pentagram": "037", "Sun": "136", "TriangleCircle": "973"}]
   ],
   "mhs_mt01": [
     [884884, "DrugLab", "4", "806"],
@@ -58,63 +41,29 @@
     [339339, [{"room": 7, "weapon": 1, "killer": 6}, "ClueRoom_BreakRoom"]]
   ],
   "smc_mt02": [
-    [453453, {
-      "Red": "RBRoom_EastCorridorRDC_Store4_3",
-      "Green": "RBRoom_DepartmentStore_EastSide_2F",
-      "Blue": "RBRoom_WestCorridorRDC_Store1",
-      "Tutorial": "RBRoom_DepartmentStore_Central_SecurityRoom"
-    }]
+    [453453, {"Red": "RBRoom_EastCorridorRDC_Store4_3", "Green": "RBRoom_DepartmentStore_EastSide_2F", "Blue": "RBRoom_WestCorridorRDC_Store1", "Tutorial": "RBRoom_DepartmentStore_Central_SecurityRoom"}]
   ],
   "fpi_mt02": [
-    [189189, {
-      "1": {"RBRoom_Circus": ["Sharing", 9]},
-      "2": {"RBRoom_SpaceConsoleStation": ["Dumbbells", 5],
-            "RBRoom_Eyes": ["Sharing", 5]},
-      "3": {"RBRoom_RabbitHole_CarrotsStorage": ["Apple", 4],
-            "RBRoom_DarkMannequin": ["Book", 6]}
-    }],
-    [346346, {
-      "1": {"RBRoom_Circus": ["Sharing", 9]},
-      "2": {"RBRoom_RabbitHole_DinnerTable": ["Sharing", 5],
-            "RBRoom_CreepyHands": ["Water", 9]},
-      "3": {"RBRoom_UpsideDownStorm": ["Dumbbells", 4],
-            "RBRoom_DinningIllusion": ["Water", 9]}
-    }]
+    [189189, {"1": {"RBRoom_Circus": ["Sharing", 9]}, "2": {"RBRoom_SpaceConsoleStation": ["Dumbbells", 5], "RBRoom_Eyes": ["Sharing", 5]}, "3": {"RBRoom_RabbitHole_CarrotsStorage": ["Apple", 4], "RBRoom_DarkMannequin": ["Book", 6]}}],
+    [346346, {"1": {"RBRoom_Circus": ["Sharing", 9]}, "2": {"RBRoom_RabbitHole_DinnerTable": ["Sharing", 5], "RBRoom_CreepyHands": ["Water", 9]}, "3": {"RBRoom_UpsideDownStorm": ["Dumbbells", 4], "RBRoom_DinningIllusion": ["Water", 9]}}]
   ],
   "tsr_mt01": [
     [695695, ["J-21", "M-05", "B-11"]]
   ],
   "fpi_mt01": [
-    [335335, [
-      ["RBRoom_Courtyard_Master", 1, "Crown"],
-      ["RBRoom_RabbitHole_CarrotsStorage", 2, "Hearth"],
-      ["RBRoom31_12", 3, "Bunny"],
-      ["RBRoom_UpsideDown_Church", 4, "Diamond"]
-    ]]
+    [335335, [["RBRoom_Courtyard_Master", 1, "Crown"], ["RBRoom_RabbitHole_CarrotsStorage", 2, "Hearth"], ["RBRoom31_12", 3, "Bunny"], ["RBRoom_UpsideDown_Church", 4, "Diamond"]]]
   ],
   "tfs_mt03": [
-    [14014, [
-      ["B3", "MT03_TF_Gas_ValvePanel_BP_Section_B3_2"],
-      ["B2", "MT03_TF_Gas_ValvePanel_BP_Section_B2_07"],
-      ["B1", "MT03_TF_Gas_ValvePanel_BP_Section_B1_04"],
-      ["A3", "MT03_TF_Gas_ValvePanel_BP_Section_A3_6"],
-      ["A1", "MT03_TF_Gas_ValvePanel_BP_Section_A1_04"],
-      ["A2", "MT03_TF_Gas_ValvePanel_BP_Section_A2_02"]
-    ]]
+    [14014, [["B3", "MT03_TF_Gas_ValvePanel_BP_Section_B3_2"], ["B2", "MT03_TF_Gas_ValvePanel_BP_Section_B2_07"], ["B1", "MT03_TF_Gas_ValvePanel_BP_Section_B1_04"], ["A3", "MT03_TF_Gas_ValvePanel_BP_Section_A3_6"], ["A1", "MT03_TF_Gas_ValvePanel_BP_Section_A1_04"], ["A2", "MT03_TF_Gas_ValvePanel_BP_Section_A2_02"]]]
   ],
-  "tfs_mt03_rooms": {
-    "B3": "RBRoom_Ext_LoadingDocks_OfficeTrailer",
-    "B2": "RBRoom_East_Laundry",
-    "B1": "RBRoom_East_Construction",
-    "A3": "RBRoom_ReceivingDocks_OfficeBuilding",
-    "A1": "RBRoom_East_Painting",
-    "A2": "RBRoom_West_Processing"
-  },
+  "tfs_mt03_rooms": {"A1": "RBRoom_East_Painting", "A2": "RBRoom_West_Processing", "A3": "RBRoom_ReceivingDocks_OfficeBuilding", "B1": "RBRoom_East_Construction", "B2": "RBRoom_East_Laundry", "B3": "RBRoom_Ext_LoadingDocks_OfficeTrailer"},
   "psa_mt01": [
-    [219219, [
-      ["Club", "RBRoom_ReelStorage", [307.3, 624.8, 1087.9]],
-      ["Star", "RBRoom25_2", [-1318.8, 806.3, 139.2]],
-      ["FilmReel", "RBRoom_DetectiveOffices03_50", [1590.3, 630.1, 407.5]]
-    ]]
+    [219219, [["Club", "RBRoom_ReelStorage", [307.3, 624.8, 1087.9]], ["Star", "RBRoom25_2", [-1318.8, 806.3, 139.2]], ["FilmReel", "RBRoom_DetectiveOffices03_50", [1590.3, 630.1, 407.5]]]],
+    [958958, [["Fire", "RBRoom_ReelStorage", [307.3, 624.8, 1087.9]], ["Bunny", "RBRoom_ShootingRange", [-3895.9, -534.4, 139.3]], ["FilmReel", "RBRoom_CafeteriaBreakRoom_17", [-1426.3, 420.8, 407.5]]]]
+  ],
+  "srr_mt01": [
+    [894894, {"MultiroomPuzzleKeypad_BP_2": ["RBRoom_Rich_House1_Salon", "4369"], "MultiroomPuzzleKeypad_BP3_5": ["RBRoom_Rich_House3_Salon", "5623"], "MultiroomPuzzleKeypad_BP4_8": ["RBRoom_Rich_House4_ConstrcutionRoom2", "9217"]}],
+    [512512, {"MultiroomPuzzleKeypad_BP_2": [null, "6459"], "MultiroomPuzzleKeypad_BP4_8": [null, "8612"], "MultiroomPuzzleKeypad_BP5_11": [null, "3159"]}],
+    [745745, {"MultiroomPuzzleKeypad_BP_2": [null, "1840"], "MultiroomPuzzleKeypad_BP3_5": [null, "8726"], "MultiroomPuzzleKeypad_BP5_11": [null, "8102"]}]
   ]
 }

@@ -51,7 +51,7 @@ TUTORIAL_COORDINATOR = 'MT02_GameShowObjectiveCoordinator_Tuto'
 BOARDS_PER_SECTION = 4          # 72 块正式翻板 / 18 分区
 MAX_FAKE = 3                    # 见 README：Easy 档因未写 Override 回落 Normal=3
 ROUNDS = 2
-CONSOLES = {1: 2, 2: 3, 3: 4}   # NumActiveConsoles（Values1P/2P/3P 覆盖）
+CONSOLES = {1: 2, 2: 3, 3: 4, 4: 4}   # NumActiveConsoles（Values1P/2P/3P 覆盖，4P 回落默认 4）
 
 M32 = sc.M32
 

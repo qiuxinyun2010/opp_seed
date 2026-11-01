@@ -1,0 +1,102 @@
+{
+  "_说明": "SR_Trial = SuburbRiot 大关（整张大图，目录 pak/OPP/Content/Maps_json/SuburbRiot）。本图汇总大关内三类任务点位：①调频器 = FrequencyMatchSuburbs_BP_C（35 个候选，靠黑光显形；FrequencyMatchKnob/PanelComponent 是其子件，不单独计点）；②显示屏 = FrequencyClue_TvChannel_BP_C（9 块，每 3 块一组显示本组 3 个图案，T08_B02 有 3、T08_B03 有 6）；③密码房 = PasscodeDecal_BP_C（数字贴花，房间内指示密码数字，68 个）+ 输入键盘 MultiroomPuzzleKeypad_BP_C（1 个，在 T08_B02）。sources 仅取含玩法 Actor 的 T08_B02 / T08_B03；几何用整张大图（所有 json 全扫）。",
+  "level": "SR_Trial",
+  "map": "SuburbRiot",
+  "title": "SR_Trial · 郊区暴乱大关（调频 + 密码房 + 显示屏）",
+  "subtitle": "整张大关地图。先到显示屏（每 3 块为一组）看本组 3 个图案 → 用黑光找对应区域的调频器 → 在带数字贴花的密码房收集数字 → 到密码键盘输入。",
+  "sources": [
+    "SuburbRiot_T08_B02.json",
+    "SuburbRiot_T08_B03.json"
+  ],
+  "point_types": [
+    {
+      "key": "tuner",
+      "pattern": "^FrequencyMatchSuburbs_BP_C$",
+      "match": "type",
+      "label": "调频器",
+      "short": "Tuner",
+      "style": "clue"
+    },
+    {
+      "key": "screen",
+      "pattern": "^FrequencyClue_TvChannel_BP_C$",
+      "match": "type",
+      "label": "显示屏",
+      "short": "Screen"
+    },
+    {
+      "key": "passcode",
+      "pattern": "^PasscodeDecal_BP_C$",
+      "match": "type",
+      "label": "密码房/数字贴花",
+      "short": "Passcode",
+      "style": ""
+    },
+    {
+      "key": "keypad",
+      "pattern": "^MultiroomPuzzleKeypad_BP_C$",
+      "match": "type",
+      "label": "密码键盘",
+      "short": "Keypad",
+      "style": ""
+    }
+  ],
+  "zones": [
+    {
+      "id": "A",
+      "name": "Mansion (豪宅)",
+      "name_zh": "A · 豪宅 Mansion",
+      "color": "#7c3aed",
+      "note": "豪宅一层/二层、车库、厨房、泳池等。",
+      "rooms": ["RBRoom_Mansion*"]
+    },
+    {
+      "id": "B",
+      "name": "Rich District (富豪住宅)",
+      "name_zh": "B · 富豪区 Rich",
+      "color": "#2563eb",
+      "note": "富豪区各 House 与中枢。",
+      "rooms": ["RBRoom_Rich*"]
+    },
+    {
+      "id": "C",
+      "name": "Poor District (贫民区)",
+      "name_zh": "C · 贫民区 Poor",
+      "color": "#b45309",
+      "note": "贫民 House、街道、警门与中枢。",
+      "rooms": ["RBRoom_Poor*"]
+    },
+    {
+      "id": "D",
+      "name": "Commercial / Town (商业与市政)",
+      "name_zh": "D · 商业区与市政 Commercial",
+      "color": "#0f766e",
+      "note": "修车、餐厅、停车场、市政厅、镇广场。",
+      "rooms": ["RBRoom_Commercial*", "RBRoom_1"]
+    },
+    {
+      "id": "E",
+      "name": "Factory (工厂)",
+      "name_zh": "E · 工厂 Factory",
+      "color": "#dc2626",
+      "note": "工厂主区、冷库、冰箱房、办公室。",
+      "rooms": ["RBRoom_Factory*"]
+    },
+    {
+      "id": "F",
+      "name": "Bunker (地堡)",
+      "name_zh": "F · 地堡 Bunker",
+      "color": "#475569",
+      "note": "地堡前厅与各室。",
+      "rooms": ["RBRoom_Bunker*"]
+    },
+    {
+      "id": "G",
+      "name": "Back Commercial (后巷商业)",
+      "name_zh": "G · 后巷商业 BackCommercial",
+      "color": "#db2777",
+      "note": "后巷公交、中枢与 SAS。",
+      "rooms": ["RBRoom_BackCommercial*"]
+    }
+  ]
+}

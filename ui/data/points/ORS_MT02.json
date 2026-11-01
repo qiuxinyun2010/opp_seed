@@ -1,0 +1,19 @@
+{
+  "_说明": "ORS_MT02「调频并打开大厅闸门」：任务点 = 调频面板 FrequencyMatchPanel_ORS_*（每个面板带 Frequency / Amplitude / Phase 三个旋钮）。一局随机 5 台——协调器 ORS_MT02_B02_Frequency_ObjCoord 的 PrimaryActorsRandomizationSetup.DesiredCount=5，1P~4P 都取 5（没有 bLocalOverrideFor1P/2P/3P），同目标最小间距 150。候选池 23 个位置全部上图（README §2 规则：N 选 M 时 M 个候选全标）。按蓝图类名匹配（match=type）以避开面板内部的 FrequencyMatchPanelComponent_BP 组件（它们在原点）。",
+  "level": "ORS_MT02",
+  "map": "OrphanageServices",
+  "title": "ORS_MT02 · 孤儿院服务区 调频面板",
+  "subtitle": "一局随机 5 台调频面板，共 23 个候选位。面板上 Frequency / Amplitude / Phase 三个旋钮，调到正确频率即可；没调完的面板会发出嗡嗡声（Uncompleted frequency machines emit a humming sound），顺着声音找。",
+  "sources": [
+    "ORS_MT02_B02.json"
+  ],
+  "point_types": [
+    {
+      "key": "freq_panel",
+      "pattern": "^FrequencyMatchPanel_ORS_",
+      "match": "type",
+      "label": "调频面板 · 候选",
+      "short": "F"
+    }
+  ]
+}

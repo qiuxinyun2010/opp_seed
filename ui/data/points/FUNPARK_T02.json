@@ -1,0 +1,302 @@
+{
+  "_说明": "FunPark_T02「Grind the Bad Apples」主线 FP_T02_B03_ObjCoord_PressureValve（FP_PressureValve_Coord_BP_C，标题 RAISE THE WATER LEVEL）：B03 里 34 个 FP_ValvePanel_BP_C，实例名 FP_ValvePanel_PA/PB/PC/PD-Vnn，四个区（PA/PB/PC/PD）= A/B/C/D 区。WaterValveSectionGroupConfig 证明是两组泵：组 1 = A+B（地面，z≈0），组 2 = C+D（上层，z≈750）；每区最少开 2 个（1P/2P 为 1 个）。区段文本是 \"Find and open the correct 'A' valve\"——每个区里只有随机被选中的那一个（几个）是正确的，拧错会白费压力，所以图上要把每区所有候选阀门都画出来。",
+  "level": "FUNPARK_T02",
+  "map": "FunPark",
+  "title": "FUNPARK_T02 · 游乐场 压力阀门",
+  "subtitle": "任务点 = 阀门。B03 里共 34 个阀门，分 A / B / C / D 四区（PA / PB / PC / PD）：A 9 个、B 7 个、C 10 个、D 8 个。A、B 走地面泵，C、D 走上层泵；每区只有随机选中的\"正确\"阀门要拧，其余是干扰。",
+  "sources": [
+    "FunPark_T02_B03.json"
+  ],
+  "point_types": [
+    {
+      "key": "valve_a1",
+      "pattern": "^FP_ValvePanel_PA-V01(_\\d+)?$",
+      "match": "name",
+      "label": "A 区 · 阀门 A1",
+      "short": "A1"
+    },
+    {
+      "key": "valve_a2",
+      "pattern": "^FP_ValvePanel_PA-V02(_\\d+)?$",
+      "match": "name",
+      "label": "A 区 · 阀门 A2",
+      "short": "A2"
+    },
+    {
+      "key": "valve_a3",
+      "pattern": "^FP_ValvePanel_PA-V03(_\\d+)?$",
+      "match": "name",
+      "label": "A 区 · 阀门 A3",
+      "short": "A3"
+    },
+    {
+      "key": "valve_a4",
+      "pattern": "^FP_ValvePanel_PA-V04(_\\d+)?$",
+      "match": "name",
+      "label": "A 区 · 阀门 A4",
+      "short": "A4"
+    },
+    {
+      "key": "valve_a5",
+      "pattern": "^FP_ValvePanel_PA-V05(_\\d+)?$",
+      "match": "name",
+      "label": "A 区 · 阀门 A5",
+      "short": "A5"
+    },
+    {
+      "key": "valve_a6",
+      "pattern": "^FP_ValvePanel_PA-V06(_\\d+)?$",
+      "match": "name",
+      "label": "A 区 · 阀门 A6",
+      "short": "A6"
+    },
+    {
+      "key": "valve_a7",
+      "pattern": "^FP_ValvePanel_PA-V07(_\\d+)?$",
+      "match": "name",
+      "label": "A 区 · 阀门 A7",
+      "short": "A7"
+    },
+    {
+      "key": "valve_a8",
+      "pattern": "^FP_ValvePanel_PA-V08(_\\d+)?$",
+      "match": "name",
+      "label": "A 区 · 阀门 A8",
+      "short": "A8"
+    },
+    {
+      "key": "valve_a9",
+      "pattern": "^FP_ValvePanel_PA-V09(_\\d+)?$",
+      "match": "name",
+      "label": "A 区 · 阀门 A9",
+      "short": "A9"
+    },
+    {
+      "key": "valve_b1",
+      "pattern": "^FP_ValvePanel_PB-V01(_\\d+)?$",
+      "match": "name",
+      "label": "B 区 · 阀门 B1",
+      "short": "B1"
+    },
+    {
+      "key": "valve_b2",
+      "pattern": "^FP_ValvePanel_PB-V02(_\\d+)?$",
+      "match": "name",
+      "label": "B 区 · 阀门 B2",
+      "short": "B2"
+    },
+    {
+      "key": "valve_b3",
+      "pattern": "^FP_ValvePanel_PB-V03(_\\d+)?$",
+      "match": "name",
+      "label": "B 区 · 阀门 B3",
+      "short": "B3"
+    },
+    {
+      "key": "valve_b4",
+      "pattern": "^FP_ValvePanel_PB-V04(_\\d+)?$",
+      "match": "name",
+      "label": "B 区 · 阀门 B4",
+      "short": "B4"
+    },
+    {
+      "key": "valve_b5",
+      "pattern": "^FP_ValvePanel_PB-V05(_\\d+)?$",
+      "match": "name",
+      "label": "B 区 · 阀门 B5",
+      "short": "B5"
+    },
+    {
+      "key": "valve_b6",
+      "pattern": "^FP_ValvePanel_PB-V06(_\\d+)?$",
+      "match": "name",
+      "label": "B 区 · 阀门 B6",
+      "short": "B6"
+    },
+    {
+      "key": "valve_b7",
+      "pattern": "^FP_ValvePanel_PB-V07(_\\d+)?$",
+      "match": "name",
+      "label": "B 区 · 阀门 B7",
+      "short": "B7"
+    },
+    {
+      "key": "valve_c1",
+      "pattern": "^FP_ValvePanel_PC-V01(_\\d+)?$",
+      "match": "name",
+      "label": "C 区 · 阀门 C1",
+      "short": "C1"
+    },
+    {
+      "key": "valve_c2",
+      "pattern": "^FP_ValvePanel_PC-V02(_\\d+)?$",
+      "match": "name",
+      "label": "C 区 · 阀门 C2",
+      "short": "C2"
+    },
+    {
+      "key": "valve_c3",
+      "pattern": "^FP_ValvePanel_PC-V03(_\\d+)?$",
+      "match": "name",
+      "label": "C 区 · 阀门 C3",
+      "short": "C3"
+    },
+    {
+      "key": "valve_c4",
+      "pattern": "^FP_ValvePanel_PC-V04(_\\d+)?$",
+      "match": "name",
+      "label": "C 区 · 阀门 C4",
+      "short": "C4"
+    },
+    {
+      "key": "valve_c5",
+      "pattern": "^FP_ValvePanel_PC-V05(_\\d+)?$",
+      "match": "name",
+      "label": "C 区 · 阀门 C5",
+      "short": "C5"
+    },
+    {
+      "key": "valve_c6",
+      "pattern": "^FP_ValvePanel_PC-V06(_\\d+)?$",
+      "match": "name",
+      "label": "C 区 · 阀门 C6",
+      "short": "C6"
+    },
+    {
+      "key": "valve_c7",
+      "pattern": "^FP_ValvePanel_PC-V07(_\\d+)?$",
+      "match": "name",
+      "label": "C 区 · 阀门 C7",
+      "short": "C7"
+    },
+    {
+      "key": "valve_c8",
+      "pattern": "^FP_ValvePanel_PC-V08(_\\d+)?$",
+      "match": "name",
+      "label": "C 区 · 阀门 C8",
+      "short": "C8"
+    },
+    {
+      "key": "valve_c9",
+      "pattern": "^FP_ValvePanel_PC-V09(_\\d+)?$",
+      "match": "name",
+      "label": "C 区 · 阀门 C9",
+      "short": "C9"
+    },
+    {
+      "key": "valve_c10",
+      "pattern": "^FP_ValvePanel_PC-V10(_\\d+)?$",
+      "match": "name",
+      "label": "C 区 · 阀门 C10",
+      "short": "C10"
+    },
+    {
+      "key": "valve_d1",
+      "pattern": "^FP_ValvePanel_PD-V01(_\\d+)?$",
+      "match": "name",
+      "label": "D 区 · 阀门 D1",
+      "short": "D1"
+    },
+    {
+      "key": "valve_d2",
+      "pattern": "^FP_ValvePanel_PD-V02(_\\d+)?$",
+      "match": "name",
+      "label": "D 区 · 阀门 D2",
+      "short": "D2"
+    },
+    {
+      "key": "valve_d3",
+      "pattern": "^FP_ValvePanel_PD-V03(_\\d+)?$",
+      "match": "name",
+      "label": "D 区 · 阀门 D3",
+      "short": "D3"
+    },
+    {
+      "key": "valve_d4",
+      "pattern": "^FP_ValvePanel_PD-V04(_\\d+)?$",
+      "match": "name",
+      "label": "D 区 · 阀门 D4",
+      "short": "D4"
+    },
+    {
+      "key": "valve_d5",
+      "pattern": "^FP_ValvePanel_PD-V05(_\\d+)?$",
+      "match": "name",
+      "label": "D 区 · 阀门 D5",
+      "short": "D5"
+    },
+    {
+      "key": "valve_d6",
+      "pattern": "^FP_ValvePanel_PD-V06(_\\d+)?$",
+      "match": "name",
+      "label": "D 区 · 阀门 D6",
+      "short": "D6"
+    },
+    {
+      "key": "valve_d7",
+      "pattern": "^FP_ValvePanel_PD-V07(_\\d+)?$",
+      "match": "name",
+      "label": "D 区 · 阀门 D7",
+      "short": "D7"
+    },
+    {
+      "key": "valve_d8",
+      "pattern": "^FP_ValvePanel_PD-V08(_\\d+)?$",
+      "match": "name",
+      "label": "D 区 · 阀门 D8",
+      "short": "D8"
+    }
+  ],
+  "zones": [
+    {
+      "id": "A",
+      "name": "A 区 · PA-V01~V09（9 个阀门）",
+      "name_en": "A zone (PA, 9 valves)",
+      "color": "#1d4ed8",
+      "note": "地面泵（Pipe 组 1，z≈0）：9 个阀门里只有随机选中的\"正确\"阀门要拧",
+      "actors": [
+        "*PA-V*"
+      ]
+    },
+    {
+      "id": "B",
+      "name": "B 区 · PB-V01~V07（7 个阀门）",
+      "name_en": "B zone (PB, 7 valves)",
+      "color": "#b45309",
+      "note": "地面泵（Pipe 组 1，z≈0）：7 个阀门里只有随机选中的\"正确\"阀门要拧",
+      "actors": [
+        "*PB-V*"
+      ]
+    },
+    {
+      "id": "C",
+      "name": "C 区 · PC-V01~V10（10 个阀门）",
+      "name_en": "C zone (PC, 10 valves)",
+      "color": "#15803d",
+      "note": "上层泵（Pipe 组 2，z≈750）：10 个阀门里只有随机选中的\"正确\"阀门要拧",
+      "actors": [
+        "*PC-V*"
+      ]
+    },
+    {
+      "id": "D",
+      "name": "D 区 · PD-V01~V08（8 个阀门）",
+      "name_en": "D zone (PD, 8 valves)",
+      "color": "#7e22ce",
+      "note": "上层泵（Pipe 组 2，z≈750）：8 个阀门里只有随机选中的\"正确\"阀门要拧",
+      "actors": [
+        "*PD-V*"
+      ]
+    },
+    {
+      "id": "R",
+      "name": "其他区域（没有阀门的房间）",
+      "name_en": "Other rooms",
+      "color": "#6b7280",
+      "note": "兜底分区：把剩下的房间收进来，免得图上出现无归属房间",
+      "rooms": [
+        "*"
+      ]
+    }
+  ]
+}

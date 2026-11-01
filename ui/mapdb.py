@@ -75,7 +75,10 @@ DEFAULT_EXTRACT = {
              'item_cats 为空表示不限制类别（仅在 items=true 时生效）。floors 是楼层聚类参数。',
     'layers': {'doors': True, 'points': True, 'items': False},
     'item_cats': [],
-    'floors': {'min_sep': 250.0, 'min_rooms': 3, 'span': 400.0},
+    'floors': {'min_sep': 250.0, 'min_rooms': 3, 'span': 400.0,
+               'merge_ratio': 0.1, 'merge_sep': 600.0,
+               'weak_points': 3, 'weak_doors': 5,
+               'levels': None, 'labels': None},
 }
 
 # 解析内核在本项目内（maplib/），不再依赖 release/map 系列
@@ -93,6 +96,7 @@ if os.path.exists(LEVELS_JSON):
         LEVELS = {k.upper(): v for k, v in json.load(_fp).items()}
 
 SCHEMA = 1
+GEOM_SCHEMA = 2          # 几何缓存版本：2 起带 stairs
 
 
 # ---------------------------------------------------------------------------
@@ -258,10 +262,11 @@ def load_geometry(map_name, refresh=False, verbose=True):
 
     if not refresh:
         old = load_json(cache_path, None)
-        if old and old.get('stamp') == stamp:
+        if old and old.get('stamp') == stamp and old.get('v') == GEOM_SCHEMA:
             if verbose:
-                print('几何缓存 %-28s rooms=%d doors=%d items=%d'
-                      % (map_name, len(old['rooms']), len(old['doors']), len(old['items'])))
+                print('几何缓存 %-28s rooms=%d doors=%d items=%d stairs=%d'
+                      % (map_name, len(old['rooms']), len(old['doors']), len(old['items']),
+                         len(old.get('stairs') or [])))
             return old
 
     if verbose:
@@ -272,6 +277,7 @@ def load_geometry(map_name, refresh=False, verbose=True):
     doors = ex.extract_doors()
     items = ex.extract_items()
     spawns = ex.extract_spawns()
+    stairs = ex.extract_stairs()
 
     # 房间被哪些关卡变体引用（B00 文件里的 RBRoom 引用）；点位/门看所在文件名
     rtags = mp.room_trial_tags(folder, [r['raw_name'] for r in rooms])
@@ -282,12 +288,13 @@ def load_geometry(map_name, refresh=False, verbose=True):
     for it in items:
         it['trials'] = mp.trial_of_file(it['file'])
 
-    data = {'map': map_name, 'folder': rel(folder), 'stamp': stamp,
-            'rooms': rooms, 'doors': doors, 'items': items, 'spawns': spawns}
+    data = {'map': map_name, 'folder': rel(folder), 'stamp': stamp, 'v': GEOM_SCHEMA,
+            'rooms': rooms, 'doors': doors, 'items': items, 'spawns': spawns,
+            'stairs': stairs}
     save_json(cache_path, data)
     if verbose:
-        print('  → %s  rooms=%d doors=%d items=%d spawns=%d'
-              % (rel(cache_path), len(rooms), len(doors), len(items), len(spawns)))
+        print('  → %s  rooms=%d doors=%d items=%d spawns=%d stairs=%d'
+              % (rel(cache_path), len(rooms), len(doors), len(items), len(spawns), len(stairs)))
     return data
 
 
@@ -382,6 +389,7 @@ def scan_points(map_name, level, cfg, refresh=False, verbose=True):
                     props = obj.get('Properties') or {}
                     actors.append({'actor': name, 'type': t, 'key': key, 'label': lab,
                                    'style': sty, 'merge_room': mrg, 'short': shrt,
+                                   'short_explicit': bool(shrt),
                                    'root': props.get('RootComponent'),
                                    'props': {k: props[k] for k in prop_keys if k in props}})
                     break
@@ -390,6 +398,7 @@ def scan_points(map_name, level, cfg, refresh=False, verbose=True):
             points.append({'actor': a['actor'], 'type': a['type'], 'key': a['key'],
                            'label': a['label'], 'style': a['style'],
                            'merge_room': a['merge_room'], 'short': a['short'],
+                           'short_explicit': a['short_explicit'],
                            'file': os.path.basename(path),
                            'x': _r1(loc[0]), 'y': _r1(loc[1]), 'z': _r1(loc[2]),
                            'yaw': round(yaw, 2), 'props': a['props']})
@@ -450,13 +459,13 @@ def assign_zones(rooms, points, specs):
     return owner
 
 
-def cluster_floors(rooms, min_sep=250.0, min_rooms=3, span=400.0):
-    """按房间地面高度 z 聚层。
+def _auto_levels(rooms, min_sep, min_rooms, hot_points, hot_doors,
+                 merge_ratio, merge_sep, weak_points, weak_doors, storey_min=200.0):
+    """锚点聚类 + 两层合并规则，返回 (levels, trace)。
 
-    不用「相邻值链式聚合」（一路链下去会把整张图合成一层），而是
-    「以簇内第一个值为锚点，超过 min_sep 就开新簇」；簇内房间数不足的
-    并入最近的真实楼层。
-    高跨度房间（楼梯井/中庭）不参与采样，跨越楼层分界 >= span 时同时归属两层。
+    门只是「锚点」，不能光凭门数多就认定一层存在：卷帘门 / 挑高大厅的门会挂在
+    半层的门楣上（法院的 420 就是这种），门挺多但那些房间的名字全叫 Ground Floor。
+    所以弱层要留，必须同时满足「门数够」和「离最近层至少一个层高」。
     """
     clusters = []
     for z in sorted(r['zmin'] for r in rooms):
@@ -467,6 +476,109 @@ def cluster_floors(rooms, min_sep=250.0, min_rooms=3, span=400.0):
     # 只有 1~2 个房间的碎簇通常是夹层/平台，并到最近的真实楼层
     keep = [c for c in clusters if len(c[1]) >= min_rooms] or clusters
     levels = sorted(sum(c[1]) / len(c[1]) for c in keep)
+    trace = []
+    if not levels:
+        return levels, trace
+
+    min_gap = max(60.0, 0.5 * min_sep)
+    # 个别房间的凸包面积会算错（比如 2.8e10），按中位数的 5 倍截断
+    areas = sorted(r.get('area') or 0.0 for r in rooms)
+    med = areas[len(areas) // 2] if areas else 0.0
+    cap = med * 5.0 if med > 0 else 0.0
+
+    def nearest_idx(z):
+        return min(range(len(levels)), key=lambda i: (abs(levels[i] - z), i))
+
+    while len(levels) > 1:
+        weights = [0.0] * len(levels)
+        counts = [0] * len(levels)
+        pc = [0] * len(levels)
+        dc = [0] * len(levels)
+        for r in rooms:
+            i = nearest_idx(r['zmin'])
+            a = r.get('area') or 0.0
+            weights[i] += a if not cap else min(a, cap)
+            counts[i] += 1
+        for z in hot_points:
+            pc[nearest_idx(z)] += 1
+        for z in hot_doors:
+            dc[nearest_idx(z)] += 1
+        if not any(weights):      # 房间面积全是 0 时退回房间数
+            weights = [float(c) for c in counts]
+
+        # 1) 两层贴得太近（< 0.5*min_sep）：同一层的两个峰，按占地加权合并
+        merged = False
+        for i in range(len(levels) - 1):
+            if levels[i + 1] - levels[i] >= min_gap:
+                continue
+            wi, wj = weights[i], weights[i + 1]
+            new = ((levels[i] * wi + levels[i + 1] * wj) / (wi + wj)
+                   if (wi + wj) else (levels[i] + levels[i + 1]) / 2.0)
+            trace.append('%.0f+%.0f→%.0f（只差 %.0f）'
+                         % (levels[i], levels[i + 1], new, levels[i + 1] - levels[i]))
+            levels.pop(i + 1)
+            levels.pop(i)
+            levels.append(new)
+            levels.sort()
+            merged = True
+            break
+        if merged:
+            continue
+
+        # 2) 弱层：占地占比小、点/门都不多、离最近层近 → 并进去（典型是夹层/半层）
+        weak = None
+        total = sum(weights) or 1.0
+        for i in sorted(range(len(levels)), key=lambda k: (weights[k], k)):
+            if weights[i] >= max(weights) * merge_ratio:
+                continue
+            others = [k for k in range(len(levels)) if k != i]
+            gap = min(abs(levels[k] - levels[i]) for k in others)
+            if pc[i] >= weak_points:
+                continue
+            # 门锚点：门数够 + 离最近层至少一个层高，才算独立一层
+            if dc[i] >= weak_doors and gap >= storey_min:
+                continue
+            j = min(others, key=lambda k: (abs(levels[k] - levels[i]), k))
+            if abs(levels[j] - levels[i]) > merge_sep:
+                continue
+            weak = (i, j, gap)
+            break
+        if weak is None:
+            break
+        i, j, gap = weak
+        trace.append('%.0f 并入 %.0f（%d 房间 / %d 点 / %d 门，占地 %.0f%%，层距 %.0f%s）'
+                     % (levels[i], levels[j], counts[i], pc[i], dc[i],
+                        100.0 * weights[i] / total, gap,
+                        '，门多但不足一个层高' if dc[i] >= weak_doors else ''))
+        levels.pop(i)
+    return levels, trace
+
+
+def cluster_floors(rooms, min_sep=250.0, min_rooms=3, span=400.0,
+                   hot_points=None, hot_doors=None, merge_ratio=0.1, merge_sep=600.0,
+                   weak_points=3, weak_doors=5, storey_min=200.0, levels=None, labels=None):
+    """按房间地面高度 z 聚层，返回 (floors, room_floors, nearest, trace)。
+
+    游戏数据里没有「楼层」字段（RBRoom 只有 Brush 几何），层只能从几何推：
+    1) 锚点聚类：以簇内第一个 z 为锚，超过 min_sep 开新簇；房间数 < min_rooms 的碎簇丢弃；
+    2) 相邻两簇差 < 0.5*min_sep 视为同一层的两个峰，占地加权合并；
+    3) 弱层（占地占比 < merge_ratio、层内点位数 < weak_points、且不满足
+       「门数 >= weak_doors 且层距 >= storey_min」、离最近层 < merge_sep，
+       典型是夹层 / 半层 / 挑高大厅的一角）并入最近的层，
+       被并入层的锚点保持不变，房间和点位的 z 就近归到它；
+    4) 跨层房间（楼梯井 / 中庭）：与另一层分带重叠 >= span 时同时归属两层。
+
+    显式 levels（如 [0, 750]）时跳过 1~3，完全按给定层位分层。
+    """
+    hot_points = [float(z) for z in (hot_points or [])]
+    hot_doors = [float(z) for z in (hot_doors or [])]
+    trace = []
+    if levels:
+        levels = sorted(float(v) for v in levels)
+    else:
+        levels, trace = _auto_levels(rooms, min_sep, min_rooms, hot_points, hot_doors,
+                                     merge_ratio, merge_sep, weak_points, weak_doors,
+                                     storey_min)
 
     def nearest(z):
         return min(range(len(levels)), key=lambda i: (abs(levels[i] - z), i)) if levels else 0
@@ -488,26 +600,48 @@ def cluster_floors(rooms, min_sep=250.0, min_rooms=3, span=400.0):
                 room_floors[r['raw_name']].append(i)
         room_floors[r['raw_name']].sort()
 
-    # 标签：最低层在地面以下（< -150）时叫 B1，其余从 1F 开始编号
-    labels = []
-    has_basement = bool(levels) and levels[0] < -150
-    for i in range(len(levels)):
-        if i == 0 and has_basement:
-            labels.append('B1')
-        else:
-            labels.append('%dF' % (i + 1 - (1 if has_basement else 0)))
+    # 标签：显式 labels 优先；否则最低层在地面以下（< -150）时叫 B1，其余从 1F 编号
+    if labels:
+        labels = [str(x) for x in labels]
+        labels = (labels + ['%dF' % (i + 1) for i in range(len(labels), len(levels))])
+        labels = labels[:len(levels)]
+    else:
+        labels = []
+        has_basement = bool(levels) and levels[0] < -150
+        for i in range(len(levels)):
+            if i == 0 and has_basement:
+                labels.append('B1')
+            else:
+                labels.append('%dF' % (i + 1 - (1 if has_basement else 0)))
 
     out = [{'index': i, 'level': round(lv, 1), 'label': labels[i],
             'band': [None if band(i)[0] < -1e8 else round(band(i)[0], 1),
                      None if band(i)[1] > 1e8 else round(band(i)[1], 1)]}
            for i, lv in enumerate(levels)]
-    return out, room_floors, nearest
+    return out, room_floors, nearest, trace
 
 
 def build_floors(rooms, doors, items, points, opts=None):
     opts = opts or {}
-    out, room_floors, nearest = cluster_floors(
-        rooms, opts.get('min_sep', 250.0), opts.get('min_rooms', 3), opts.get('span', 400.0))
+    # 点位 / 门密集的层不会被当成夹层合并掉（物品太散，不算「人在的层」）。
+    # 点位按所在房间去重：一个房间里摆 5 台电视不算 5 个任务点。
+    hot_points = []
+    seen_rooms = set()
+    for p in points:
+        rid = p.get('room')
+        if rid is not None:
+            if rid in seen_rooms:
+                continue
+            seen_rooms.add(rid)
+        hot_points.append(p['z'])
+    out, room_floors, nearest, trace = cluster_floors(
+        rooms, opts.get('min_sep', 250.0), opts.get('min_rooms', 3), opts.get('span', 400.0),
+        hot_points=hot_points, hot_doors=[d['z'] for d in doors],
+        merge_ratio=opts.get('merge_ratio', 0.1),
+        merge_sep=opts.get('merge_sep', 600.0),
+        weak_points=opts.get('weak_points', 3), weak_doors=opts.get('weak_doors', 5),
+        storey_min=opts.get('storey_min', 200.0),
+        levels=opts.get('levels'), labels=opts.get('labels'))
     door_floor = {id(d): nearest(d['z']) for d in doors}
     item_floor = {}
     for it in items:
@@ -519,9 +653,30 @@ def build_floors(rooms, doors, items, points, opts=None):
                 break
         cand = room_floors.get(near['raw_name']) if near else None
         item_floor[id(it)] = cand[0] if cand else nearest(it['z'])
+    # 点位落层：
+    # 1) 点位落在单层房间里、且高度没超出房间上下界 → 跟着房间走。玩具箱码在货架上、
+    #    车斗里（Truck 02 的箱子 z=200，房间地面还是 1F），只按 z 就近会被画到 2F；
+    # 2) 否则取「脚下那一层」：z 往下的最近一层（带 60 容差，照顾点位原点略低于地面）。
+    #    房间跨层（楼梯井、Train Bridge）或点位高出房间（TSR 的 z=825 在 zmax=452 的房间里）
+    #    时走这条。
+    levels = [f['level'] for f in out]
+    tol = 60.0
+    room_span = {r['raw_name']: (r['zmin'], r['zmax']) for r in rooms}
+
+    def _floor_below(z):
+        below = [i for i, lv in enumerate(levels) if lv <= z + tol]
+        if below:
+            return max(below, key=lambda i: levels[i])
+        return min(range(len(levels)), key=lambda i: abs(levels[i] - z))
+
     for p in points:
-        p['floor'] = nearest(p['z'])
-    return out, room_floors, door_floor, item_floor, nearest
+        rf = room_floors.get(p.get('room')) if p.get('room') else None
+        span = room_span.get(p.get('room'))
+        if rf and len(rf) == 1 and span and span[0] - tol <= p['z'] <= span[1]:
+            p['floor'] = rf[0]
+        else:
+            p['floor'] = _floor_below(p['z'])
+    return out, room_floors, door_floor, item_floor, nearest, trace
 
 
 # ---------------------------------------------------------------------------
@@ -535,6 +690,7 @@ def build_level(level, map_override=None, refresh=False, verbose=True, opts=None
     ecfg = opts.get('extract') or load_extract_cfg()
     layers = ecfg.get('layers') or {}
     item_cats = set(ecfg.get('item_cats') or [])
+    stairs_layer = layers.get('stairs', True)
 
     geo = load_geometry(map_name, refresh=refresh, verbose=verbose)
     rooms, doors, items, spawns = geo['rooms'], geo['doors'], geo['items'], geo['spawns']
@@ -547,7 +703,8 @@ def build_level(level, map_override=None, refresh=False, verbose=True, opts=None
         p['room'] = zm.room_of_point(rooms, p['x'], p['y'], p['z'])
         p['zone'] = zm.point_zone(p, cfg.get('zones') or [])
         p['short'] = p.get('short') or zm.short_actor(p['actor'])
-        if len(p['short']) <= 3 or p['short'].upper().startswith('BP'):
+        if not p.get('short_explicit') and (len(p['short']) <= 3
+                                            or p['short'].upper().startswith('BP')):
             p['short'] = p.get('label') or p['short']
 
     specs = cfg.get('zones') or []
@@ -560,7 +717,7 @@ def build_level(level, map_override=None, refresh=False, verbose=True, opts=None
         if not p.get('zone') and p.get('room'):
             p['zone'] = owner.get(p['room'])
 
-    floor_meta, room_floors, door_floor, item_floor, nearest = build_floors(
+    floor_meta, room_floors, door_floor, item_floor, nearest, floor_trace = build_floors(
         rooms, doors, items, points, ecfg.get('floors'))
 
     names = zm.Names(cfg)
@@ -627,6 +784,34 @@ def build_level(level, map_override=None, refresh=False, verbose=True, opts=None
                 'floor': door_floor.get(id(d)),
             })
 
+    # 楼梯：一段楼梯按自身 z 区间挂到相交的层；整道楼梯(run)投影到它跨过的所有层，
+    # 这样跨层的长楼梯在上层/下层都能看到（上层是"从这下来"，下层是"往这上去"）。
+    out_stairs = []
+    stair_runs = geo.get('stairs') or []
+    if stairs_layer and stair_runs:
+        def floors_overlap(zlo, zhi):
+            hit = []
+            for i, f in enumerate(floor_meta):
+                lo, hi = f['band']
+                lo = -1e18 if lo is None else lo
+                hi = 1e18 if hi is None else hi
+                if zhi >= lo and zlo <= hi:
+                    hit.append(i)
+            return hit
+
+        for i, s in enumerate(stair_runs):
+            zlo, zhi = s.get('zmin'), s.get('zmax')
+            zlo = min(s['a'][2], s['b'][2]) if zlo is None else zlo
+            zhi = max(s['a'][2], s['b'][2]) if zhi is None else zhi
+            out_stairs.append({
+                'id': i, 'name': s.get('name') or '', 'file': s.get('file'),
+                'w': _r1(s.get('w') or 200.0),
+                'a': [_r1(v) for v in s['a']], 'b': [_r1(v) for v in s['b']],
+                'z': [_r1(zlo), _r1(zhi)], 'steps': s.get('steps') or 0,
+                # 跨层的楼梯会同时出现在它覆盖的所有层上
+                'floors': floors_overlap(zlo, zhi),
+            })
+
     out_items = []
     if layers.get('items', False):
         for i, it in enumerate(items):
@@ -655,7 +840,8 @@ def build_level(level, map_override=None, refresh=False, verbose=True, opts=None
         counter[zid] = counter.get(zid, 0) + 1
         label_en = pretty_en(p['key'].replace('_', ' ')).title()
         short = p['short']
-        if (len(short) <= 3 or short.upper().startswith('BP') or not short.isascii()
+        if ((not p.get('short_explicit')
+             and (len(short) <= 3 or short.upper().startswith('BP') or not short.isascii()))
                 or dup.get((p.get('zone'), p['short']), 0) > 1):
             short = label_en
         out_points.append({
@@ -686,15 +872,18 @@ def build_level(level, map_override=None, refresh=False, verbose=True, opts=None
         'zrange': [min((r['z'][0] for r in out_rooms), default=0),
                    max((r['z'][1] for r in out_rooms), default=0)],
         'floors': floor_meta,
+        'floors_merge': floor_trace,
         'zones': [{'id': s['id'],
                    'name': (s.get('name_en') or s.get('name')
                             or s['id']) if (s.get('name_en') or (s.get('name') or '').isascii())
                            else 'Zone %s' % s['id'],
                    'name_zh': s.get('name') or '',
                    'color': s['color'],
-                   'note_zh': s.get('note') or ''} for s in specs],
+                   'note_zh': s.get('note') or '',
+                   'point_only': not (s.get('rooms') or [])} for s in specs],
         'rooms': out_rooms,
         'doors': out_doors,
+        'stairs': out_stairs,
         'points': out_points,
         'items': out_items,
         'notes': {'rooms': {}, 'zones': {}, 'points': {}},
@@ -742,6 +931,10 @@ def check_level(level, out_dir=None):
     print('  房间 %d   门 %d   点位 %d   物品 %d   楼层 %d   分区 %d'
           % (len(rooms), len(doors), len(points), len(db.get('items') or []),
              len(db.get('floors') or []), len(zones)))
+    print('  楼层  %s' % ' / '.join('%s(z=%s)' % (f['label'], f['level'])
+                                    for f in (db.get('floors') or [])))
+    for line in (db.get('floors_merge') or []):
+        print('        自动合并：%s' % line)
     if doors:
         kinds = {}
         for d in doors:
@@ -764,7 +957,8 @@ def check_level(level, out_dir=None):
             issues.append('%d 个房间没有分区归属：%s'
                           % (len(unzoned), ', '.join(r['raw'] for r in unzoned[:4])))
         empty = [z['id'] for z in zones
-                 if not any(r.get('zone') == z['id'] for r in rooms)]
+                 if not z.get('point_only')
+                 and not any(r.get('zone') == z['id'] for r in rooms)]
         if empty:
             issues.append('分区 %s 没有任何房间（rooms 通配可能写错）' % ','.join(empty))
     no_room = [p for p in points if p.get('room') is None]
@@ -871,9 +1065,9 @@ def main(argv=None):
             continue
         write_level(level, db, args.out_dir)
         if verbose:
-            print('   rooms=%d doors=%d points=%d items=%d floors=%d zones=%d'
-                  % (len(db['rooms']), len(db['doors']), len(db['points']),
-                     len(db['items']), len(db['floors']), len(db['zones'])))
+            print('   rooms=%d doors=%d stairs=%d points=%d items=%d floors=%d zones=%d'
+                  % (len(db['rooms']), len(db['doors']), len(db.get('stairs') or []),
+                     len(db['points']), len(db['items']), len(db['floors']), len(db['zones'])))
     return 0
 
 

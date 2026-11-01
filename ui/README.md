@@ -26,6 +26,16 @@ python mapweb.py PSA_MT01          # 指定初始关卡
 - 运行会在 `data/cache/web_profile/` 生成 Edge 配置目录（已 gitignore，可随时删）。
 - Web 版只是新增入口，`mapdb.py` / `maplib/` / `data/` 与 Tk 版完全共用，`ui/` 仍然自包含。
 
+### 坐标定位（Web 版工具栏右上角）
+
+输入世界坐标 `x, y, z`（例如 `-139.2, -829.9, 369.2`），回车或点「定位」：地图上用黄色十字 + 实心点
+标出该坐标，并把视图居中到它。**一次只保留一个点**——定位下一个会自动清掉上一个；`✕`（或输入框里
+按 Esc）手动清除，按 `G` 聚焦输入框。
+
+- z 可省略（只给 `x, y`）；带了 z 时信息栏会写出它属于哪一层（按楼层的 `band` 判断）
+- 信息栏同时给出该点落在哪个房间轮廓内（点里最大的取最内圈的那个房间），点标记即可复制坐标
+- 坐标超出本图范围时照旧标出，只是提示一下（可能是别的关卡的坐标）
+
 ```
 ui/
   mapdb.py                 提取器（paks → data/maps/<关卡>.json）
@@ -419,7 +429,7 @@ python mapview.py TSR_MT01 --png data/preview/TSR_MT01.overlay.png
 | `pattern` | 正则；`match=type` 时匹配蓝图类名（如 `^Clue_BlackLightable_SwitchBoard_BP_C$`），`match=name` 时匹配实例名（如 `^MT01_ProjectionSymbol_BP_`） |
 | `match` | `type`（推荐，稳定）/ `name`（按实例名，历史配置的写法） |
 | `style` | `clue` = 空心圆（线索/可交互）；不写 = 实心（目标） |
-| `short` | 图上标记的短名（ASCII，如 `Judge`）；不写就按实例名推，推不出来时退回类型名 |
+| `short` | 图上标记的短名（ASCII，如 `Judge`）；不写就按实例名推，推不出来时退回类型名。**显式写了就照用**，哪怕只有 2 个字符（如 `TOYFACTORY_T05` 的 `1A` `4C`）；只有自动推出来的短名才会因为「太短/BP 开头/非 ASCII/区内重名」退回类型名 |
 | `props` | 额外读取的 actor 属性，`ObjectiveIndex` 可用来按组自动分区 |
 | `merge_room` | 默认 `true`：点位所在房间并入该点位所属分区 |
 
@@ -593,23 +603,71 @@ OPP.log ──(gamelog.py：整份读，>16MB 才只读末尾 8MB)──> {trial
                                             │
                         ┌───────────────────┴────────────────────┐
                         ▼                                        ▼
-        seedpanel.py（右侧文本）                   markers.py（从结果里挖坐标）
-        '!' 提示橙色，答案行加粗                     → 地图上的 ①②③ 标记
+        seedpanel.py（右侧文本）                   analysis.py（按关卡整理分析点位）
+        '!' 提示橙色，答案行加粗                     → 地图上的 ①②③ 标记 + 房间高亮
 ```
 
-### 坐标标记怎么来的
+### 分析点位怎么来的
 
-不针对某一关卡写死，按字段名递归找（`markers.py`）：
+`analysis.py` 按关卡写适配器，决定「标哪些点、什么颜色、圆点里写什么字」；没有适配器的关卡回落
+到 `markers.py`（按字段名递归挖 `*coordinates`）。
 
-| seed.py 输出 | 标记标签 |
-|---|---|
-| `patterns[].coordinates`（MHS 投影符号） | `骷髅 854`（图案名 + 密码） |
-| `mannequins[].coordinates`（SMC 人偶） | `红 / 绿 / 蓝 / 教学` |
-| `rooms[].coordinates`（CHJ 房间 + 密码） | 密码 `2671` |
-| `connections[].letter_coordinates / number_coordinates`（TSR） | `Letter J` / `Number 21` |
-| `clue.crime_scene_coordinates`（RES） | `Break Room` |
+| 关卡 | 标什么 | 画法 |
+|---|---|---|
+| `CHJ_MT01` | 3 个密码房 | 房间中心大方点，圆点里写 4 位密码，圆点旁写「N 号密码房」，房间边框同色高亮 |
+| `RES_MT02` | 26 颗宝石 | 按宝石颜色着色（红 `Ruby` / 蓝 `Sapphire` / 绿 `Emerald`），圆点里写 红/蓝/绿 |
+| `TFS_MT03` | 6 个阀门 | 按 **A / B 两大区**着色（A 蓝 `#1d4ed8` / B 棕 `#b45309`），圆点里写小节号 `A1` `A2` … `B3` |
+| `TOYFACTORY_T05` | 22 个钥匙生成候选位（`TF_KeyModule_Spawner_BP`）+ 教学钥匙 1 · 6 个玩具箱传输带投放区（`ConveyorDropZoneBase`）· B05 的 12 个火泵阀门（次要） | 三色分区：**钥匙**蓝 `#1d4ed8`（圆点写 `K1`…`K22`，教学点 `K0`）/ **传输带**棕 `#b45309`（圆点写 `A1` `A2` `B1` `B2` `C` `Material`）/ **火泵阀门**紫 `#7e22ce`（空心圆，`1A`…`4C`） |
+| `FUNPARK_T02` | 34 个压力阀门（`FP_ValvePanel_PA/PB/PC/PD-Vnn`） | 按压力分区 **A / B / C / D 四区**着色（A 蓝 `#1d4ed8` 9 个 / B 棕 `#b45309` 7 个 / C 绿 `#15803d` 10 个 / D 紫 `#7e22ce` 8 个），圆点里写阀门号 `A1` … `D8`；A、B 在地面层，C、D 在上层 |
+| `PSA_MT01` | 图案钥匙 / 录像盘 | 每个点位标注对应图案名，同一图案同色 |
+| `DTS_MT01` | 调频器 + 目标人偶 | 圆点旁写「调频器」「目标人偶」 |
+| `SMC_MT02` | 4 个人偶下半身 | 按人偶颜色着色（红 `Red` / 绿 `Green` / 蓝 `Blue` / 灰 `Tutorial`），圆点里写 红/绿/蓝/教学 |
+| `CHJ_MT02` | 4 个真投影机位 + 教学机位 | 按图案着色（骷髅 / 螺旋 / 五角星 / 太阳 / 教学·三角），圆点里写 3 位编号 |
+| `SRR_MT01` | 5 个密码盘点位（3 个主 + 2 个备用） | 一个密码盘一个点，圆点里写 4 位密码，旁边标「H1 密码盘」；本局激活的 3 栋按宅子着色（H1 橙 / H2 紫 / H3 蓝 / H4 绿 / H5 红），另外 2 栋画**灰色备用点**（判错时也能试）；**不画贴花位** |
+| 其他 | 回落 `markers.py` 通用挖掘（有坐标就画） | 目标点红、线索点青 |
 
-- `coordinate_type = room_center` 的用**空心虚线圆**，表示只到房间级别，不是道具精确位置
+`DTS_MT01` 与 `DRS_MT01` 是同一张图（`DowntownRiotSewers`，关卡资产 `DRS_MT01_B00.json`），
+`data/maps/DTS_MT01.json` 由 `python mapdb.py DTS_MT01 --paks ../../paks/MAP/Maps` 生成，
+点位规则复用 `data/points/DTS_MT01.json`（拷自 `DRS_MT01.json`）。
+
+`CHJ_MT02` / `TFS_MT03` 的关卡几何在 `pak/OPP/Content/Maps_json/<map>/` 下，提取时要指到这个目录：
+
+```powershell
+$env:OUTLAST_MAPS_DIR="D:/workspace/outlast/pak/OPP/Content/Maps_json"
+python mapdb.py CHJ_MT02     # 43 个投影机位（A21/B21/教学1）+ 5 个展示电视 + 3 个协调器
+python mapdb.py TFS_MT03     # 36 个阀门候选位（A 区 18 / B 区 18）+ 6 个小节协调器
+```
+
+`TOYFACTORY_T05` 走同一套，但 `ToyFactory` 整张图的子关卡加起来 700MB（ART/LD/各 Trial），
+全扫会很久，所以只把要用的 8 个 json 拷到 `paks/MAP/Maps/ToyFactory/`：
+`ToyFactory_LD_Rooms.json`（102 个房间）、`ToyFactory_Persistent.json`（出生点）、
+`ToyFactory_T05_B00/B01/B03/B03_SexToy/B04/B05.json`（任务与阀门），几何缓存 20s 内扫完（8 扇门）。
+以后要补 ToyFactory 的其它 Trial，往这个目录里加对应的 `ToyFactory_<Trial>_B0x.json` 再重跑即可：
+
+```powershell
+python mapdb.py TOYFACTORY_T05   # 22 个钥匙候选位 + 教学 1 + 传输带 6 + 火泵阀门 12
+```
+
+`FUNPARK_T02`（Grind the Bad Apples）同理，`FunPark` 整图更夸张（光 `WaterTunnels_2ndFloor` 就 490MB），
+只拷 7 个：`FunPark_LD_Rooms.json`（100 个房间）、`FunPark_Persistent.json`、
+`FunPark_T02_B01/B02/B03/B04/B06.json`。点位只扫 `FunPark_T02_B03.json`（配置里的 `sources`），
+几何缓存约 30s：
+
+```powershell
+python mapdb.py FUNPARK_T02      # 34 个压力阀门（PA 9 / PB 7 / PC 10 / PD 8）
+```
+
+`CHJ_MT02` 的 43 个机位坐标写进了 `seed/data/chj_mt02.json` 的 `symbol_coordinates` /
+`symbol_rooms`，由 `data/maps/CHJ_MT02.json` 导出；`seed.predict()` 直接给出 `coordinates`，
+所以分析点位画的是**机位本体**，不是房间中心。
+
+`SRR_MT01` 同理：密码盘坐标来自 `data/maps/SRR_MT01.json` 的 `keypad` 点位，一次性导出到
+`seed/data/srr_mt01.json` 的 `pad_coordinates`，所以 5 个点全是**道具精确点**。
+
+顶栏的「分析点位」开关控制这一层，**默认开启**；当本局生成了分析点位时，顶栏「点位」（普通任务点位）
+会**自动关闭一次**（用户可以再手动打开，不会反复抢），只留分析点位，避免两套点叠在一起。
+
+- `coordinate_type = room_center` 的用**空心虚线圈**，表示只到房间级别，不是道具精确位置
 - 世界坐标和地图是同一套，直接 `Layout` 换算，不偏移
 - PNG 导出想带标记：`--png a.png --seed-marks`（只在日志里的关卡与所画关卡一致时才加）
 
@@ -643,6 +701,15 @@ python gamelog.py --all      # 日志里所有对局
 python gamelog.py --json
 python seedinfo.py --log     # 直接算日志里最新一局
 ```
+
+### 自动切图（跟随游戏）
+
+- 日志里读到新关卡、且 `data/maps/<关卡>.json` 存在时，地图自动切过去（顶栏「跟随游戏 (L)」开着才行）。
+- 从顶栏下拉框**手动挑关卡**只锁「当前这一局」，不写 `config.json`、也不关掉跟随；
+  下一局日志变化时自动解锁并跟随。
+- 如果日志已经换了关卡但地图没换（跟随关掉了 / 该关没地图），地图顶部会出现橙色按钮
+  「本局是 XXX · 点此切图」，点一下立即切图并重新打开跟随。
+- 右侧种子文本不受地图影响，所以会出现「文本已经识别、地图还没换」——这个按钮就是补这个缺口。
 
 ### 配置 `config.json`
 

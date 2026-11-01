@@ -1,0 +1,48 @@
+{
+  "_说明": "TFS_MT03「火泵阀门」：任务点 = 阀门。阀门分 A / B 两大区，每区 3 个小节（A1/A2/A3、B1/B2/B3），共 36 个候选位：A1 6、A2 6、A3 6、B1 4、B2 8、B3 6。蓝图类统一是 TF_Gas_ValvePanel_BP_C，A/B 与小节只能从实例名读，所以按 name 匹配；同类的 ValvePanelComponent_BP_C 是子组件，实例名叫「Valve Panel Component」，不会被误收。6 个 MT03_FirePump_ObjCoord_BP_SectionXX（协调器）全部堆在地图角落的一个逻辑房间里，不是实际任务点，故意不提取。",
+  "level": "TFS_MT03",
+  "map": "ToyFactoryShipping",
+  "title": "TFS_MT03 · 玩具工厂 火泵阀门",
+  "subtitle": "任务点 = 阀门。全图 36 个阀门候选位，按 A 区（A1/A2/A3）与 B 区（B1/B2/B3）分成两大块：A 区 18 个、B 区 18 个。实心点就是阀门候选位，颜色区分 A / B 两大区。",
+  "sources": [
+    "TFS_LD_MT03_B00.json"
+  ],
+  "point_types": [
+    {
+      "key": "valve_a",
+      "pattern": "^MT03_TF_Gas_ValvePanel_BP_Section_A",
+      "match": "name",
+      "label": "阀门 · A 区",
+      "short": "A"
+    },
+    {
+      "key": "valve_b",
+      "pattern": "^MT03_TF_Gas_ValvePanel_BP_Section_B",
+      "match": "name",
+      "label": "阀门 · B 区",
+      "short": "B"
+    }
+  ],
+  "zones": [
+    {
+      "id": "A",
+      "name": "A 区 · A1 / A2 / A3",
+      "name_en": "Section A (A1/A2/A3)",
+      "color": "#1d4ed8",
+      "note": "A1 6 个 + A2 6 个 + A3 6 个，共 18 个阀门候选位",
+      "actors": [
+        "*Section_A*"
+      ]
+    },
+    {
+      "id": "B",
+      "name": "B 区 · B1 / B2 / B3",
+      "name_en": "Section B (B1/B2/B3)",
+      "color": "#b45309",
+      "note": "B1 4 个 + B2 8 个 + B3 6 个，共 18 个阀门候选位",
+      "actors": [
+        "*Section_B*"
+      ]
+    }
+  ]
+}

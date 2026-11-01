@@ -1,0 +1,355 @@
+{
+  "_说明": "ToyFactory_T05「Pervert the Futterman」：主线是钥匙 + 玩具箱传输带。B03 里 23 个 TF_KeyModule_Spawner_BP_C（每局随机刷钥匙，所以是候选位）+ 1 个教学钥匙 TF_KeyTuto_Spawner_BP；6 个 ConveyorDropZoneBase_BP_C（Material + ProdLineA_1/A_2/B_1/B_2/C）。B05 的 12 个 TF_ValvePanel_BP_C 属于最后的火泵加压阶段，画成空心圆作次要目标。",
+  "level": "TOYFACTORY_T05",
+  "map": "ToyFactory",
+  "title": "TOYFACTORY_T05 · 玩具工厂 钥匙与传输带",
+  "subtitle": "任务点 = 钥匙生成点 + 玩具箱传输带。钥匙在 B03 的 23 个候选位里随机刷（另有 1 个教学点）；6 个传输带投放区按 ProdLine 分 A1 / A2 / B1 / B2 / C，Material 是素材位。B05 的 12 个火泵阀门是最后的加压阶段，空心圆表示次要目标。",
+  "sources": [
+    "ToyFactory_T05_B03.json",
+    "ToyFactory_T05_B05.json"
+  ],
+  "point_types": [
+    {
+      "key": "key_01",
+      "pattern": "^TF_KeyModule_Spawner_BP2$",
+      "match": "name",
+      "label": "钥匙生成点 01",
+      "short": "K1"
+    },
+    {
+      "key": "key_02",
+      "pattern": "^TF_KeyModule_Spawner_BP3_6$",
+      "match": "name",
+      "label": "钥匙生成点 02",
+      "short": "K2"
+    },
+    {
+      "key": "key_03",
+      "pattern": "^TF_KeyModule_Spawner_BP4$",
+      "match": "name",
+      "label": "钥匙生成点 03",
+      "short": "K3"
+    },
+    {
+      "key": "key_04",
+      "pattern": "^TF_KeyModule_Spawner_BP5_2$",
+      "match": "name",
+      "label": "钥匙生成点 04",
+      "short": "K4"
+    },
+    {
+      "key": "key_05",
+      "pattern": "^TF_KeyModule_Spawner_BP6$",
+      "match": "name",
+      "label": "钥匙生成点 05",
+      "short": "K5"
+    },
+    {
+      "key": "key_06",
+      "pattern": "^TF_KeyModule_Spawner_BP7$",
+      "match": "name",
+      "label": "钥匙生成点 06",
+      "short": "K6"
+    },
+    {
+      "key": "key_07",
+      "pattern": "^TF_KeyModule_Spawner_BP8$",
+      "match": "name",
+      "label": "钥匙生成点 07",
+      "short": "K7"
+    },
+    {
+      "key": "key_08",
+      "pattern": "^TF_KeyModule_Spawner_BP9_8$",
+      "match": "name",
+      "label": "钥匙生成点 08",
+      "short": "K8"
+    },
+    {
+      "key": "key_09",
+      "pattern": "^TF_KeyModule_Spawner_BP10_11$",
+      "match": "name",
+      "label": "钥匙生成点 09",
+      "short": "K9"
+    },
+    {
+      "key": "key_10",
+      "pattern": "^TF_KeyModule_Spawner_BP11_14$",
+      "match": "name",
+      "label": "钥匙生成点 10",
+      "short": "K10"
+    },
+    {
+      "key": "key_11",
+      "pattern": "^TF_KeyModule_Spawner_BP12_17$",
+      "match": "name",
+      "label": "钥匙生成点 11",
+      "short": "K11"
+    },
+    {
+      "key": "key_12",
+      "pattern": "^TF_KeyModule_Spawner_BP13_20$",
+      "match": "name",
+      "label": "钥匙生成点 12",
+      "short": "K12"
+    },
+    {
+      "key": "key_13",
+      "pattern": "^TF_KeyModule_Spawner_BP14_23$",
+      "match": "name",
+      "label": "钥匙生成点 13",
+      "short": "K13"
+    },
+    {
+      "key": "key_14",
+      "pattern": "^TF_KeyModule_Spawner_BP15$",
+      "match": "name",
+      "label": "钥匙生成点 14",
+      "short": "K14"
+    },
+    {
+      "key": "key_15",
+      "pattern": "^TF_KeyModule_Spawner_BP16_27$",
+      "match": "name",
+      "label": "钥匙生成点 15",
+      "short": "K15"
+    },
+    {
+      "key": "key_16",
+      "pattern": "^TF_KeyModule_Spawner_BP17_30$",
+      "match": "name",
+      "label": "钥匙生成点 16",
+      "short": "K16"
+    },
+    {
+      "key": "key_17",
+      "pattern": "^TF_KeyModule_Spawner_BP18_33$",
+      "match": "name",
+      "label": "钥匙生成点 17",
+      "short": "K17"
+    },
+    {
+      "key": "key_18",
+      "pattern": "^TF_KeyModule_Spawner_BP19_36$",
+      "match": "name",
+      "label": "钥匙生成点 18",
+      "short": "K18"
+    },
+    {
+      "key": "key_19",
+      "pattern": "^TF_KeyModule_Spawner_BP20_2$",
+      "match": "name",
+      "label": "钥匙生成点 19",
+      "short": "K19"
+    },
+    {
+      "key": "key_20",
+      "pattern": "^TF_KeyModule_Spawner_BP21_5$",
+      "match": "name",
+      "label": "钥匙生成点 20",
+      "short": "K20"
+    },
+    {
+      "key": "key_21",
+      "pattern": "^TF_KeyModule_Spawner_BP22$",
+      "match": "name",
+      "label": "钥匙生成点 21",
+      "short": "K21"
+    },
+    {
+      "key": "key_22",
+      "pattern": "^TF_KeyModule_Spawner_BP_2$",
+      "match": "name",
+      "label": "钥匙生成点 22",
+      "short": "K22"
+    },
+    {
+      "key": "key_tuto",
+      "pattern": "^TF_KeyTuto_Spawner_BP_2$",
+      "match": "name",
+      "label": "教学钥匙生成点",
+      "short": "K0"
+    },
+    {
+      "key": "conv_material",
+      "pattern": "^ConveyorDropZoneBase_Material$",
+      "match": "name",
+      "label": "传输带投放区 素材",
+      "short": "Material"
+    },
+    {
+      "key": "conv_a1",
+      "pattern": "^ConveyorDropZoneBase_ProdLineA_1$",
+      "match": "name",
+      "label": "传输带投放区 A1",
+      "short": "A1"
+    },
+    {
+      "key": "conv_a2",
+      "pattern": "^ConveyorDropZoneBase_ProdLineA_2$",
+      "match": "name",
+      "label": "传输带投放区 A2",
+      "short": "A2"
+    },
+    {
+      "key": "conv_b1",
+      "pattern": "^ConveyorDropZoneBase_ProdLineB_1$",
+      "match": "name",
+      "label": "传输带投放区 B1",
+      "short": "B1"
+    },
+    {
+      "key": "conv_b2",
+      "pattern": "^ConveyorDropZoneBase_ProdLineB_2$",
+      "match": "name",
+      "label": "传输带投放区 B2",
+      "short": "B2"
+    },
+    {
+      "key": "conv_c",
+      "pattern": "^ConveyorDropZoneBase_ProdLineC$",
+      "match": "name",
+      "label": "传输带投放区 C",
+      "short": "C"
+    },
+    {
+      "key": "valve_1a",
+      "pattern": "^TF_ValvePanel_Section_01A$",
+      "match": "name",
+      "label": "A 区 · 火泵阀门 1A",
+      "short": "1A",
+      "style": "clue"
+    },
+    {
+      "key": "valve_1b",
+      "pattern": "^TF_ValvePanel_Section_01B$",
+      "match": "name",
+      "label": "A 区 · 火泵阀门 1B",
+      "short": "1B",
+      "style": "clue"
+    },
+    {
+      "key": "valve_1c",
+      "pattern": "^TF_ValvePanel_Section_01C$",
+      "match": "name",
+      "label": "A 区 · 火泵阀门 1C",
+      "short": "1C",
+      "style": "clue"
+    },
+    {
+      "key": "valve_2a",
+      "pattern": "^TF_ValvePanel_Section_02A$",
+      "match": "name",
+      "label": "B 区 · 火泵阀门 2A",
+      "short": "2A",
+      "style": "clue"
+    },
+    {
+      "key": "valve_2b",
+      "pattern": "^TF_ValvePanel_Section_02B$",
+      "match": "name",
+      "label": "B 区 · 火泵阀门 2B",
+      "short": "2B",
+      "style": "clue"
+    },
+    {
+      "key": "valve_2c",
+      "pattern": "^TF_ValvePanel_Section_02C$",
+      "match": "name",
+      "label": "B 区 · 火泵阀门 2C",
+      "short": "2C",
+      "style": "clue"
+    },
+    {
+      "key": "valve_3a",
+      "pattern": "^TF_ValvePanel_Section_03A$",
+      "match": "name",
+      "label": "C 区 · 火泵阀门 3A",
+      "short": "3A",
+      "style": "clue"
+    },
+    {
+      "key": "valve_3b",
+      "pattern": "^TF_ValvePanel_Section_03B$",
+      "match": "name",
+      "label": "C 区 · 火泵阀门 3B",
+      "short": "3B",
+      "style": "clue"
+    },
+    {
+      "key": "valve_3c",
+      "pattern": "^TF_ValvePanel_Section_03C$",
+      "match": "name",
+      "label": "C 区 · 火泵阀门 3C",
+      "short": "3C",
+      "style": "clue"
+    },
+    {
+      "key": "valve_4a",
+      "pattern": "^TF_ValvePanel_Section_04A$",
+      "match": "name",
+      "label": "D 区 · 火泵阀门 4A",
+      "short": "4A",
+      "style": "clue"
+    },
+    {
+      "key": "valve_4b",
+      "pattern": "^TF_ValvePanel_Section_04B$",
+      "match": "name",
+      "label": "D 区 · 火泵阀门 4B",
+      "short": "4B",
+      "style": "clue"
+    },
+    {
+      "key": "valve_4c",
+      "pattern": "^TF_ValvePanel_Section_04C$",
+      "match": "name",
+      "label": "D 区 · 火泵阀门 4C",
+      "short": "4C",
+      "style": "clue"
+    }
+  ],
+  "zones": [
+    {
+      "id": "K",
+      "name": "钥匙生成点（23 个候选位 + 教学 1 个）",
+      "name_en": "Key spawns",
+      "color": "#1d4ed8",
+      "note": "B03 里 23 个 TF_KeyModule_Spawner_BP：每局随机挑几个刷钥匙，所以是候选位",
+      "actors": [
+        "*KeyModule_Spawner*",
+        "*KeyTuto_Spawner*"
+      ]
+    },
+    {
+      "id": "C",
+      "name": "玩具箱传输带（投放区 A1/A2/B1/B2/C）",
+      "name_en": "Toy-box conveyor",
+      "color": "#b45309",
+      "note": "6 个 ConveyorDropZoneBase：把对得上条码的玩具箱丟进对应投放区",
+      "actors": [
+        "*ConveyorDropZoneBase*"
+      ]
+    },
+    {
+      "id": "V",
+      "name": "火泵阀门（Section_01~04）",
+      "name_en": "Fire pump valves",
+      "color": "#7e22ce",
+      "note": "B05 加压阶段：12 个 TF_ValvePanel_BP_C，空心圆＝次要目标",
+      "actors": [
+        "*TF_ValvePanel_Section*"
+      ]
+    },
+    {
+      "id": "R",
+      "name": "其他区域",
+      "name_en": "Other rooms",
+      "color": "#6b7280",
+      "note": "兜底分区：把剩下的房间收进来，免得图上出现无归属房间",
+      "rooms": [
+        "*"
+      ]
+    }
+  ]
+}

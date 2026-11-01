@@ -31,13 +31,13 @@ DATA_DIR = os.path.join(HERE, 'data', 'maps')
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
 
+import analysis      # noqa: E402
 import gamelog       # noqa: E402
 import hotkey        # noqa: E402
-import markers       # noqa: E402
 import mapview       # noqa: E402
 import seedinfo      # noqa: E402
 
-VERSION = '2026-10-30.web1'
+VERSION = '2026-11-01.web10'
 
 SW_HIDE = 0
 SW_SHOW = 5
@@ -47,6 +47,13 @@ HWND_NOTOPMOST = -2
 SWP_NOMOVE = 0x0002
 SWP_NOSIZE = 0x0001
 SWP_SHOWWINDOW = 0x0040
+
+VK_MENU = 0x12
+KEYEVENTF_KEYUP = 0x0002
+PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+
+# 收起窗口后要还焦点给游戏：先还给它自己记下的前台窗口，实在找不到就按进程名兜底
+GAME_EXE_HINTS = ('outlast', 'totclient', 'opp-win64', 'oppgame', 'opp.exe')
 
 
 class Win32WindowController(object):
@@ -98,12 +105,128 @@ class Win32WindowController(object):
             return True
         return not self.visible
 
+    def _force_foreground(self, hwnd):
+        """把任意窗口提到前台并拿到焦点。
+
+        Windows 有「前台锁」：非前台进程直接 SetForegroundWindow 往往静默失败。这里按
+        直接设置 → AttachThreadInput 借前台线程 → 模拟 Alt 键 三级递进尝试。
+        """
+        if not hwnd:
+            return False
+        user32 = ctypes.windll.user32
+        kernel32 = ctypes.windll.kernel32
+        try:
+            if not user32.IsWindow(hwnd):
+                return False
+            if user32.IsIconic(hwnd):
+                user32.ShowWindow(hwnd, SW_RESTORE)
+            if user32.GetForegroundWindow() == hwnd:
+                return True
+            user32.SetForegroundWindow(hwnd)
+            if user32.GetForegroundWindow() == hwnd:
+                return True
+
+            tid_cur = kernel32.GetCurrentThreadId()
+            fg = user32.GetForegroundWindow()
+            tid_fg = user32.GetWindowThreadProcessId(fg, None) if fg else 0
+            tid_target = user32.GetWindowThreadProcessId(hwnd, None)
+            attached_fg = False
+            attached_target = False
+            try:
+                if tid_fg and tid_fg != tid_cur:
+                    attached_fg = bool(user32.AttachThreadInput(tid_fg, tid_cur, True))
+                if tid_target and tid_target != tid_cur:
+                    attached_target = bool(user32.AttachThreadInput(tid_target, tid_cur, True))
+                user32.BringWindowToTop(hwnd)
+                user32.SetForegroundWindow(hwnd)
+                user32.SetActiveWindow(hwnd)
+                user32.SetFocus(hwnd)
+            finally:
+                if attached_target:
+                    user32.AttachThreadInput(tid_target, tid_cur, False)
+                if attached_fg:
+                    user32.AttachThreadInput(tid_fg, tid_cur, False)
+
+            if user32.GetForegroundWindow() == hwnd:
+                return True
+
+            # 兜底：按键解锁前台限制后再试一次
+            user32.keybd_event(VK_MENU, 0, 0, 0)
+            user32.keybd_event(VK_MENU, 0, KEYEVENTF_KEYUP, 0)
+            user32.SetForegroundWindow(hwnd)
+            return user32.GetForegroundWindow() == hwnd
+        except Exception:
+            return False
+
+    @staticmethod
+    def _window_pid(hwnd):
+        pid = wt.DWORD()
+        ctypes.windll.user32.GetWindowThreadProcessId(hwnd, ctypes.byref(pid))
+        return pid.value or 0
+
+    def _find_game_window(self):
+        """按进程名找一个可见的游戏窗口（prev_fg 丢失时的兜底）。"""
+        if not self.available():
+            return None
+        user32 = ctypes.windll.user32
+        kernel32 = ctypes.windll.kernel32
+        found = []
+
+        def exe_name(pid):
+            if not pid:
+                return ''
+            handle = kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+            if not handle:
+                return ''
+            try:
+                size = wt.DWORD(1024)
+                buf = ctypes.create_unicode_buffer(1024)
+                if kernel32.QueryFullProcessImageNameW(handle, 0, buf, ctypes.byref(size)):
+                    return os.path.basename(buf.value or '').lower()
+            finally:
+                kernel32.CloseHandle(handle)
+            return ''
+
+        WNDENUMPROC = ctypes.WINFUNCTYPE(wt.BOOL, wt.HWND, wt.LPARAM)
+
+        def _cb(hwnd, _lparam):
+            if not user32.IsWindowVisible(hwnd):
+                return True
+            if user32.GetWindowTextLengthW(hwnd) <= 0:
+                return True
+            name = exe_name(self._window_pid(hwnd))
+            if name and any(hint in name for hint in GAME_EXE_HINTS):
+                found.append(hwnd)
+                return False
+            return True
+
+        proc = WNDENUMPROC(_cb)
+        user32.EnumWindows(proc, 0)
+        return found[0] if found else None
+
+    def _usable_prev(self):
+        """上次记下的前台窗口还能用吗？自己的窗口、已销毁的都算不能用。"""
+        hwnd = self.prev_fg_hwnd
+        if not hwnd:
+            return None
+        user32 = ctypes.windll.user32
+        if not user32.IsWindow(hwnd):
+            return None
+        if self._window_pid(hwnd) == os.getpid():
+            return None
+        length = user32.GetWindowTextLengthW(hwnd)
+        if length > 0:
+            buf = ctypes.create_unicode_buffer(length + 1)
+            user32.GetWindowTextW(hwnd, buf, length + 1)
+            if self.title_marker in (buf.value or ''):
+                return None
+        return hwnd
+
     def show_and_focus(self):
         hwnd = self.find_hwnd()
         if not hwnd:
             return False
         user32 = ctypes.windll.user32
-        kernel32 = ctypes.windll.kernel32
 
         try:
             fg = user32.GetForegroundWindow()
@@ -124,26 +247,7 @@ class Win32WindowController(object):
             )
 
             if self.activate:
-                tid_cur = kernel32.GetCurrentThreadId()
-                tid_fg = user32.GetWindowThreadProcessId(fg, None) if fg else 0
-                tid_target = user32.GetWindowThreadProcessId(hwnd, None)
-                attached_fg = False
-                attached_target = False
-                try:
-                    if tid_fg and tid_fg != tid_cur:
-                        attached_fg = bool(user32.AttachThreadInput(tid_fg, tid_cur, True))
-                    if tid_target and tid_target != tid_cur:
-                        attached_target = bool(user32.AttachThreadInput(tid_target, tid_cur, True))
-                    user32.BringWindowToTop(hwnd)
-                    user32.SetForegroundWindow(hwnd)
-                    user32.SetActiveWindow(hwnd)
-                    user32.SetFocus(hwnd)
-                finally:
-                    if attached_target:
-                        user32.AttachThreadInput(tid_target, tid_cur, False)
-                    if attached_fg:
-                        user32.AttachThreadInput(tid_fg, tid_cur, False)
-
+                self._force_foreground(hwnd)
                 rect = wt.RECT()
                 pt = wt.POINT()
                 if user32.GetWindowRect(hwnd, ctypes.byref(rect)) and user32.GetCursorPos(ctypes.byref(pt)):
@@ -163,10 +267,21 @@ class Win32WindowController(object):
             return False
         user32 = ctypes.windll.user32
         try:
+            target = self._usable_prev()
             user32.ShowWindow(hwnd, SW_HIDE)
             self.visible = False
-            if self.prev_fg_hwnd and user32.IsWindow(self.prev_fg_hwnd):
-                user32.SetForegroundWindow(self.prev_fg_hwnd)
+            try:
+                user32.ClipCursor(None)      # 松开可能被工具抓走的鼠标
+            except Exception:
+                pass
+
+            ok = self._force_foreground(target)
+            if not ok:
+                game = self._find_game_window()
+                if game:
+                    ok = self._force_foreground(game)
+                    if ok:
+                        self.prev_fg_hwnd = game
             return True
         except Exception:
             return False
@@ -183,6 +298,8 @@ class AppState(object):
         self.pinned = bool(pinned and initial_level)
         self.follow_game = bool(cfg.get('follow_game', True)) and not self.pinned
         self.current_level = (initial_level or '').upper() or None
+        # 手动从下拉框挑关卡时的「临时锁定」：锁在这一局，下一局自动恢复跟随
+        self.pin_trial = None
         self.orientation = mapview.load_orientation()
         self.lock = threading.Lock()
         self.win_ctrl = None
@@ -234,27 +351,33 @@ class AppState(object):
         ans = seedinfo.answer(info, self.cfg.get('seed_lib'))
         trial = (info.get('trial') or '').upper() if info else None
 
+        has_trial_map = bool(trial and os.path.isfile(os.path.join(DATA_DIR, '%s.json' % trial)))
+
         with self.lock:
-            if self.follow_game and trial:
-                if os.path.isfile(os.path.join(DATA_DIR, '%s.json' % trial)):
-                    self.current_level = trial
-            elif not self.current_level and trial:
-                if os.path.isfile(os.path.join(DATA_DIR, '%s.json' % trial)):
-                    self.current_level = trial
+            # 临时锁定的那一局已经打完 → 解锁，恢复跟随
+            if self.pin_trial and trial != self.pin_trial:
+                self.pin_trial = None
+            if self.follow_game and trial and has_trial_map and self.pin_trial is None:
+                self.current_level = trial
+            elif not self.current_level and trial and has_trial_map:
+                self.current_level = trial
             active_level = self.current_level
 
-        seed_markers = []
+        seed_analysis = {'level': None, 'points': [], 'legend': [],
+                         'hide_points': False, 'note': ''}
         if ans.get('ok') and ans.get('data'):
             if not active_level or (trial and trial == active_level):
-                seed_markers = markers.collect(ans.get('data'))
+                seed_analysis = analysis.build(ans.get('data'))
+        seed_markers = seed_analysis.get('points') or []
 
-        has_trial_map = bool(trial and os.path.isfile(os.path.join(DATA_DIR, '%s.json' % trial)))
         return {
+            'seed_line': gamelog.seed_line(info),
             'version': VERSION,
             'hotkey': self.hotkey_label,
             'is_admin': self.is_admin,
             'follow_game': self.follow_game,
             'active_level': active_level,
+            'trial_level': trial if has_trial_map else None,
             'trial_has_map': has_trial_map,
             'gamelog': info,
             'gamelog_summary': gamelog.summary(info),
@@ -268,6 +391,7 @@ class AppState(object):
                 'notes': ans.get('notes') or [],
             },
             'seed_markers': seed_markers,
+            'analysis': seed_analysis,
         }
 
     def save_note(self, level, kind, key, text):
@@ -377,8 +501,12 @@ def make_handler(app_state):
                     app_state.cfg['follow_game'] = app_state.follow_game
                     mapview.write_config({'follow_game': app_state.follow_game})
                 if 'level' in payload and payload['level']:
+                    lv = str(payload['level']).upper()
                     with app_state.lock:
-                        app_state.current_level = str(payload['level']).upper()
+                        app_state.current_level = lv
+                        # 手动挑的关卡只锁当前这一局，下一局自动恢复跟随
+                        info = gamelog.latest(app_state.cfg.get('log_path'))
+                        app_state.pin_trial = (info.get('trial') or '').upper() or None
                 return self._send_json({'ok': True, 'follow_game': app_state.follow_game})
 
             if path == '/api/window/hide':

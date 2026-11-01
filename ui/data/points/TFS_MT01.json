@@ -1,0 +1,141 @@
+{
+  "_说明": "TFS_MT01「粉碎性玩具箱 / Crush the Sex Toy Boxes」：任务点 = 玩具箱。全图 92 个箱子候选位，箱子实例名里带分区（ToyBoxBase_BP_Compactor_* / _West1_* / _West2_* / _East1_* / _East2_*），所以按 name 匹配。5 个协调器 MT01_ToyMachineLargeObject_ObjCoord_BP_{Compactor,West1,West2,East1,East2} 各自对应一个分区和一台扫码面板（CustomBarcodeScanner = ToyDeliveryZone_BP_<同名>），配置为：SpecificLargeObjectRandomizationTag = 自己的分区、BoxesPrefix = 箱子编号前缀 A~E、NumberOfBoxesToFind = 1、NumberOfTrappedBoxes = 5 或 11、LargePickupActorsRandomizationSetup.DesiredCount = 6 或 12。也就是每个分区从池子里刷 6（C/E 区 12）个箱子，其中只有 1 个真箱，其余 5/11 是陷阱假箱；箱子条形码 = 前缀字母 + 序号，扫码面板给出要的那个号。另有 9 个固定陷阱箱（ToyBoxBase_MT01_Trapped_BP*，tag=Trap，不在任何分区的池子里），单独标出来提醒。5 个协调器的 ObjectiveActors 都指向同一个压机实体 Compactor_TFS_BP（694,1986），5 个扫码面板也几乎重叠在 (840,1965)，所以压机只取 Compactor_TFS_BP 一个点，面板不重复画。",
+  "level": "TFS_MT01",
+  "map": "ToyFactoryShipping",
+  "title": "TFS_MT01 · 玩具工厂 粉碎性玩具箱",
+  "subtitle": "分区只给箱子着色（point_only，不刷房间）。任务点 = 玩具箱。箱子按扫码面板分 5 个区，区号字母就是箱子条形码的前缀：A=Compactor（8 个候选位）、B=West1（14）、C=West2（26）、D=East1（14）、E=East2（21）。每个区从池里刷 6 个箱子（C/E 区 12 个），只有 1 个是真箱，其余 5 个（C/E 区 11 个）是陷阱箱，搬错会炸。红色是 9 个固定陷阱箱，不在任务池里。",
+  "sources": [
+    "TFS_LD_MT01_B00.json"
+  ],
+  "point_types": [
+    {
+      "key": "box_a",
+      "pattern": "^ToyBoxBase_BP_Compactor_\\d",
+      "match": "name",
+      "label": "玩具箱 · A 区 Compactor",
+      "short": "A",
+      "merge_room": false
+    },
+    {
+      "key": "box_b",
+      "pattern": "^ToyBoxBase_BP_West1_\\d",
+      "match": "name",
+      "label": "玩具箱 · B 区 West1",
+      "short": "B",
+      "merge_room": false
+    },
+    {
+      "key": "box_c",
+      "pattern": "^ToyBoxBase_BP_West2_\\d",
+      "match": "name",
+      "label": "玩具箱 · C 区 West2",
+      "short": "C",
+      "merge_room": false
+    },
+    {
+      "key": "box_d",
+      "pattern": "^ToyBoxBase_BP_East1_\\d",
+      "match": "name",
+      "label": "玩具箱 · D 区 East1",
+      "short": "D",
+      "merge_room": false
+    },
+    {
+      "key": "box_e",
+      "pattern": "^ToyBoxBase_BP_East2_\\d",
+      "match": "name",
+      "label": "玩具箱 · E 区 East2",
+      "short": "E",
+      "merge_room": false
+    },
+    {
+      "key": "box_trap",
+      "pattern": "^ToyBoxBase_(BP_Trap_\\d|MT01_Trapped_BP)",
+      "match": "name",
+      "label": "陷阱箱（固定假箱）",
+      "short": "T",
+      "merge_room": false
+    },
+    {
+      "key": "machine",
+      "pattern": "^Compactor_TFS_BP$",
+      "match": "name",
+      "label": "压机（粉碎机）",
+      "short": "M",
+      "style": "clue"
+    }
+  ],
+  "zones": [
+    {
+      "id": "A",
+      "name": "A 区 · Compactor 压机区",
+      "name_en": "Zone A - Compactor",
+      "color": "#7c3aed",
+      "note": "8 个候选位，随机池 6 个：1 真箱 + 5 陷阱箱。条形码前缀 A",
+      "actors": [
+        "toyboxbase_bp_compactor_*"
+      ]
+    },
+    {
+      "id": "B",
+      "name": "B 区 · West1",
+      "name_en": "Zone B - West1",
+      "color": "#0891b2",
+      "note": "14 个候选位，随机池 6 个：1 真箱 + 5 陷阱箱。条形码前缀 B",
+      "actors": [
+        "toyboxbase_bp_west1_*"
+      ]
+    },
+    {
+      "id": "C",
+      "name": "C 区 · West2",
+      "name_en": "Zone C - West2",
+      "color": "#2563eb",
+      "note": "26 个候选位，随机池 12 个：1 真箱 + 11 陷阱箱。条形码前缀 C",
+      "actors": [
+        "toyboxbase_bp_west2_*"
+      ]
+    },
+    {
+      "id": "D",
+      "name": "D 区 · East1",
+      "name_en": "Zone D - East1",
+      "color": "#15803d",
+      "note": "14 个候选位，随机池 6 个：1 真箱 + 5 陷阱箱。条形码前缀 D",
+      "actors": [
+        "toyboxbase_bp_east1_*"
+      ]
+    },
+    {
+      "id": "E",
+      "name": "E 区 · East2",
+      "name_en": "Zone E - East2",
+      "color": "#ca8a04",
+      "note": "21 个候选位，随机池 12 个：1 真箱 + 11 陷阱箱。条形码前缀 E",
+      "actors": [
+        "toyboxbase_bp_east2_*"
+      ]
+    },
+    {
+      "id": "T",
+      "name": "固定陷阱箱",
+      "name_en": "Static trapped boxes",
+      "color": "#dc2626",
+      "note": "9 个固定假箱，tag=Trap，不在任何压机的随机池里，别去搬",
+      "actors": [
+        "toyboxbase_bp_trap_*",
+        "toyboxbase_mt01_trapped_bp*"
+      ]
+    },
+    {
+      "id": "M",
+      "name": "压机",
+      "name_en": "Compactor machine",
+      "color": "#0f766e",
+      "note": "粉碎玩具箱的压机本体；5 个扫码面板都装在它旁边",
+      "actors": [
+        "compactor_tfs_bp"
+      ]
+    }
+  ]
+}

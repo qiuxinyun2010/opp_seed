@@ -1,0 +1,117 @@
+{
+ "_说明": "PSB_MT01（警察局地下室 · 找钥匙把受试者送进粉碎机 / Find Keys to Release Agents to Their Deaths）。任务点位 = 钥匙，但钥匙不单独摆在地图上：关卡里有 41 具尸体 CorpseSearch_PS_Trial02_* 是钥匙的容器，每局在 A/B/C 三个扇区各随机搜出 1 把图案钥匙（共 3 把），图案从 10 种里抽（兔子/梅花/方块/火焰/心形/黑桃/王冠/眼睛/月亮/五角星），要先到体育馆看 3 台线索电视显示的图案，再去对应扇区找尸体。尸体→扇区的归属写死在 PSB_MT01_B01.json 的 SpecificObjectiveActorTarget（软引用 KeyItemDestination_Device_Base_BP2 / BP3 / BP_2），与 seed 无关，所以本文件把 41 具尸体按扇区全部上图：A=15、B=10、C=16。seed → 本局具体哪 3 具尸体、3 个图案 尚未解出（见 release/coop/PSB_MT01/PSB_MT01.md §5），进局后仍要按电视图案定位。体育馆（Gym/GymAccess/GymStorage）是三台线索电视所在地，不属于任何一个扇区，故意留作中性色。",
+ "level": "PSB_MT01",
+ "map": "PoliceStationBasement",
+ "title": "PSB_MT01 · 警察局地下室 找钥匙",
+ "subtitle": "41 个点都是钥匙候选（每具尸体最多藏 1 把）。A/B/C 三个扇区各随机出 1 把图案钥匙，共 3 把；先到体育馆看 3 台线索电视的图案，再去对应扇区搜尸体。",
+ "sources": [
+  "PSB_MT01_B01.json"
+ ],
+ "point_types": [
+  {
+   "key": "key",
+   "pattern": "^CorpseSearch_PS_Trial02_(BP|AgainstWall_BP|WallThroat_BP|OnChair_BP|Desk_BP)_C$",
+   "match": "type",
+   "label": "钥匙（尸体）",
+   "short": "Key",
+   "style": ""
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "A 区 · 车库 / 轮胎库 / 后巷",
+   "name_en": "Garage, tire storage & back alley",
+   "color": "#7c3aed",
+   "note": "钥匙目的地 KeyItemDestination_Device_Base_BP2，线索电视 Clue_TvChannel_LeftGate（在体育馆）。15 具尸体：车库主厅/锅炉房/储藏/车间/办公室、轮胎库、后巷与后巷仓库、管道走廊 01。",
+   "rooms": [
+    "RBRoom_Garage*",
+    "RBRoom_TireStorage",
+    "RBRoom_Alley",
+    "RBRoom_BackAlleyStore",
+    "RBRoom_PipesHallway01"
+   ],
+   "actors": [
+    "CorpseSearch_PS_Trial02_AgainstWall_BP2_5",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP3_8",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP4_11",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP6_20",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP_2",
+    "CorpseSearch_PS_Trial02_BP2_20",
+    "CorpseSearch_PS_Trial02_BP3_8",
+    "CorpseSearch_PS_Trial02_BP4_11",
+    "CorpseSearch_PS_Trial02_BP5_17",
+    "CorpseSearch_PS_Trial02_BP6_23",
+    "CorpseSearch_PS_Trial02_BP_2",
+    "CorpseSearch_PS_Trial02_WallThroat_BP2_5",
+    "CorpseSearch_PS_Trial02_WallThroat_BP3_11",
+    "CorpseSearch_PS_Trial02_WallThroat_BP4_14",
+    "CorpseSearch_PS_Trial02_WallThroat_BP_2"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "B 区 · 停尸房 / 维护区 / 管道北段",
+   "name_en": "Morgue, maintenance & north pipes",
+   "color": "#b45309",
+   "note": "钥匙目的地 KeyItemDestination_Device_Base_BP3，线索电视 Clue_TvChannel_BP_6（在体育馆）。10 具尸体：停尸房本体/楼梯/通道、发电机房、主楼梯、维修间、卫生间 4 间、管道走廊 02~05。",
+   "rooms": [
+    "RBRoom_Morgue*",
+    "RBRoom_Generator",
+    "RBRoom_MainStairs",
+    "RBRoom_Maintenance",
+    "RBRoom_Bathroom*",
+    "RBRoom_PipesHallway02",
+    "RBRoom_PipesHallway03",
+    "RBRoom_PipesHallway04*",
+    "RBRoom_PipesHallway05"
+   ],
+   "actors": [
+    "CorpseSearch_PS_Trial02_BP10_35",
+    "CorpseSearch_PS_Trial02_BP12_41",
+    "CorpseSearch_PS_Trial02_BP9_32",
+    "CorpseSearch_PS_Trial02_Desk_BP2_2",
+    "CorpseSearch_PS_Trial02_Desk_BP3_5",
+    "CorpseSearch_PS_Trial02_Desk_BP_5",
+    "CorpseSearch_PS_Trial02_OnChair_BP2_5",
+    "CorpseSearch_PS_Trial02_OnChair_BP_2",
+    "CorpseSearch_PS_Trial02_WallThroat_BP5_17",
+    "CorpseSearch_PS_Trial02_WallThroat_BP7_26"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "C 区 · 靶场 / 档案 / 军械库",
+   "name_en": "Shooting range, archives & armory",
+   "color": "#0f766e",
+   "note": "钥匙目的地 KeyItemDestination_Device_Base_BP_2，线索电视 Clue_TvChannel_RightGate（在体育馆）。16 具尸体：靶场主厅与两条维护通道、档案室 3 号、军械库/军械车间/入口、施工区与施工通道、管道走廊 06、街道与街道入口。",
+   "rooms": [
+    "RBRoom_ShootingRange*",
+    "RBRoom_Archives*",
+    "RBRoom_armory",
+    "RBRoom_Armory*",
+    "RBRoom_Construction*",
+    "RBRoom_PipesHallway06",
+    "RBRoom_Street*"
+   ],
+   "actors": [
+    "CorpseSearch_PS_Trial02_AgainstWall_BP5_2",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP7_23",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP8_29",
+    "CorpseSearch_PS_Trial02_AgainstWall_BP9_2",
+    "CorpseSearch_PS_Trial02_BP13_44",
+    "CorpseSearch_PS_Trial02_BP15_50",
+    "CorpseSearch_PS_Trial02_BP19_62",
+    "CorpseSearch_PS_Trial02_BP20_65",
+    "CorpseSearch_PS_Trial02_BP7_2",
+    "CorpseSearch_PS_Trial02_OnChair_BP3_8",
+    "CorpseSearch_PS_Trial02_OnChair_BP4_11",
+    "CorpseSearch_PS_Trial02_OnChair_BP5_14",
+    "CorpseSearch_PS_Trial02_OnChair_BP7_23",
+    "CorpseSearch_PS_Trial02_OnChair_BP8_5",
+    "CorpseSearch_PS_Trial02_WallThroat_BP8_32",
+    "CorpseSearch_PS_Trial02_WallThroat_BP9_35"
+   ]
+  }
+ ]
+}

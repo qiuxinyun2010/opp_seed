@@ -99,6 +99,16 @@ def rand_seeded_range(seed, lo, hi, salt=0):
     return lo + (rand_seeded(seed, span, salt) % span)
 
 
+def rand_fraction(seed, salt=0):
+    """sub_1413F02F0(seed) -> [0,1)：同一个 64 位混合取 (uint16)/65536。
+
+    RES_MT02 用它给房间排优先级（`RandFraction(GetSeed(room) + 479582)`）。
+    """
+    if not seed:
+        return 0.0
+    return (_mix64(seed & M32, salt) & 0xFFFF) / 65536.0
+
+
 def rand_bool(seed, salt=0):
     """sub_1413F08D0：同一个混合，取最低位。"""
     if not salt:

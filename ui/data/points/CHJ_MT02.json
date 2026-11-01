@@ -1,0 +1,77 @@
+{
+  "_说明": "CHJ_MT02「投影图案」：任务点 = 投影图案机位（ProjectionSymbol）。蓝图只有三种类：A 组 21 个、B 组 21 个、教学 C_4 1 个，所以按 type 匹配。每局会从这 43 个机位里挑出 4 个真机位 + 1 个教学位，图案（Spiral/Pentagram/Sun/Skull/TriangleCircle）与 3 位编号由 seed 决定，这部分在 analysis 里按 seed 标色。5 个 Projection_TvChannel_BP_TV_x 是投影控制室里展示图案的电视，只做参考标记（画空心）；3 个 Projections_Coordinator_BP_* 全堆在五楼一个逻辑房间里，不是任务点，故意不提取。所有点位 merge_room=false，只染点、不染房间，否则大半个法院都会被涂色。",
+  "level": "CHJ_MT02",
+  "map": "CourthouseJudicial",
+  "title": "CHJ_MT02 · 法院 投影图案",
+  "subtitle": "任务点 = 投影图案机位。全图 43 个图案机位（A 组 21 / B 组 21 / 教学 1），每局从中抽 4 个真机位 + 1 个教学位；图案与 3 位编号由 seed 决定。实心点是候选机位（按 A / B / 教学分色），空心点是投影控制室里展示图案的 5 台电视。",
+  "sources": [
+    "CHJ_LD_MT02_B00.json"
+  ],
+  "point_types": [
+    {
+      "key": "proj_a",
+      "pattern": "^CHJ_MT02_ProjectionSymbol_BP_A_C$",
+      "match": "type",
+      "label": "投影图案 · A 组",
+      "short": "A",
+      "merge_room": false
+    },
+    {
+      "key": "proj_b",
+      "pattern": "^CHJ_MT02_ProjectionSymbol_BP_B_C$",
+      "match": "type",
+      "label": "投影图案 · B 组",
+      "short": "B",
+      "merge_room": false
+    },
+    {
+      "key": "proj_c",
+      "pattern": "^CHJ_MT02_ProjectionSymbol_BP_C_C$",
+      "match": "type",
+      "label": "投影图案 · 教学",
+      "short": "C",
+      "merge_room": false
+    },
+    {
+      "key": "tv",
+      "pattern": "^MT02_Projection_TvChannel_BP_TV_\\d+$",
+      "match": "name",
+      "label": "投影频道电视",
+      "short": "TV",
+      "style": "clue",
+      "merge_room": false
+    }
+  ],
+  "zones": [
+    {
+      "id": "A",
+      "name": "A 组机位",
+      "name_en": "Group A sockets",
+      "color": "#1d4ed8",
+      "note": "21 个候选机位（A2~A24）",
+      "actors": [
+        "CHJ_MT02_ProjectionSymbol_BP_A*"
+      ]
+    },
+    {
+      "id": "B",
+      "name": "B 组机位",
+      "name_en": "Group B sockets",
+      "color": "#be123c",
+      "note": "21 个候选机位（B_2~B_24）",
+      "actors": [
+        "CHJ_MT02_ProjectionSymbol_BP_B*"
+      ]
+    },
+    {
+      "id": "C",
+      "name": "教学机位",
+      "name_en": "Tutorial socket",
+      "color": "#0f766e",
+      "note": "C_4，教学用的三角形套圆形",
+      "actors": [
+        "CHJ_MT02_ProjectionSymbol_BP_C*"
+      ]
+    }
+  ]
+}

@@ -2,8 +2,8 @@
  "_说明": "SRR_MT02（郊区住宅区 · 调频 + 发电机）。三类任务点位：①调频器 = FrequencyMatchBlacklit_BP（关卡里 49 台候选，靠黑光显形）；②显示屏 = FrequencyClue_TvChannel_BP，共 9 块、每 3 块一组（富豪区入口 / 学校停车场入口 / 学校后院 SAS 出口），屏上显示图案；③发电机 = Timed_GeneratorObjective_BP（关卡里 5 台）。每组的调频器由 OrderedClueFrequency_Coord 的三个协调器决定：RichDistrict=4 台全用、SasExit=19 选 6、School=26 选 6，即本局共 16 台需要调频；三个协调器名与地理不完全对应（School 组调频器在住宅区、SasExit 组在学校里），分区按地理实际范围命名。",
  "level": "SRR_MT02",
  "map": "SuburbRiotResidential",
- "title": "SRR_MT02 · 郊区住宅区 调频与发电机",
- "subtitle": "先到三组显示屏（每组 3 块）看图案 → 到对应区域用黑光找调频器（富豪区 4 台 / 住宅区 26 选 6 / 学校 19 选 6）→ 5 台发电机位置在图上，本局需要启动 3 台。",
+ "title": "SRR_MT02 · 郊区住宅区 调频 + 密码房 + 发电机",
+ "subtitle": "先到三组显示屏（每组 3 块）看图案 → 到对应区域用黑光找调频器（富豪区 4 台 / 住宅区 26 选 6 / 学校 19 选 6）→ 密码房（键盘 + 数字贴花，全图 1 处）输入密码 → 5 台发电机位置在图上，本局需要启动 3 台。",
  "sources": [
   "SRR_MT02_B00.json"
  ],
@@ -29,6 +29,14 @@
    "match": "type",
    "label": "发电机",
    "short": "Generator"
+  },
+  {
+   "key": "keypad",
+   "pattern": "^MultiroomPuzzleKeypad_BP_C$",
+   "match": "type",
+   "label": "密码房",
+   "short": "Passcode",
+   "style": ""
   }
  ],
  "zones": [

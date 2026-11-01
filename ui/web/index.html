@@ -30,7 +30,11 @@
         <input type="checkbox" id="chkDoors" checked />
         <span>门</span>
       </label>
-      <label class="pill-toggle" title="显示/隐藏任务点位">
+      <label class="pill-toggle" title="显示/隐藏楼梯与台阶（跨层的楼梯会在两层都显示）">
+        <input type="checkbox" id="chkStairs" checked />
+        <span>楼梯</span>
+      </label>
+      <label class="pill-toggle" title="显示/隐藏任务点位（本局有分析点位时会自动关闭一次）">
         <input type="checkbox" id="chkPoints" checked />
         <span>点位</span>
       </label>
@@ -38,9 +42,9 @@
         <input type="checkbox" id="chkAllNames" />
         <span>全房间名</span>
       </label>
-      <label class="pill-toggle seed-pill" title="显示/隐藏本局种子答案坐标标记 (快捷键 S)">
+      <label class="pill-toggle seed-pill" title="显示/隐藏本局种子分析点位（有分析点位时普通点位默认关闭）(快捷键 S)">
         <input type="checkbox" id="chkSeed" checked />
-        <span id="lblSeedCount">本局标记 (0)</span>
+        <span id="lblSeedCount">分析点位 (0)</span>
       </label>
       <label class="pill-toggle" title="显示/隐藏左上角分区与门图例 (快捷键 H)">
         <input type="checkbox" id="chkLegend" />
@@ -49,8 +53,12 @@
     </div>
 
     <div class="toolbar-group right">
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="搜索房间 / 点位 / RBRoom..." />
+      <div class="coord-box">
+        <input type="text" id="coordInput" spellcheck="false"
+               placeholder="定位坐标  x, y, z"
+               title="输入世界坐标定位，如 -139.2, -829.9, 369.2；回车或点「定位」，按 G 聚焦输入框" />
+        <button class="icon-btn" id="btnCoordGo" title="在地图上标出这个坐标点 (Enter)">定位</button>
+        <button class="icon-btn warn" id="btnCoordClear" title="清除当前坐标点 (Esc)">✕</button>
       </div>
       <button class="icon-btn" id="btnRotate" title="顺时针旋转 90° (快捷键 T)">↻ 旋转</button>
       <button class="icon-btn" id="btnMirror" title="左右镜像翻转 (快捷键 X)">⇄ 镜像</button>
@@ -75,20 +83,9 @@
         <div id="doorLegendList" class="door-legend-list"></div>
       </aside>
 
+      <button id="mapHint" class="map-hint hidden" title="日志已切换到新关卡，点击立即切图并恢复跟随"></button>
       <div id="hoverTooltip" class="hover-tooltip hidden"></div>
       <div id="viewBadge" class="view-badge">Overlay</div>
-
-      <footer class="inspector-bar" id="inspectorBar">
-        <div class="inspector-main">
-          <div class="inspector-title" id="inspTitle">点击房间、点位或门查看详情（点击即自动复制原始名）</div>
-          <div class="inspector-sub" id="inspSub">滚轮缩放 · 左/右键拖拽平移 · 双击房间或点位添加自定义备注</div>
-        </div>
-        <div class="inspector-actions">
-          <span class="toast-msg" id="toastMsg"></span>
-          <button class="action-btn" id="btnCopyRaw" disabled>复制原始名</button>
-          <button class="action-btn primary" id="btnEditNote" disabled>编辑备注 (N)</button>
-        </div>
-      </footer>
     </section>
 
     <aside class="seed-panel" id="seedPanel">
@@ -101,7 +98,10 @@
       </div>
 
       <div class="seed-markers-bar hidden" id="seedMarkersBar">
-        <div class="bar-label">本局答案坐标点（点击在图上高亮定位）：</div>
+        <div class="bar-label">
+          <span>分析点位（点击在图上高亮定位）：</span>
+          <span id="analysisLegend" class="analysis-legend"></span>
+        </div>
         <div class="marker-chips" id="markerChips"></div>
       </div>
 
@@ -112,10 +112,23 @@
       <div class="seed-footer">
         <div class="seed-foot-btns">
           <button class="action-btn" id="btnRefreshSeed">刷新日志 (R)</button>
+          <button class="action-btn" id="btnCopySeedLine" title="复制 Trial ID / 难度 / Stage / Mission / Seed / 人数 一行信息 (C)">复制 Seed (C)</button>
           <button class="action-btn" id="btnCopySeed">复制全部答案</button>
         </div>
         <div class="seed-foot-info" id="seedFootInfo"></div>
       </div>
+
+      <footer class="inspector-bar" id="inspectorBar">
+        <div class="inspector-main">
+          <div class="inspector-title" id="inspTitle">点击房间、点位或门查看详情（点击即自动复制原始名）</div>
+          <div class="inspector-sub" id="inspSub">滚轮缩放 · 左/右键拖拽平移 · 双击房间或点位添加自定义备注</div>
+        </div>
+        <div class="inspector-actions">
+          <span class="toast-msg" id="toastMsg"></span>
+          <button class="action-btn" id="btnCopyRaw" disabled>复制原始名</button>
+          <button class="action-btn primary" id="btnEditNote" disabled>编辑备注 (N)</button>
+        </div>
+      </footer>
     </aside>
   </main>
 

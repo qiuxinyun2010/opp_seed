@@ -1,6 +1,6 @@
 {
-  "_source": "paks/MAP/Maps/PoliceStationAttic/PSA_MT01_B00.json（KeyLockedRooms_ObjCoord_BP_2）+ PSA_LD_Rooms.json（RBKeyLockedRoomComponent）+ release/seed/ui/data/cache/PoliceStationAttic.points.PSA_MT01.json（点位坐标）",
-  "_note": "symbols = KeyLockedRooms_ObjCoord_BP_2.QuestItemClasses 的数组顺序（10 个，字母序，不是 Trial2 那套顺序）。start_key 来自 StartingKeySpawner + StartingKeyRoom（节点 1 固定，不随机）。room_positions 是每个 RBRoom 的 Brush 根组件坐标，即原生距离过滤用的那个点；room_spawners 是每房钥匙生成点的 actor 与坐标（导出点位里 RBRoom_Morgue_Master 只有 1 个）；film_reels 来自 KeyLockedRoomComponent.FinalRoomActors 里的 DiaporamaWheel（根房没有录像盘）。room_aliases 是内部 RBRoom 名 → 玩家/点位图用的显示名。",
+  "_source": "paks/MAP/Maps/PoliceStationAttic/PSA_MT01_B00.json（KeyLockedRooms_ObjCoord_BP_2）+ PSA_LD_Items.json（停尸房第二个钥匙生成点）+ PSA_LD_Rooms.json（RBKeyLockedRoomComponent）+ release/seed/ui/data/cache/PoliceStationAttic.points.PSA_MT01.json（点位坐标）",
+  "_note": "symbols = KeyLockedRooms_ObjCoord_BP_2.QuestItemClasses 的数组顺序（10 个，字母序，不是 Trial2 那套顺序）。start_key 来自 StartingKeySpawner + StartingKeyRoom（节点 1 固定，不随机）。room_positions 是每个 RBRoom 的 Brush 根组件坐标，即原生距离过滤用的那个点；room_spawners 是每房钥匙生成点的 actor 与坐标，池内顺序 = actor 序号升序。注意 RBRoom_Morgue_Master 的第二个点 PSA_MT01_KeySpawner_Morgue_2 不在 PSA_MT01_B00 里，而在 PSA_LD_Items 子关卡（SceneComp.RelativeLocation = -794.6382, 2209.8171, 139.12964），所以带 level 字段。film_reels 来自 KeyLockedRoomComponent.FinalRoomActors 里的 DiaporamaWheel（根房没有录像盘）。room_aliases 是内部 RBRoom 名 → 玩家/点位图用的显示名。",
   "symbols": ["Bunny", "Club", "Crown", "Diamond", "Eye", "Fire", "Heart", "Moon", "Spade", "Star"],
   "symbol_names_zh": {
     "Bunny": "兔子",
@@ -92,7 +92,10 @@
       {"actor": "PSA_MT01_KeySpawner_InterrogationRoom_2", "coordinates": [2315.0, 2157.9, 439.3]}
     ],
     "RBRoom_Morgue_Master": [
-      {"actor": "PSA_MT01_KeySpawner_Morgue_1", "coordinates": [-790.7, 1993.2, 139.2]}
+      {"actor": "PSA_MT01_KeySpawner_Morgue_1", "coordinates": [-790.7, 1993.2, 139.2],
+       "level": "PSA_MT01_B00"},
+      {"actor": "PSA_MT01_KeySpawner_Morgue_2", "coordinates": [-794.6, 2209.8, 139.1],
+       "level": "PSA_LD_Items"}
     ],
     "RBRoom_ReelStorage": [
       {"actor": "PSA_MT01_KeySpawner_ClassRoom_1", "coordinates": [308.8, 375.2, 1087.3]},

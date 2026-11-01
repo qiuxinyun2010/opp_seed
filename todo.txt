@@ -1,0 +1,31 @@
+TFS_MT03   [PART] 玩具工厂 · 开启六个阀门 
+DTS_MT01   [PART] 闹市区 · 调频线索与目标人体模型
+PSA_MT01   [OK  ] 警察局阁楼 · 图案钥匙与录像盘 
+CHJ_MT02   [PART] 法院 · 判决被起诉者
+
+CHJ_MT03 贿赂法官 钱箱点位
+PSB_MT03 限时投箱，箱子点位
+PSO_MT01 取消尸体， 钥匙点位
+ORS_MT02 调频器点位 /
+ORS_MT03 钥匙点位， /
+TFS_MT01 粉碎性玩具，箱子编号与点位
+TFS_MT02 推车 钥匙点位 
+TFS_MT03 消毒 阀门点位
+TFW_MT01 关闭工厂 开关点位
+TFW_MT03 钥匙图案4个， 钥匙点位 
+FPC_MT02 出票机点位
+DRS_MT03 钱箱点位 
+SRR_MT02 调频器图案与点位
+TSR_MT02 刻录机点位
+MHS_MT02 毒气桶点位
+MHS_MT03 藏毒桶点位
+
+PoliceStation_T02 钥匙点位 
+ORPH_T03 钥匙点位
+CHouse_T04 证据点位，硫酸桶点位
+ToyFactory_T05 玩具箱编号与点位
+FunPark_T02 阀门点位 
+SR_Trial  调频器图案与点位
+拍卖会， 宝石点位
+处决政客， 阀门点位
+袭击典狱长 猪头+阀门+密码房

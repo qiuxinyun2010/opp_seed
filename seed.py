@@ -4,7 +4,7 @@
 用法：
     python seed.py --list
     python seed.py FPI_MT02 189189                      # 房间 / 图案 / 答案
-    python seed.py FPI_MT02 189189 --players 3          # 1/2/3 人（讲台数不同）
+    python seed.py FPI_MT02 189189 --players 3          # 1-4 人（讲台数不同：2/3/4/4）
     python seed.py FPI_MT02 189189 --difficulty easy    # easy / normal / hard / insane
     python seed.py CHJ_MT01 592592                      # 谜题房间 + 4 位密码
     python seed.py CHJ_MT01 592592 --trace              # 附带分区抽取过程
@@ -18,11 +18,14 @@
     python seed.py SMC_MT02 453453 --trace              # 附带组洗牌与距离过滤过程
     python seed.py PSA_MT01 219219                      # 最短路径：每把钥匙 + 录像盘的房间与坐标
     python seed.py DTS_MT01 252252                      # 3 个调频器 / 3 条线索 / 最终模型
+    python seed.py RES_MT02 176176                      # 水疗度假村：26 颗宝石（人偶 / 类别 / 坐标）
+    python seed.py RES_MT02 69069 --tuto                # 再加教学段 51 人偶的类别图
+    python seed.py RES_MT02 69069 --difficulty hard
     python seed.py FPI_MT02 189189 --json
     python seed.py --selftest
 
 模块：
-    seedcore.py   逆向出的随机原语（GetSeed / RandSeeded / RandBool / lookup3 mix …）
+    seedcore.py   逆向出的随机原语（GetSeed / RandSeeded / RandBool / RandFraction / lookup3 mix …）
     gameshow.py   FPI_MT02 的 GameShow 模型
     mannequin.py  SMC_MT02 的人偶配对模型（分组/洗牌/距离过滤/抽取）
     seeddata.py   静态数据载入层（data/*.json → 同名常量）
@@ -44,11 +47,14 @@ import cluegame as cg
 import mannequin as mq
 from seeddata import (
     ROOM_CENTERS,
+    RES_MT02_COORDINATORS, RES_MT02_POOL,
     SAMPLES_CHJ, SAMPLES_CHJ_MT02, SAMPLES_RES, SAMPLES_SMC, SAMPLES_GS,
     SAMPLES_TSR, SAMPLES_FPI_MT01, SAMPLES_TFS, SAMPLES_MHS,
-    SAMPLES_MHS_PICK, TFS_SAMPLE_ROOMS, SAMPLES_PSA,
+    SAMPLES_MHS_PICK, TFS_SAMPLE_ROOMS, SAMPLES_PSA, SAMPLES_SRR,
+    SRR_HOUSES, SRR_HOUSE_ORDER, SRR_ROOM_COMPONENTS, SRR_ROOM_CENTERS,
     CHJ_MT02_COORDS, CHJ_MT02_ACTORS, CHJ_MT02_ROOMS_20020,
-    CHJ_MT02_SYMBOL_NAMES, MHS_SYMBOL_NAMES, MHS_ZONES, MHS_ZONE_BY_KEY,
+    CHJ_MT02_SYMBOL_NAMES, CHJ_MT02_SYMBOL_COORDS, CHJ_MT02_SYMBOL_ROOMS,
+    MHS_SYMBOL_NAMES, MHS_ZONES, MHS_ZONE_BY_KEY,
     MHS_SYMBOLS, TSR_BUCKETS, TSR_BUCKET_NAMES, TSR_MANDATORY_ROOM,
     TSR_SPLIT_ROOMS, TSR_CLUE_COORDS, FPI_FIXED_PROJECTOR, FPI_GROUPS,
     FPI_SYMBOLS, FPI_SYMBOL_NAMES_ZH, FPI_PROJECTOR_COORDS,
@@ -160,6 +166,24 @@ LEVELS = {
         'partial': True,
         'doc': 'release/coop/DRS_MT01/DRS_MT01.md',
     },
+    'RES_MT02': {
+        'name': '水疗度假村 · 焚毁莉莉娅的遗物',
+        'english': "Burn Liliana's Relics",
+        'map': 'ResortSpa',
+        'kind': 'CollectJewels',
+        'jewels': True,
+        'partial': True,     # 教学段「哪 6 个人偶」未解
+        'coordinator': 'MT02_CollectingJewels_MainAuction',
+        'doc': 'release/home/RES_MT02.md',
+    },
+    'SRR_MT01': {
+        'name': '郊区住宅区 · 撬开富豪宅的密码盘',
+        'english': 'Crack the keypads of the rich houses',
+        'map': 'SuburbRiotResidential',
+        'kind': 'MultiroomPuzzle',
+        'puzzle': True,
+        'doc': 'release/home/SRR_MT01.md',
+    },
     'CHJ_MT03': {
         'name': '法院 · 贿赂其余可收买的法官',
         'map': 'CourthouseJudicial',
@@ -187,6 +211,10 @@ ALIASES = {
     'DOWNTOWN': 'DTS_MT01', 'DOWNTOWNSEWER': 'DTS_MT01',
     'PSA': 'PSA_MT01', 'POLICE': 'PSA_MT01', 'ATTIC': 'PSA_MT01',
     'POLICESTATION': 'PSA_MT01', 'KEYLOCKED': 'PSA_MT01',
+    'RES2': 'RES_MT02', 'RES-MT02': 'RES_MT02', 'JEWEL': 'RES_MT02',
+    'JEWELS': 'RES_MT02', 'RELIC': 'RES_MT02', 'LILIANA': 'RES_MT02',
+    'SRR': 'SRR_MT01', 'SUBURB': 'SRR_MT01', 'HOUSES': 'SRR_MT01',
+    'KEYPAD': 'SRR_MT01', 'KEYPADS': 'SRR_MT01', 'MULTIROOM': 'SRR_MT01',
 }
 
 # ---------------------------------------------------------------------------
@@ -200,6 +228,8 @@ ALIASES = {
 #   data/fpi_mt01.json        FPI_MT01 三组候选 / 图案表 / 放映机坐标
 #   data/tfs_mt03.json        TFS_MT03 Sections 原始顺序 / 阀门候选 / 坐标
 #   data/chj_mt02.json        CHJ_MT02 协调器组 / 符号 actor / 房间
+#   data/psa_mt01.json        PSA_MT01 图案表 / 房间生成点 / 录像盘
+#   data/srr_mt01.json        SRR_MT01 协调器 Sections / 房间组件 / 密码盘坐标
 #   data/room_centers.json    各 map 的房间中心参考点
 #   data/samples.json         全部 --selftest 实测样本
 # ---------------------------------------------------------------------------
@@ -293,6 +323,35 @@ DTS_PANEL_SAMPLES = {
             'FrequencyMatchPanel_DTS_Child5_5',
             'FrequencyMatchPanel_DTS_Child17_2'),
 }
+
+# RES_MT02：主轴段 0x1433B49B0 / 教学段 0x1433B5BC0（见 release/home/RES_MT02.md）
+# 四个 seed 常量是硬编码在 0x1433B49B0 里的偏移，直接调 RandSeeded/RandRangeInt/RandFraction。
+RES_MT02_MAIN = 'MT02_CollectingJewels_MainAuction'
+RES_MT02_TUTO = 'MT02_CollectingJewels_Tuto'
+RES_SEED_MANDATORY = 820351        # 0x1433B4B81  pick_spawner(counter + 820351)
+RES_SEED_SECTION_SPAWNER = 279412  # 0x1433B506C  pick_spawner(counter + 279412)
+RES_SEED_ROOM_ORDER = 479582       # 0x1433B4F6D  RandFraction(GetSeed(room) + 479582)
+RES_SEED_CLASS_PICK = 823203       # 0x1433B50BF  RandRangeInt(counter + 823203, 0, len-1)
+RES_GEM_CN = {'Ruby': '红宝石', 'Sapphire': '蓝宝石', 'Emerald': '绿宝石'}
+
+# 主轴段实测：人偶 → 宝石类别（seed=176176，2/2 命中）
+RES_MT02_SAMPLES = {
+    176176: [
+        ('RE_MannequinTrap_Setup_BP160', 'Ruby'),
+        ('RE_MannequinTrap_Setup_BP_295', 'Sapphire'),
+    ],
+}
+# 教学段实测：(seed, 人偶, 颜色) 8 条，BP_139 两局都与模型相反，单独记录不计分
+RES_MT02_TUTO_SAMPLES = [
+    (176176, 'RE_MannequinTrap_Tutorial_BP_96', 'Emerald'),
+    (176176, 'RE_MannequinTrap_Tutorial_BP_106', 'Sapphire'),
+    (176176, 'RE_MannequinTrap_Tutorial_BP_111', 'Sapphire'),
+    (69069, 'RE_MannequinTrap_Tutorial_BP_106', 'Sapphire'),
+    (69069, 'RE_MannequinTrap_Tutorial_BP_115', 'Sapphire'),
+    (69069, 'RE_MannequinTrap_Tutorial_BP_84', 'Emerald'),
+    (69069, 'RE_MannequinTrap_Tutorial_BP_117', 'Emerald'),
+    (69069, 'RE_MannequinTrap_Tutorial_BP_109', 'Emerald'),
+]
 
 
 def _tsr_room(name):
@@ -529,12 +588,6 @@ def _attach_room_coordinates(item, map_name, room_key='room'):
     return item
 
 
-def _fmt_coordinates(coordinates):
-    if not coordinates:
-        return ''
-    return ' (%g, %g, %g)' % tuple(coordinates)
-
-
 def resolve(level_id):
     key = (level_id or '').upper().replace('_', '-')
     key = key.replace('-', '_')
@@ -581,8 +634,10 @@ def _predict_chj_mt02(level_seed):
             projections.append({
                 'symbol': group,
                 'symbol_name': CHJ_MT02_SYMBOL_NAMES[group],
-                'room': rooms.get(group),
+                'room': rooms.get(group) or CHJ_MT02_SYMBOL_ROOMS.get(actor),
                 'actor': actor,
+                'coordinates': CHJ_MT02_SYMBOL_COORDS.get(actor),
+                'coordinate_type': 'actor',
                 'code': _chj_mt02_draw_code(base, level_seed),
                 'tutorial': tutorial,
             })
@@ -717,10 +772,11 @@ def _psa_draw_rooms(level_seed, trace=False):
         parent = rooms[node // 2]
         spawners = spawner_pools[parent]
         if not spawners:
+            # 每个钥匙房都有 2 个生成点（停尸房第二个在 PSA_LD_Items 子关卡），
+            # 正常不会走到这里；真出现说明 room_spawners 数据的点数不够。
             raise ModelUnresolved(
-                'PSA_MT01：%s 只导出一个钥匙生成点，但该 seed 把它选成了「还要再出一把钥匙」'
-                '的中间节点。游戏运行时可能还有未导出的内部 spawn slot，'
-                '本脚本不猜第二个点，故不输出结果（约 12%% 的 seed 会命中）' % parent)
+                'PSA_MT01：%s 的生成点池已耗尽，但该 seed 还要在这个房间再出一把钥匙。'
+                '请检查 data/psa_mt01.json 的 room_spawners（每个房应有 2 个点）' % parent)
         spawn = _psa_swap_remove(
             spawners, sc.rand_seeded(PSA_SPAWN_SEED_BASE + node, len(spawners),
                                      level_seed))
@@ -795,6 +851,206 @@ def _predict_psa_mt01(level_seed, trace=False):
     return {'path': path, 'film_node': film_node}
 
 
+def _res_conf(coordinator):
+    return RES_MT02_COORDINATORS[coordinator]
+
+
+def _res_mandatory_rooms():
+    return [(m['room'], m['count'])
+            for m in _res_conf(RES_MT02_MAIN)['mandatory_rooms']]
+
+
+def _res_sections():
+    return [{'count': s['count'], 'rooms': list(s['rooms'])}
+            for s in _res_conf(RES_MT02_MAIN)['sections']]
+
+
+def _res_distribution(coordinator=RES_MT02_MAIN):
+    """ItemClassesDistributionDataOrderedByPrice：顺序 = 数组顺序（别排序）。
+
+    主轴段是 红 0.2 / 蓝 0.5 / 绿 0.3，教学段只有 蓝 0.6 / 绿 0.4。
+    """
+    return [(d['class'].replace('_BP_C', '').replace('RE_', ''), d['value'])
+            for d in _res_conf(coordinator)['distributions']]
+
+
+def _res_pool(classes=('main',)):
+    return [m for m in RES_MT02_POOL if m['pool'] in classes]
+
+
+def _res_uid(m):
+    """同名 actor 可能出现在不同子关卡，去重要带 level。"""
+    return '%s:%s' % (m['level'], m['name'])
+
+
+def _res_gem_point(m):
+    """宝石挂点 = 人偶根 + ItemSpawnLocation（按 yaw 绕 Z 旋转）。"""
+    offset = m.get('spawn_offset')
+    if not offset:
+        return (m['x'], m['y'], m['z'])
+    ox, oy, oz = offset
+    th = math.radians(m.get('yaw') or 0.0)
+    c, s = math.cos(th), math.sin(th)
+    return (round(m['x'] + ox * c - oy * s, 1),
+            round(m['y'] + ox * s + oy * c, 1),
+            round(m['z'] + oz, 1))
+
+
+def _res_candidates(room, used=(), classes=('main',)):
+    """房间里还没被占用的人偶，顺序 = (level, name)（近似关卡 actor 顺序）。"""
+    out = [m for m in _res_pool(classes)
+           if m.get('room') == room and _res_uid(m) not in used]
+    out.sort(key=lambda m: (m['level'], m['name']))
+    return out
+
+
+def _res_class_slots(dist, total):
+    """0x1433B4D72：n_i = (int)(2*d_i*total + 0.5) >> 1（cvtss2si 四舍五入到偶数）。"""
+    slots = []
+    for index, (_name, weight) in enumerate(dist):
+        n = int(round(2.0 * float(weight) * total + 0.5)) >> 1
+        slots.extend([index] * max(0, n))
+    return slots
+
+
+def _res_room_order(rooms, salt):
+    """每个房间算 RandFraction(GetSeed(room) + 479582)，按 float 升序（0x1433B4F6D）。
+
+    GetSeed(room) 的外层是关卡的 PersistentLevel，别用 seed_of_object 的默认 0。
+    """
+    keyed = [(sc.rand_fraction(
+                (sc.seed_chain(['PersistentLevel', r]) + RES_SEED_ROOM_ORDER) & sc.M32,
+                salt), r)
+             for r in rooms]
+    keyed.sort(key=lambda pair: pair[0])
+    return keyed
+
+
+def _res_tuto_order():
+    """教学段 51 人偶的排序：比较器 0x1402C6910 = actor 名字大小写折叠升序。"""
+    return sorted(_res_pool(('tutorial',)),
+                  key=lambda m: (m['name'].upper(), m['name']))
+
+
+def _res_tuto_class_map(level_seed):
+    """教学段每个人偶的颜色（`0x1433B5BC0`，给 51 个人偶逐个分配类别）。
+
+        v4 = GetSeed(协调器) = |crc32(名字) + crc32(PersistentLevel)|   # 与关卡种子无关
+        for k in 0..50:
+            i   = RandSeeded(v4 + k, len(剩余))                        # 逐次抽签
+            cls = k % Num(类别)                                        # bAlternatePricesUniformly
+
+    返回 {name: (序号, 类别)}；类别表取协调器自己的 distributions（蓝/绿两项）。
+    注意 a1+0x3728 是**全量 51 个**，所以每个人偶都有颜色；「哪 6 个有宝石」是另一套上游选择。
+    """
+    v4 = sc.seed_chain(['PersistentLevel', RES_MT02_TUTO])
+    salt = level_seed % 1000
+    dist = [name for name, _weight in _res_distribution(RES_MT02_TUTO)]
+    pool = list(_res_tuto_order())
+    out = {}
+    for k in range(len(pool)):
+        index = sc.rand_seeded((v4 + k) & sc.M32, len(pool), salt)
+        out[pool.pop(index)['name']] = (k, dist[k % len(dist)])
+    return out
+
+
+def _res_tuto_table(level_seed):
+    """教学段类别图（按抽取序号排）。"""
+    cmap = _res_tuto_class_map(level_seed)
+    rows = []
+    for m in _res_tuto_order():
+        k, gem = cmap[m['name']]
+        rows.append({'k': k, 'gem': gem, 'gem_cn': RES_GEM_CN.get(gem, gem),
+                     'spawner': m['name'], 'room': m.get('room'),
+                     'coordinates': list(_res_gem_point(m))})
+    return rows
+
+
+def _res_item(source, room, gem, pick, counter, n_candidates):
+    return {
+        'source': source,
+        'room': room,
+        'gem': gem,
+        'gem_cn': RES_GEM_CN.get(gem, gem),
+        'spawner': pick['name'],
+        'spawner_level': pick['level'],
+        'counter': counter,
+        'n_candidates': n_candidates,
+        'coordinates': list(_res_gem_point(pick)),
+        'coordinate_type': 'actor',
+    }
+
+
+def _predict_res_mt02(level_seed, difficulty='easy', trace=False, tuto=False):
+    salt = level_seed % 1000
+    dist = _res_distribution()
+    items, tr = [], []
+
+    # 1) 固定房（MandatoryRoomsSpawnData）：类别恒为 dist[0]，用自己的 counter
+    used = set()
+    counter = 0
+    for room, block in _res_mandatory_rooms():
+        for _ in range(sc.int_by_difficulty(block, difficulty)):
+            cands = _res_candidates(room, used=used)
+            if not cands:
+                tr.append('mandatory %-32s 没有空余人偶' % room)
+                continue
+            seed = (counter + RES_SEED_MANDATORY) & sc.M32
+            pick = cands[sc.rand_seeded(seed, len(cands), salt)]
+            items.append(_res_item('mandatory', room, dist[0][0], pick, counter, len(cands)))
+            used.add(_res_uid(pick))
+            tr.append('mandatory %-32s seed=%d/%d -> %s %s'
+                      % (room, seed, len(cands), pick['name'], dist[0][0]))
+            counter += 1
+
+    # 2) 类别桶：把 Distribution 按总需求整数化，再抽签 + swap-remove
+    sections = _res_sections()
+    total = sum(sc.int_by_difficulty(s['count'], difficulty) for s in sections)
+    slots = _res_class_slots(dist, total)
+    slot_counts = {name: slots.count(index) for index, (name, _w) in enumerate(dist)}
+    tr.append('sections total=%d  slots=%d  %s' % (total, len(slots), slot_counts))
+    if len(slots) < total:
+        tr.append('!! 类别桶少于总需求：游戏会报 Random rooms distributions error 并放弃')
+
+    # 3) 分区：counter 从 0 重新起算（0x1433B4F12），房间是轮流拿而不是随机
+    counter = 0
+    for si, sec in enumerate(sections, 1):
+        want = sc.int_by_difficulty(sec['count'], difficulty)
+        if want <= 0:
+            continue
+        keyed = _res_room_order(sec['rooms'], salt)
+        tr.append('section %d: want=%d rooms=%d' % (si, want, len(keyed)))
+        if trace:
+            for key, room in keyed:
+                tr.append('    key=%.6f %s' % (key, room))
+        for k in range(want):
+            room = keyed[k % len(keyed)][1]       # 轮流，不是随机（0x1433B505C）
+            cands = _res_candidates(room, used=used)
+            if not cands:
+                tr.append('    [%s] 没有空余人偶，跳过（counter 不前进）' % room)
+                continue
+            seed = (counter + RES_SEED_SECTION_SPAWNER) & sc.M32
+            pick = cands[sc.rand_seeded(seed, len(cands), salt)]
+            r = sc.rand_seeded_range((counter + RES_SEED_CLASS_PICK) & sc.M32,
+                                     0, len(slots) - 1, salt)
+            gem = dist[slots.pop(r)][0]
+            items.append(_res_item('section%d' % si, room, gem, pick, counter, len(cands)))
+            used.add(_res_uid(pick))
+            tr.append('    [%s] #%d seed=%d/%d -> %s %s'
+                      % (room, counter, seed, len(cands), pick['name'], gem))
+            counter += 1
+
+    result = {
+        'jewels': items,
+        'class_slot_counts': slot_counts,
+        'section_total': total,
+        'trace': tr if trace else [],
+    }
+    if tuto:
+        result['tutorial_jewels'] = _res_tuto_table(level_seed)
+    return result
+
+
 def _predict_dts_mt01(level_seed, trace=False):
     if not 0 < level_seed <= sc.M32:
         raise ValueError('seed 必须在 [1, 2^32-1]')
@@ -846,13 +1102,170 @@ def _predict_dts_mt01(level_seed, trace=False):
     }
 
 
+# ---------------------------------------------------------------------------
+# SRR_MT01：郊区住宅区 · 撬开富豪宅的密码盘
+# ---------------------------------------------------------------------------
+# 已闭环（894894→4369/5623/9217、512512→6459/8612/3159、745745→1840/8726/8102）：
+#   选 3 栋   sub_1437E5100(RandomizeActorArray)：池=H1..H5，抽 3，保序删除；
+#             idx_j = RandSeeded(GetSeed(setup) + j + 45151, |池|)
+#   抽房      sub_14374E420 分区抽房：idx = RandSeeded(剩余需求 + 28042, |该区房间|)
+#   处理顺序  sub_14374E420 尾部容器 introsort(key = RandFraction(GetSeed(组件))>=0.5)，
+#             n<=8 走选择排序；密码按「逆序」消费
+#   数字      digit_k = pool[RandSeeded(compSeed(room_k) + k + 7168, |pool|)]，池=0..9 保序删除
+SRR_DRAW_OFFSET = 45151     # sub_1437E5100：抽密码房
+SRR_PICK_OFFSET = 28042     # sub_14374E420：分区抽房
+SRR_FILL_OFFSET = 28088     # sub_14374E420：兜底补位（本关用不到）
+SRR_DIGIT_OFFSET = 7168     # sub_143620E70：逐位抽数字
+
+
+def _srr_house_seed():
+    """GetSeed(抽签 setup) 的暂定解：|crc(组名) + |crc(House1 协调器名) + 0||。
+
+    在「池 [H1..H5] × 670+ 名字链构造」中是三样本同时命中的唯一解；
+    setup 对象的真实身份未定位，第四个样本可推翻它（见 SRR_MT01.md §6.1）。
+    """
+    return sc.seed_of_object(
+        'RBObjectiveCoordinatorGroup2',
+        sc.seed_of_object('MultiroomPuzzle_Coordinator_House1_BP', 0))
+
+
+def _srr_draw_houses(salt, trace=False):
+    """本局 3 个密码房，返回抽中顺序的 tag 列表（如 ['H1', 'H3', 'H4']）。"""
+    group_seed = _srr_house_seed()
+    pool = list(SRR_HOUSE_ORDER)
+    picked = []
+    for j in range(3):
+        index = sc.rand_seeded((group_seed + j + SRR_DRAW_OFFSET) & sc.M32,
+                               len(pool), salt)
+        picked.append(pool.pop(index))
+        if trace:
+            print('  SRR 抽密码房 j=%d idx=%d/%d -> %s'
+                  % (j, index, len(pool) + 1, picked[-1]))
+    return picked
+
+
+def _srr_pick_rooms(house, salt, trace=False):
+    """按 Sections 顺序抽房（可重复：两个 Section 可以指向同一间房）。"""
+    sections = house['sections']
+    pools = [list(sec['rooms']) for sec in sections]
+    picked = []
+    remaining = house['count']
+    for sid, section in enumerate(sections):
+        for _ in range(max(0, min(section['min'], remaining))):
+            pool = pools[sid]
+            if not pool:
+                break
+            index = sc.rand_seeded((remaining + SRR_PICK_OFFSET) & sc.M32,
+                                   len(pool), salt)
+            picked.append(pool.pop(index))
+            if trace:
+                print('    sect%d 剩余=%d idx=%d/%d -> %s'
+                      % (sid, remaining, index, len(pool) + 1, picked[-1]))
+            remaining -= 1
+    for sid in range(len(sections)):           # 兜底补位
+        while remaining > 0 and pools[sid]:
+            index = sc.rand_seeded((remaining + SRR_FILL_OFFSET) & sc.M32,
+                                   len(pools[sid]), salt)
+            picked.append(pools[sid].pop(index))
+            remaining -= 1
+    return picked
+
+
+def _srr_comp_seed(room):
+    """GetSeed(RBPuzzleRoomComponent) = |crc(组件名) + |crc(房间名) + crc(PersistentLevel)||"""
+    component = SRR_ROOM_COMPONENTS.get(room, 'RBPuzzleRoomComponent_0')
+    return sc.seed_of_object(component,
+                             sc.seed_of_object(room, sc.crc32_fname('PersistentLevel')))
+
+
+def _srr_sel_sort_bit(items, bits):
+    """sub_1435F7860 小范围（n<=8）选择排序：每轮把「最后一个 bit=0」换到区间末尾。"""
+    out = list(items)
+    end = len(out) - 1
+    while end > 0:
+        cand = 0
+        for j in range(1, end + 1):
+            if bits[out[j]] == 0:
+                cand = j
+        out[cand], out[end] = out[end], out[cand]
+        end -= 1
+    return out
+
+
+def _srr_process_order(rooms, salt):
+    """贴花位的处理顺序 = 容器排序（key=RandFraction(compSeed)>=0.5）的逆序。"""
+    bits = {room: 1 if sc.rand_fraction(_srr_comp_seed(room), salt) >= 0.5 else 0
+            for room in rooms}
+    return list(reversed(_srr_sel_sort_bit(rooms, bits))), bits
+
+
+def _srr_digits(order, salt, trace=False):
+    """4 位密码：pool 每局重置为 0..9，逐位抽走即删。"""
+    pool = list(range(10))
+    out = []
+    for k, room in enumerate(order):
+        base = _srr_comp_seed(room)
+        index = sc.rand_seeded((base + k + SRR_DIGIT_OFFSET) & sc.M32,
+                               len(pool), salt)
+        digit = pool.pop(index)
+        out.append(digit)
+        if trace:
+            print('    k=%d %-42s compSeed=%d pool=%d idx=%d -> %d'
+                  % (k, room, base, len(pool) + 1, index, digit))
+    return ''.join(str(d) for d in out)
+
+
+def _predict_srr_mt01(level_seed, trace=False):
+    salt = level_seed % 1000
+    selected = _srr_draw_houses(salt, trace=trace)
+    houses = []
+    for coordinator in sorted(SRR_HOUSES):
+        house = SRR_HOUSES[coordinator]
+        picked = _srr_pick_rooms(house, salt, trace=trace)
+        order, bits = _srr_process_order(picked, salt)
+        code = _srr_digits(order, salt, trace=trace)
+        slots = []
+        for k, room in enumerate(order, 1):
+            slot = {'index': k, 'room': room, 'digit': int(code[k - 1])}
+            center = SRR_ROOM_CENTERS.get(room)
+            if center:
+                slot['coordinates'] = list(center)
+                slot['coordinate_type'] = 'room_center'
+            slots.append(slot)
+        entry = {
+            'coordinator': coordinator,
+            'tag': house['tag'],
+            'pad': house['pad'],
+            'pad_room': house.get('pad_room'),
+            'selected': house['tag'] in selected,
+            'rooms': picked,
+            'order': order,
+            'bits': bits,
+            'code': code,
+            'slots': slots,
+        }
+        if house.get('pad_coordinates'):
+            entry['coordinates'] = list(house['pad_coordinates'])
+            entry['coordinate_type'] = 'actor'
+        if trace:
+            print('  [%s]%s 密码盘=%s 贴花位=%s 密码=%s'
+                  % (entry['tag'], '' if entry['selected'] else '（未激活）',
+                     entry['pad'], ' -> '.join(order), code))
+        houses.append(entry)
+    return {'selected': selected, 'houses': houses}
+
+
 def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
-            digits=4, trace=False):
+            digits=4, trace=False, tuto=False):
     key = resolve(level_id)
     cfg = LEVELS[key]
     result = {'level': key, 'name': cfg['name'], 'map': cfg['map'],
               'seed': seed, 'salt': seed % 1000,
               'players': players, 'difficulty': difficulty}
+
+    if cfg.get('jewels'):
+        result.update(_predict_res_mt02(seed, difficulty, trace=trace, tuto=tuto))
+        return result
 
     if cfg.get('keylockedrooms'):
         result.update(_predict_psa_mt01(seed, trace=trace))
@@ -860,6 +1273,10 @@ def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
 
     if cfg.get('dts'):
         result.update(_predict_dts_mt01(seed, trace=trace))
+        return result
+
+    if cfg.get('puzzle'):
+        result.update(_predict_srr_mt01(seed, trace=trace))
         return result
 
     if cfg.get('gameshow'):
@@ -895,7 +1312,9 @@ def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
         projections, notes = _predict_chj_mt02(seed)
         result['projections'] = projections
         for item in projections:
-            _attach_room_coordinates(item, cfg['map'])
+            # 机位 actor 坐标优先，只有拿不到精确坐标时才退回房间中心
+            if not item.get('coordinates'):
+                _attach_room_coordinates(item, cfg['map'])
         if notes:
             result['notes'] = notes
         return result
@@ -947,130 +1366,170 @@ def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
     return result
 
 
-def render(result):
-    if 'frequency_panels' in result:
-        lines = ['调频器：']
-        for index, panel in enumerate(result['frequency_panels'], 1):
-            lines.append('  %d. %s%s' % (
-                index, panel['room'], _fmt_coordinates(panel['coordinates'])))
-        lines.append('线索：')
-        for clue in result['clues']:
-            lines.append('  %s = %s' % (clue['name'], clue['value']))
-        lines.append('最终模型：')
-        target = result['target_model']
-        if target['status'] == 'unresolved':
-            lines.append('  未闭环')
-        else:
-            lines.append('  %s%s' % (
-                target['room'], _fmt_coordinates(target['coordinates'])))
-        return '\n'.join(lines)
+def _point(room, label=None, id_=None, coords=None, **extra):
+    point = {}
+    if id_:
+        point['id'] = id_
+    point['room'] = room
+    if label:
+        point['label'] = label
+    if coords:
+        point['coordinates'] = [round(float(c), 1) for c in coords]
+    point.update(extra)
+    return point
 
-    head = '%s  %s  (%s)' % (result['level'], result['name'], result['map'])
-    lines = [head,
-             'seed = %d   salt = %d   %s   %dP'
-             % (result['seed'], result['salt'],
-                result.get('difficulty', 'easy').title(),
-                result.get('players', 1))]
-    if result.get('notes'):
-        for n in result['notes']:
-            lines.append('! ' + n)
-        if not any(key in result for key in
-                   ('rounds', 'projectors', 'valves', 'connections',
-                    'projections', 'clue', 'rooms', 'patterns', 'mannequins',
-                    'path')):
-            return '\n'.join(lines)
-    if 'path' in result:
-        for index, step in enumerate(result['path'], 1):
-            lines.append('  %d：%s=%s%s'
-                         % (index, step['symbol_name_zh'], step['room'],
-                            _fmt_coordinates(step['coordinates'])))
-        return '\n'.join(lines)
-    if 'projectors' in result:
-        for item in result['projectors']:
-            lines.append('  [盘%d] %-40s %-8s(%s)%s'
-                         % (item['reel_index'], item['room'], item['symbol'],
-                            item['symbol_name_zh'],
-                            _fmt_coordinates(item['coordinates'])))
-        return '\n'.join(lines)
-    if 'valves' in result:
-        for item in result['valves']:
-            lines.append('  [%s] %-42s %s%s'
-                         % (item['section'], item['room'], item['actor'],
-                            _fmt_coordinates(item['coordinates'])))
-        return '\n'.join(lines)
-    if 'connections' in result:
-        lines.append('  面板种子 %d   数字错位 %d'
-                     % (result['panel_seed'], result['number_rotation']))
-        for item in result['connections']:
-            lines.append('  [%s]' % item['code'])
-            lines.append('    字母 %-2s %-14s%s'
-                         % (item['letter'], item['letter_room'],
-                            _fmt_coordinates(item['letter_coordinates'])))
-            lines.append('    数字 %-2s %-14s%s'
-                         % (item['number'], item['number_room'],
-                            _fmt_coordinates(item['number_coordinates'])))
-        return '\n'.join(lines)
-    if 'mannequins' in result:
-        for item in result['mannequins']:
-            if item['room'] is None:
-                lines.append('  [%-8s] <候选被距离规则过滤空>' % item['color'])
-                continue
-            lines.append('  [%s %-4s %-18s] %-44s%s'
-                         % (item['color'], item['color_name'], item['section'],
-                            item['room'],
-                            _fmt_coordinates(item['coordinates'])))
-        return '\n'.join(lines)
-    if 'patterns' in result:
-        for item in result['patterns']:
-            lines.append('  [%s %-12s] %-46s 密码 %s  (%s)%s'
-                         % (item['pattern_name'], item['pattern'],
-                            item['room'], item['code'],
-                            item['actor'].rsplit('_BP_', 1)[-1],
-                            _fmt_coordinates(item['coordinates'])))
-        return '\n'.join(lines)
-    if 'projections' in result:
-        for item in result['projections']:
-            stage = '教学 ' if item['tutorial'] else ''
-            room = item['room'] or '房间未验证'
-            short_actor = item['actor'].rsplit('_BP_', 1)[-1]
-            lines.append('  [%s%s] %-34s 密码 %s  (%s)%s'
-                         % (stage, item['symbol_name'], room, item['code'],
-                            short_actor, _fmt_coordinates(item.get('coordinates'))))
-        return '\n'.join(lines)
-    if 'clue' in result:
-        lines.extend(cg.describe(result['seed']))
-        lines.append('  犯罪现场坐标%s'
-                     % _fmt_coordinates(result['clue'].get('crime_scene_coordinates')))
-        return '\n'.join(lines)
-    if 'rounds' in result:
-        tut = result.get('tutorial')
+
+def _actor_coords(item, key='coordinates'):
+    """房间中心留给地图按 room 索引；actor 级点位才带坐标（同房多点时必须）。"""
+    if item.get('coordinate_type') == 'room_center':
+        return None
+    return item.get(key)
+
+
+def view(result):
+    """把内部推理结构压成 UI 用的极简视图。
+
+    只保留三样东西：
+      answer  —— 整关一个答案串（"1=王冠 2=红心" / "room=9 weapon=5" / "螺旋=752"）
+      points  —— 任务点位 [{id?, room, label?, coordinates?}]，数组顺序即执行顺序
+      rounds  —— 仅多轮关卡 [{round, answers}]
+      spare   —— 仅 SRR_MT01：没抽中的那几栋的密码（抽签判错时的兜底）
+    """
+    out = {'level': result['level'], 'name': result['name'],
+           'map': result['map'], 'seed': result['seed'],
+           'players': result.get('players', 1),
+           'answer': None, 'points': []}
+    points = out['points']
+
+    if 'jewels' in result:                                  # RES_MT02
+        for item in result['jewels']:
+            points.append(_point(item['room'], item['gem_cn'], item['spawner'],
+                                 _actor_coords(item)))
+
+    elif 'path' in result:                                  # PSA_MT01
+        for step in result['path']:
+            points.append(_point(step['room'], step['symbol_name_zh'],
+                                 step.get('actor'), _actor_coords(step)))
+
+    elif 'frequency_panels' in result:                      # DTS_MT01
+        for panel in result['frequency_panels']:
+            points.append(_point(panel['room'], '调频器', panel.get('actor'),
+                                 _actor_coords(panel)))
+        target = result['target_model']
+        if target.get('room'):
+            points.append(_point(target['room'], '目标人偶', target.get('actor'),
+                                 _actor_coords(target)))
+        out['answer'] = ' '.join('%s=%s' % (c['name'], c['value'])
+                                 for c in result['clues'])
+
+    elif 'rounds' in result:                                # FPI_MT02
+        rounds = []
+        tut = result.get('tutorial') or []
         if tut:
-            r = tut[0]
-            lines.append('  [阶段1 教学] %-14s %-10s 答案 %d   数字 %s%s'
-                         % (r['room_name'], r['symbol'], r['answer'],
-                            '+'.join(str(x) for x in r['digits']),
-                            _fmt_coordinates(r.get('coordinates'))))
+            rounds.append({'round': 0,
+                           'answers': [str(r['answer']) for r in tut]})
         for rd in result['rounds']:
-            if rd.get('failed') or not rd['rooms']:
-                lines.append('  [阶段%d] 该回合准备失败（脚本未覆盖的边界）'
-                             % rd['stage'])
-                continue
-            lines.append('  [阶段%d 第%d回合]' % (rd['stage'], rd['round'] + 1))
-            for r in rd['rooms']:
-                lines.append('    %-14s %-10s 答案 %d   数字 %s%s'
-                             % (r['room_name'], r['symbol'], r['answer'],
-                                '+'.join(str(x) for x in r['digits']),
-                                _fmt_coordinates(r.get('coordinates'))))
-        return '\n'.join(lines)
-    for room in result.get('rooms', []):
-        if 'code' in room:
-            lines.append('  [%d] %-30s 密码 %s%s'
-                         % (room['index'], room['room'], room['code'],
-                            _fmt_coordinates(room.get('coordinates'))))
-        else:
-            lines.append('  [%d] %s%s'
-                         % (room['index'], room['room'],
-                            _fmt_coordinates(room.get('coordinates'))))
+            rounds.append({'round': rd['round'] + 1,
+                           'answers': [str(r['answer']) for r in rd['rooms']]})
+        out['rounds'] = rounds
+        return out
+
+    elif 'clue' in result:                                  # RES_MT01
+        ans = result['clue']['answers']
+        out['answer'] = 'room=%d weapon=%d killer=%d' % (
+            ans['room'], ans['weapon'], ans['killer'])
+
+    elif 'connections' in result:                           # TSR_MT01
+        for item in result['connections']:
+            points.append(_point(item['letter_room'], item['letter'],
+                                 None, item.get('letter_coordinates')))
+            points.append(_point(item['number_room'], item['number'],
+                                 None, item.get('number_coordinates')))
+
+    elif 'projections' in result:                           # CHJ_MT02
+        out['answer'] = ' '.join('%s=%s' % (i['symbol_name'], i['code'])
+                                  for i in result['projections'])
+
+    elif 'patterns' in result:                              # MHS_MT01
+        out['answer'] = ' '.join('%s=%s' % (i['pattern_name'], i['code'])
+                                  for i in result['patterns'])
+
+    elif 'mannequins' in result:                            # SMC_MT02
+        for item in result['mannequins']:
+            if item.get('room'):
+                points.append(_point(item['room'], item['color_name'],
+                                     item.get('actor'), _actor_coords(item)))
+
+    elif 'projectors' in result:                            # FPI_MT01
+        items = sorted(result['projectors'], key=lambda x: x['reel_index'])
+        for item in items:
+            points.append(_point(item['room'], item['symbol_name_zh'],
+                                 item.get('actor'), _actor_coords(item),
+                                 reel=item['reel_index']))
+        out['answer'] = ' '.join('%d=%s' % (i['reel_index'], i['symbol_name_zh'])
+                                 for i in items)
+
+    elif 'valves' in result:                                # TFS_MT03
+        for item in sorted(result['valves'], key=lambda x: x['section']):
+            points.append(_point(item['room'], item['section'], item['actor'],
+                                 _actor_coords(item)))
+
+    elif 'houses' in result:                                # SRR_MT01
+        # 只要「哪个房间的密码盘」+ 4 位密码：激活的 3 栋在前，另外 2 栋随后（标备用）
+        active = [h for h in result['houses'] if h['selected']]
+        spare = [h for h in result['houses'] if not h['selected']]
+        for house in active + spare:
+            is_spare = not house['selected']
+            point = _point(house['pad_room'],
+                           '%s 密码盘%s' % (house['tag'], '（备用）' if is_spare else ''),
+                           house['pad'], _actor_coords(house))
+            point['answer'] = house['code']
+            if is_spare:
+                point['spare'] = True
+            points.append(point)
+        out['answer'] = ' '.join('%s=%s' % (h['tag'], h['code']) for h in active)
+        if spare:
+            out['spare'] = [{key: house.get(key) for key in
+                             ('tag', 'code', 'pad', 'pad_room', 'coordinates')
+                             if house.get(key)} for house in spare]
+
+    else:                                                   # CHJ_MT01 等
+        for room in result.get('rooms') or []:
+            point = {'room': room['room']}
+            if room.get('code'):
+                point['answer'] = room['code']
+            points.append(point)
+
+    if not out['answer']:
+        out['answer'] = None
+        if not points:
+            notes = result.get('notes') or []
+            if notes:
+                out['note'] = notes[0]
+    return out
+
+
+def render(result):
+    """CLI 文本输出。predict() 的原始结果或 view() 的视图都能传。"""
+    v = view(result) if 'salt' in result else result
+    lines = ['%s  %s  (%s)  seed=%d  %dP'
+             % (v['level'], v['name'], v['map'], v['seed'],
+                v.get('players', 1))]
+    if v.get('answer'):
+        lines.append('  答案：%s' % v['answer'])
+    if v.get('note'):
+        lines.append('  ! %s' % v['note'])
+    for index, point in enumerate(v.get('points') or [], 1):
+        tail = ''
+        if point.get('answer'):
+            tail = '  密码 %s' % point['answer']
+        if point.get('reel') is not None:
+            tail = '  盘%d' % point['reel']
+        lines.append('  %2d. %-8s %s%s'
+                     % (index, point.get('label') or '', point['room'], tail))
+    for rd in v.get('rounds') or []:
+        name = '教学' if rd['round'] == 0 else '第%d轮' % rd['round']
+        lines.append('  [%s] %s' % (name, '  '.join(rd['answers'])))
     return '\n'.join(lines)
 
 
@@ -1199,6 +1658,30 @@ def selftest(verbose=True):
         if verbose:
             print('  PSA %-7d 预测=%s 实测=%s %s'
                   % (seed, got, expect, 'OK' if ok else 'MISMATCH'))
+    for seed, expect in SAMPLES_SRR:
+        result = predict('SRR_MT01', seed)
+        pads = {house['pad']: house for house in result['houses']}
+        got_tags = sorted(house['tag'] for house in result['houses']
+                          if house['selected'])
+        want_tags = sorted(pads[pad]['tag'] for pad in expect)
+        total += 1
+        ok = got_tags == want_tags
+        bad += 0 if ok else 1
+        if verbose:
+            print('  SRR %-7d 选房 预测=%-12s 实测=%-12s %s'
+                  % (seed, ' '.join(got_tags), ' '.join(want_tags),
+                     'OK' if ok else 'MISMATCH'))
+        for pad, (room, code) in sorted(expect.items()):
+            house = pads[pad]
+            got_code = house['code']
+            got_room = house['pad_room']
+            total += 1
+            ok = got_code == code and (room is None or got_room == room)
+            bad += 0 if ok else 1
+            if verbose:
+                print('  SRR %-7d %-28s 预测=%s@%-40s 实测=%s@%-40s %s'
+                      % (seed, house['tag'], got_code, got_room, code,
+                         room or '(未记)', 'OK' if ok else 'MISMATCH'))
     for seed, expected_panels in DTS_PANEL_SAMPLES.items():
         result = predict('DTS_MT01', seed)
         panels = tuple(item['actor'] for item in result['frequency_panels'])
@@ -1215,6 +1698,29 @@ def selftest(verbose=True):
                   % (seed, ','.join(item['room']
                                     for item in result['frequency_panels']),
                      target.get('actor', '---'), 'OK' if ok else 'MISMATCH'))
+    # RES_MT02 主轴段：人偶 -> 宝石类别
+    for seed, expect in RES_MT02_SAMPLES.items():
+        got = {item['spawner']: item['gem']
+               for item in predict('RES_MT02', seed)['jewels']}
+        for name, gem in expect:
+            total += 1
+            ok = got.get(name) == gem
+            bad += 0 if ok else 1
+            if verbose:
+                print('  RES2 %-7d %-34s 预测=%-9s 实测=%-9s %s'
+                      % (seed, name, got.get(name, '---'), gem,
+                         'OK' if ok else 'MISMATCH'))
+    # RES_MT02 教学段：人偶 -> 颜色（BP_139 两局都与模型相反，未收入样本）
+    cache = {}
+    for seed, name, gem in RES_MT02_TUTO_SAMPLES:
+        cmap = cache.setdefault(seed, _res_tuto_class_map(seed))
+        total += 1
+        ok = cmap[name][1] == gem
+        bad += 0 if ok else 1
+        if verbose:
+            print('  RES2 %-7d 教学 %-6s 预测=%-9s 实测=%-9s %s'
+                  % (seed, name.rsplit('_', 1)[-1], cmap[name][1], gem,
+                     'OK' if ok else 'MISMATCH'))
     print('自检：%d/%d 通过' % (total - bad, total))
     return bad == 0
 
@@ -1226,8 +1732,8 @@ def main(argv=None):
         epilog='例：python seed.py FPI_MT02 189189 --players 2')
     ap.add_argument('level', nargs='?', help='关卡编号，如 FPI_MT02 / CHJ_MT01')
     ap.add_argument('seed', nargs='?', type=int, help='关卡种子（6 位数）')
-    ap.add_argument('--players', type=int, default=1, choices=(1, 2, 3),
-                    help='玩家人数（默认 1；影响讲台/房间数）')
+    ap.add_argument('--players', type=int, default=1, choices=(1, 2, 3, 4),
+                    help='玩家人数 1-4（默认 1；影响讲台/房间数）')
     ap.add_argument('--difficulty', default='easy',
                     choices=('easy', 'normal', 'hard', 'insane'),
                     help='难度（默认 easy）')
@@ -1237,7 +1743,11 @@ def main(argv=None):
     ap.add_argument('--list', action='store_true', help='列出已支持关卡')
     ap.add_argument('--json', action='store_true', help='输出 JSON')
     ap.add_argument('--out', metavar='FILE', help='把 JSON 写入文件')
-    ap.add_argument('--trace', action='store_true', help='打印抽取过程')
+    ap.add_argument('--trace', action='store_true', help='打印抽取过程（走 stderr）')
+    ap.add_argument('--debug', action='store_true',
+                    help='JSON 里附带 debug 字段（完整内部推理结构）')
+    ap.add_argument('--tuto', action='store_true',
+                    help='RES_MT02：附带教学段 51 个人偶的类别图')
     ap.add_argument('--selftest', action='store_true', help='用已知样本自检')
     args = ap.parse_args(argv)
 
@@ -1253,7 +1763,8 @@ def main(argv=None):
                   or cfg.get('switchboard') or cfg.get('projectors')
                   or cfg.get('firepump') or cfg.get('mhs')
                   or cfg.get('mannequin') or cfg.get('dts')
-                  or cfg.get('keylockedrooms'))
+                  or cfg.get('keylockedrooms') or cfg.get('jewels')
+                  or cfg.get('puzzle'))
             status = 'PART' if cfg.get('partial') else ('OK' if ok else 'TODO')
             print('%-10s [%-4s] %-24s %s'
                   % (key, status, cfg['name'], cfg['map']))
@@ -1268,7 +1779,7 @@ def main(argv=None):
 
     try:
         result = predict(args.level, args.seed, args.players, args.difficulty,
-                         args.max_fake, args.digits, args.trace)
+                         args.max_fake, args.digits, args.trace, args.tuto)
     except KeyError:
         print('未知关卡：%s（用 --list 查看）' % args.level, file=sys.stderr)
         return 2
@@ -1276,14 +1787,21 @@ def main(argv=None):
         print('! %s' % exc, file=sys.stderr)
         return 2
 
+    for line in result.get('trace') or []:
+        print(line, file=sys.stderr)
+
+    data = view(result)
+    if args.debug:
+        data['debug'] = result
+
     if args.out:
         with open(args.out, 'w', encoding='utf-8') as fp:
-            json.dump(result, fp, ensure_ascii=False, indent=2)
+            json.dump(data, fp, ensure_ascii=False, indent=2)
         print('已写入 %s' % args.out)
         return 0
 
-    print(json.dumps(result, ensure_ascii=False, indent=2) if args.json
-          else render(result))
+    print(json.dumps(data, ensure_ascii=False, indent=2) if args.json
+          else render(data))
     return 0
 
 

@@ -1,20 +1,28 @@
 {
-  "_source": "paks/MAP/Maps/CourthouseJudicial/CHJ_LD_MT02_B00.json + plan.json",
+  "_source": "paks/MAP/Maps/CourthouseJudicial/CHJ_LD_MT02_B00.json + plan.json + ui/data/maps/CHJ_MT02.json（symbol_coordinates / symbol_rooms 由地图点位表导出）",
   "_note": "前置候选过滤/补位尚未泛化：下面 actors 里的三个 seed 是已由密码与房间交叉验证的真实投影器，其他 seed 不输出未经验证的房间或密码。密码主链本身对三个 seed 的 14 个实测值全部一致。",
   "coordinates": [
     {
       "actor": "MT02_Projections_Coordinator_BP_YellowSide",
-      "groups": ["Skull", "Spiral"],
+      "groups": [
+        "Skull",
+        "Spiral"
+      ],
       "tutorial": false
     },
     {
       "actor": "MT02_Projections_Coordinator_BP_BlueSIde",
-      "groups": ["Pentagram", "Sun"],
+      "groups": [
+        "Pentagram",
+        "Sun"
+      ],
       "tutorial": false
     },
     {
       "actor": "MT02_Projections_Coordinator_BP_Tuto",
-      "groups": ["TriangleCircle"],
+      "groups": [
+        "TriangleCircle"
+      ],
       "tutorial": true
     }
   ],
@@ -54,5 +62,267 @@
     "Pentagram": "五角星",
     "Sun": "太阳",
     "TriangleCircle": "三角"
+  },
+  "symbol_coordinates": {
+    "CHJ_MT02_ProjectionSymbol_BP_A10": [
+      -4510.0,
+      5627.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A11": [
+      -5278.2,
+      5839.5,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A12": [
+      -4425.4,
+      6037.4,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A13": [
+      -3870.3,
+      6108.7,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A14": [
+      -3196.0,
+      4144.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A15": [
+      -3308.0,
+      4480.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A16": [
+      -3286.0,
+      5114.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A17": [
+      -2982.0,
+      5416.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A18": [
+      -2919.0,
+      5954.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A19": [
+      -5079.4,
+      7482.6,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A2": [
+      -4365.0,
+      2744.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A20": [
+      -4092.2,
+      7789.4,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A21": [
+      -5216.8,
+      6908.8,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A22": [
+      -3728.8,
+      5003.6,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A3": [
+      -3370.4,
+      2782.8,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A4": [
+      -4777.0,
+      2601.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A5": [
+      -3923.0,
+      3982.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A6": [
+      -3928.6,
+      4253.6,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A7": [
+      -5030.0,
+      5016.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A8": [
+      -3887.0,
+      4811.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_A_6": [
+      -4971.0,
+      4481.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B10": [
+      -330.8,
+      3898.4,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B11": [
+      -660.8,
+      4449.4,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B12": [
+      13.4,
+      5145.2,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B13": [
+      -561.6,
+      5545.2,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B14": [
+      37.4,
+      5716.2,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B15": [
+      1064.7,
+      6250.1,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B16": [
+      723.1,
+      6525.1,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B17": [
+      816.1,
+      6917.1,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B18": [
+      856.1,
+      8521.1,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B19": [
+      568.1,
+      7807.1,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B2": [
+      190.0,
+      2593.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B20": [
+      1278.1,
+      7331.1,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B23": [
+      -448.7,
+      7811.6,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B24": [
+      -1136.1,
+      8665.9,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B3": [
+      581.0,
+      1986.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B4": [
+      928.0,
+      3173.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B5": [
+      962.0,
+      2565.0,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B6": [
+      1161.0,
+      3978.0,
+      800.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B7": [
+      1561.0,
+      4774.7,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B8": [
+      1151.8,
+      5372.4,
+      750.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_B_2": [
+      -433.0,
+      2038.0,
+      753.0
+    ],
+    "CHJ_MT02_ProjectionSymbol_BP_C_4": [
+      -2525.0,
+      8377.0,
+      440.0
+    ]
+  },
+  "symbol_rooms": {
+    "CHJ_MT02_ProjectionSymbol_BP_A10": "RBRoom_West_Corridor_3",
+    "CHJ_MT02_ProjectionSymbol_BP_A11": "RBRoom_West_Corridor_3",
+    "CHJ_MT02_ProjectionSymbol_BP_A12": "RBRoom_West_Maintenance",
+    "CHJ_MT02_ProjectionSymbol_BP_A13": "RBRoom_West_Maintenance",
+    "CHJ_MT02_ProjectionSymbol_BP_A14": "RBRoom_West_ConstructionStorage",
+    "CHJ_MT02_ProjectionSymbol_BP_A15": "RBRoom_West_ConstructionStorage",
+    "CHJ_MT02_ProjectionSymbol_BP_A16": "RBRoom_West_OfficeConstruction",
+    "CHJ_MT02_ProjectionSymbol_BP_A17": "RBRoom_West_OfficeConstruction",
+    "CHJ_MT02_ProjectionSymbol_BP_A18": "RBRoom_West_OfficeConstruction",
+    "CHJ_MT02_ProjectionSymbol_BP_A19": "RBRoom_West_Blueprints",
+    "CHJ_MT02_ProjectionSymbol_BP_A2": "RBRoom_West_ConstructionGore",
+    "CHJ_MT02_ProjectionSymbol_BP_A20": "RBRoom_West_Blueprints",
+    "CHJ_MT02_ProjectionSymbol_BP_A21": "RBRoom_West_Blueprints",
+    "CHJ_MT02_ProjectionSymbol_BP_A22": "RBRoom_West_Corridor_6",
+    "CHJ_MT02_ProjectionSymbol_BP_A3": "RBRoom_West_ConstructionGore",
+    "CHJ_MT02_ProjectionSymbol_BP_A4": "RBRoom_West_Corridor_4",
+    "CHJ_MT02_ProjectionSymbol_BP_A5": "RBRoom_West_PrivateOffice",
+    "CHJ_MT02_ProjectionSymbol_BP_A6": "RBRoom_West_PrivateOffice",
+    "CHJ_MT02_ProjectionSymbol_BP_A7": "RBRoom_West_PrivateOffice_CrawlSpace",
+    "CHJ_MT02_ProjectionSymbol_BP_A8": "RBRoom_West_Bureau",
+    "CHJ_MT02_ProjectionSymbol_BP_A_6": "RBRoom_West_PrivateOffice",
+    "CHJ_MT02_ProjectionSymbol_BP_B10": "RBRoom_GF_East_PostOffice_Sorting",
+    "CHJ_MT02_ProjectionSymbol_BP_B11": "RBRoom_East_BreakRoom",
+    "CHJ_MT02_ProjectionSymbol_BP_B12": "RBRoom_EastCorridor_5_Master",
+    "CHJ_MT02_ProjectionSymbol_BP_B13": "RBRoom_East_Museum",
+    "CHJ_MT02_ProjectionSymbol_BP_B14": "RBRoom_EastCorridor_2_Master",
+    "CHJ_MT02_ProjectionSymbol_BP_B15": "RBRoom_East_Bathroom",
+    "CHJ_MT02_ProjectionSymbol_BP_B16": "RBRoom_East_Bathroom_CrawlSpace",
+    "CHJ_MT02_ProjectionSymbol_BP_B17": "RBRoom_East_Judge_Records",
+    "CHJ_MT02_ProjectionSymbol_BP_B18": "RBRoom_East_JudgesOffice",
+    "CHJ_MT02_ProjectionSymbol_BP_B19": "RBRoom_East_JudgesOffice",
+    "CHJ_MT02_ProjectionSymbol_BP_B2": "RBRoom_East_Courtroom_1",
+    "CHJ_MT02_ProjectionSymbol_BP_B20": "RBRoom_East_JudgesOffice",
+    "CHJ_MT02_ProjectionSymbol_BP_B23": "RBRoom_MainCourtroom_Balcony",
+    "CHJ_MT02_ProjectionSymbol_BP_B24": "RBRoom_MainCourtroom_Balcony",
+    "CHJ_MT02_ProjectionSymbol_BP_B3": "RBRoom_East_Courtroom_1",
+    "CHJ_MT02_ProjectionSymbol_BP_B4": "RBRoom_EastCorridor_1_Slave_2",
+    "CHJ_MT02_ProjectionSymbol_BP_B5": "RBRoom_EastCorridor_1_Slave_2",
+    "CHJ_MT02_ProjectionSymbol_BP_B6": "RBRoom_East_Courtroom_2",
+    "CHJ_MT02_ProjectionSymbol_BP_B7": "RBRoom_East_Courtroom_2",
+    "CHJ_MT02_ProjectionSymbol_BP_B8": "RBRoom_East_Courtroom_2",
+    "CHJ_MT02_ProjectionSymbol_BP_B_2": "RBRoom_East_Courtroom_1",
+    "CHJ_MT02_ProjectionSymbol_BP_C_4": "RBRoom_BackEntrance_Stairs"
   }
 }

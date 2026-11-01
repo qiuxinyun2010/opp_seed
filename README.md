@@ -41,7 +41,7 @@ opp_seed/
 cd <本仓库目录>       # 即 opp_seed/
 
 python seed.py --list
-python seed.py --selftest                  # 全部已接入样本：71/71
+python seed.py --selftest                  # 全部已接入样本：95/95
 
 python seed.py DTS_MT01 252252             # 3 个调频器 / 3 条线索 / 最终模型位置
 python seed.py FPI_MT01 335335             # 放映机坐标 / 录像盘 / 图案
@@ -66,6 +66,10 @@ python seed.py SMC_MT02 453453 --trace     # 附带组洗牌 / 距离过滤 / �
 
 python seed.py PSA_MT01 219219             # 最短路径上每把钥匙 + 录像盘的房间与坐标
 python seed.py PSA_MT01 219219 --trace     # 附带节点房间抽取与距离过滤过程
+
+python seed.py RES_MT02 176176             # 水疗度假村：26 颗宝石（人偶 / 类别 / 坐标）
+python seed.py RES_MT02 69069 --tuto       # 再加教学段 51 人偶的类别图
+python seed.py RES_MT02 69069 --difficulty hard
 ```
 
 ### PSA_MT01 输出
@@ -196,6 +200,25 @@ seed = 453453   salt = 453   Easy   1P
 所谓「3 个人偶分散到东西两个区域」是这条距离规则的副作用，不是 section 硬约束
 （300 seed 抽样 298 次东西各半）。详见 `release/coop/SMC_MT02/SMC_MT02.md`。
 
+### RES_MT02 输出
+
+```text
+$ python seed.py RES_MT02 176176
+RES_MT02  水疗度假村 · 焚毁莉莉娅的遗物  (ResortSpa)
+seed = 176176   salt = 176   Easy   1P
+类别配额（分区 25 颗的展开）：Ruby=5  Sapphire=13  Emerald=8
+  mandatory  RBRoom_Building_Room3              红宝石  RE_MannequinTrap_Setup_BP_15   (-139.2, -829.9, 369.2)
+  mandatory  RBRoom_RestaurantLounge_Master     红宝石  RE_MannequinTrap_Setup_BP_214  (-977.1, -3279.3, 683.2)
+  section1   RBRoom_West1F_GameRoom             蓝宝石  RE_MannequinTrap_Setup_BP_129  (-2071.7, 4694.8, 219.2)
+  ...
+  共 26 颗宝石
+```
+
+- 每行 = **该人偶身上是真宝石 + 颜色 + 宝石挂点坐标**；`mandatory` 是固定房（类别恒为红）。
+- 分区 4 段：房间按 `RandFraction(GetSeed(room)+479582)` 排序后**轮流**分配，类别从配额桶里抽。
+- `--tuto` 额外打印教学段 51 个人偶的颜色表（偶序号=蓝、奇序号=绿）；
+  「哪 6 个人偶带宝石」仍未解。详见 `release/home/RES_MT02.md`。
+
 ## 坐标输出
 
 涉及房间或点位的 JSON 结果同时包含 `coordinates = [X, Y, Z]`：
@@ -239,8 +262,10 @@ seed = 453453   salt = 453   Easy   1P
 | `MHS_MT01` | 黑帮据点 · 找到 3 个投影房间 | 图案 + 房间 + 3 位密码（TrainDepot 池按房间去重 10→8），抽取 12/12、密码 11/11 |
 | `TSR_MT01` | 电视台屋顶 · 密码接线面板 | 字母数字码位坐标 + 接线密码 |
 | `SMC_MT02` | 商场 · 4 个人偶按颜色配对下半身 | 颜色 → 下半身房间 + 区域 + 布置点坐标（教学关固定） |
-| `PSA_MT01` | 警察局阁楼 · 图案钥匙与录像盘 | 最短路径上每把钥匙 + 录像盘的房间与坐标；1 条样本，约 12% seed 命中已知数据缺口 |
+| `PSA_MT01` | 警察局阁楼 · 图案钥匙与录像盘 | 最短路径上每把钥匙 + 录像盘的房间与坐标；2 条样本（219219 / 958958），全 salt 扫描 0 失败 |
 | `DTS_MT01` | 闹市区 · 调频线索与目标人体模型 | 3 个调频器可泛化；两条完整样本可输出 3 线索与最终模型，其他 seed 标记未闭环，PART |
+| `RES_MT02` | 水疗度假村 · 焚毁莉莉娅的遗物 | 主轴段 26 颗宝石（人偶 / 类别 / 坐标，实测 2/2）；教学段**颜色**可查（`--tuto`，实测 8/10），「哪 6 个人偶」未解，PART |
+| `SRR_MT01` | 郊区住宅区 · 撬开富豪宅的密码盘 | **5 个密码盘所在房间 + 各自 4 位密码**（本局 3 栋为主，另外 2 栋标「备用」；不给贴花位）；选房/密码 12/12 实测，`groupSeed` 为唯一自洽解 |
 | `CHJ_MT03` | 法院 · 贿赂其余可收买的法官 | TODO |
 
 新增关卡：在 `seed.py` 的 `LEVELS` 里加一条；随机原语复用 `seedcore.py`；
@@ -268,7 +293,17 @@ seed = 453453   salt = 453   Easy   1P
 6. `DTS_MT01` 的 3 个随机调频器已对任意 seed 交付；武器、房间和最终模型目前只对
    `252252`、`61061` 两条完整样本输出。缺失 DTR MapSet 的 `ObjectiveTypeIndex` 默认值，
    未知 seed 不做人体模型拟合。
-7. `PSA_MT01` 只有 1 条实测（Easy / 1P，seed=219219）：7 个节点的图案、6 个已记录房间、
-   录像盘叶子都对上了，火焰房是预测值。约 12% 的 seed 会把 `RBRoom_Morgue_Master`
-   （导出数据里只有 1 个钥匙生成点）选成还要再出一把钥匙的中间节点，此时脚本报
-   `ModelUnresolved` 而不猜第二个生成点；只有 easy/1P 有样本。
+7. `PSA_MT01` 有 2 条实测（Easy / 1P，seed=219219、958958）：7 个节点的图案、已记录房间、
+   录像盘叶子都对上了，火焰房是预测值。停尸房 `RBRoom_Morgue_Master` 的第二个钥匙生成点
+   `PSA_MT01_KeySpawner_Morgue_2` 不在 `PSA_MT01_B00` 里，而在 `PSA_LD_Items` 子关卡
+   （`SceneComp.RelativeLocation = -794.6382, 2209.8171, 139.12964`），补进
+   `data/psa_mt01.json` 后 999 个 salt 全部有解（旧表有 118/999 ≈ 11.8% 的 seed 会报
+   `ModelUnresolved`）。只有 easy/1P 有样本。
+8. `SRR_MT01` 有 3 条实测（Easy / 1P，seed=894894、512512、745745）：选房与 4 位密码 12/12。
+   其中「抽密码房」的 `GetSeed(setup)` 没有从二进制里直接定位到，现用
+   `|crc(RBObjectiveCoordinatorGroup2) + |crc(MultiroomPuzzle_Coordinator_House1_BP)||`
+   这个自洽解（在「池 H1..H5 × 670+ 名字链」里三样本同时命中的唯一解），第四个样本可能推翻它。
+   正因为这条没定死，`view()` 除了本局 3 栋，还把**另外 2 栋的密码盘**一起列出来（标「（备用）」，
+   同时在 `spare` 字段里给机器读）：万一判错的正好是哪 3 栋，5 组密码都摆在那儿照样能试。
+   输出**只到「密码盘房间 + 4 位密码」这一层**，贴花位（第几位读哪个房间）不再输出；
+   内部仍算了 `slots`，需要时可以直接取 `predict()` 的原始结果。

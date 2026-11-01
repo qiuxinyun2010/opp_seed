@@ -17,15 +17,20 @@
     mode: 'overlay',
     floor: 0,
     showDoors: true,
+    showStairs: true,
     showPoints: true,
     showAllNames: false,
     showSeed: true,
     showLegend: false,
     followGame: true,
     lightTheme: false,
-    searchQuery: '',
+    coordTarget: null,
     hiddenZones: new Set(),
     seedMarkers: [],
+    analysis: null,
+    analysisRoomColor: new Map(),
+    autoHiddenPointsFor: null,
+    seedLine: '',
     selected: null,
     hovered: null,
     lastSeedSig: '',
@@ -122,11 +127,12 @@
     showToast._timer = setTimeout(() => { toastMsg.textContent = ''; }, 3200);
   }
 
-  async function copyText(text) {
+  async function copyText(text, label) {
     if (!text) return;
+    const msg = label || `已复制: ${text}`;
     try {
       await navigator.clipboard.writeText(text);
-      showToast(`已复制: ${text}`);
+      showToast(msg);
     } catch {
       const ta = document.createElement('textarea');
       ta.value = text;
@@ -134,8 +140,18 @@
       ta.select();
       document.execCommand('copy');
       ta.remove();
-      showToast(`已复制: ${text}`);
+      showToast(msg);
     }
+  }
+
+  function copySeedLine() {
+    if (!state.seedLine) {
+      showToast('还没有读到本局 seed 信息');
+      return;
+    }
+    const trial = (state.seedLine.match(/Trial ID: ([^,]+)/) || [])[1] || '';
+    const seed = (state.seedLine.match(/Seed: (\d+)/) || [])[1] || '';
+    copyText(state.seedLine, `已复制 Seed：${trial}${seed ? ' / ' + seed : ''}`);
   }
 
   function hexToRgba(hex, alpha) {
@@ -180,6 +196,7 @@
     levelSelect.value = state.level;
     state.hiddenZones.clear();
     state.selected = null;
+    state.coordTarget = null;      // 换关卡就作废：坐标只属于当前这张图
 
     if (state.db._default_flip) {
       view.flipx = !!state.db._default_flip.x;
@@ -306,7 +323,6 @@
     const rooms = db.rooms || [];
     const points = db.points || [];
     const doors = db.doors || [];
-    const q = state.searchQuery.trim().toLowerCase();
 
     const zoneHidden = (zid) => zid && state.hiddenZones.has(zid);
 
@@ -341,12 +357,6 @@
       const isSelected = state.selected?.kind === 'room' && state.selected?.id === r.id;
       const isSeedRoom = state.selected?.kind === 'seed' && state.seedMarkers[state.selected.id]?.room === r.raw;
       const isHovered = state.hovered?.kind === 'room' && state.hovered?.id === r.id;
-      const isMatched = q && (
-        r.raw.toLowerCase().includes(q) ||
-        (r.name || '').toLowerCase().includes(q) ||
-        (r.name_zh || '').toLowerCase().includes(q) ||
-        noteOf('rooms', r.raw).toLowerCase().includes(q)
-      );
 
       let fillAlpha = r.kind === 'corridor' ? 0.14 : 0.26;
       if (state.lightTheme) fillAlpha = r.kind === 'corridor' ? 0.16 : 0.28;
@@ -355,13 +365,15 @@
       let stroke = r.zone ? hexToRgba(zColor, 0.85) : (state.lightTheme ? '#94a3b8' : '#475569');
       let lw = 1.5;
 
-      if (isMatched) {
-        fill = hexToRgba('#14b8a6', 0.42);
-        stroke = '#14b8a6';
-        lw = 2.6;
+      const anColor = state.showSeed ? state.analysisRoomColor.get(r.raw) : null;
+      if (anColor) {
+        fill = hexToRgba(anColor, state.lightTheme ? 0.3 : 0.22);
+        stroke = anColor;
+        lw = 2.2;
       }
+
       if (isHovered) {
-        lw = 2.4;
+        lw = Math.max(lw, 2.4);
       }
       if (isSelected || isSeedRoom) {
         fill = hexToRgba('#f59e0b', state.lightTheme ? 0.38 : 0.35);
@@ -408,6 +420,56 @@
         ctx.restore();
 
         hitTargets.push({ kind: 'door', id: d.id, p1, p2 });
+      });
+    }
+
+    // 楼梯：一段要么是单层的一级台阶/坡道，要么跨层（floors 里不止一层）——
+    // 跨层的楼梯在它覆盖的每一层都会画一次，所以两层里都能看到楼梯在哪。
+    if (state.showStairs) {
+      (db.stairs || []).forEach(s => {
+        const fls = s.floors || [];
+        if (state.mode === 'floor' && fls.length && !fls.includes(state.floor)) return;
+        const [x0, y0] = s.a;
+        const [x1, y1] = s.b;
+        let dx = x1 - x0, dy = y1 - y0;
+        let len = Math.hypot(dx, dy);
+        if (len < 1) { dx = 0; dy = -1; len = 1; }
+        const halfW = Math.max(90, s.w || 200) / 2;
+        const nx = -dy / len * halfW;
+        const ny = dx / len * halfW;
+        const quad = [
+          view.pt(x0 - nx, y0 - ny), view.pt(x1 - nx, y1 - ny),
+          view.pt(x1 + nx, y1 + ny), view.pt(x0 + nx, y0 + ny),
+        ];
+        const multi = fls.length > 1;
+        const isSel = state.selected?.kind === 'stair' && state.selected?.id === s.id;
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(quad[0][0], quad[0][1]);
+        for (let i = 1; i < quad.length; i++) ctx.lineTo(quad[i][0], quad[i][1]);
+        ctx.closePath();
+        ctx.fillStyle = multi
+          ? hexToRgba('#22d3ee', state.lightTheme ? 0.26 : 0.2)
+          : hexToRgba('#22d3ee', state.lightTheme ? 0.16 : 0.12);
+        ctx.fill();
+        ctx.setLineDash(multi ? [] : [4, 3]);
+        ctx.strokeStyle = isSel ? '#f59e0b' : (multi ? '#22d3ee' : 'rgba(34, 211, 238, 0.7)');
+        ctx.lineWidth = isSel ? 3 : (multi ? 2.0 : 1.3);
+        ctx.stroke();
+        // 中线：从低端指向高端，方便看出上行方向
+        const p0 = view.pt(x0, y0);
+        const p1 = view.pt(x1, y1);
+        ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(p0[0], p0[1]);
+        ctx.lineTo(p1[0], p1[1]);
+        ctx.strokeStyle = isSel ? '#f59e0b' : '#22d3ee';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+
+        hitTargets.push({ kind: 'stair', id: s.id, p1: p0, p2: p1 });
       });
     }
 
@@ -508,9 +570,9 @@
         }
         const [sx, sy] = view.pt(m.p[0], m.p[1]);
         const isSel = state.selected?.kind === 'seed' && state.selected?.id === i;
-        const isGoal = m.kind === 'goal';
-        const color = isGoal ? '#f43f5e' : '#14b8a6';
-        const r = isSel ? 13 : 10.5;
+        const color = m.color || (m.kind === 'goal' ? '#f43f5e' : '#14b8a6');
+        const base = 10.5 * (m.size || 1);
+        const r = isSel ? base + 2.5 : base;
 
         ctx.beginPath();
         ctx.arc(sx, sy, r + 4, 0, Math.PI * 2);
@@ -519,16 +581,22 @@
 
         ctx.beginPath();
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
-        ctx.fillStyle = color;
+        const roomOnly = m.exact === false;
+        ctx.fillStyle = roomOnly ? hexToRgba(color, 0.5) : color;
         ctx.fill();
         ctx.lineWidth = isSel ? 3 : 2;
         ctx.strokeStyle = isSel ? '#f59e0b' : '#ffffff';
+        if (roomOnly) ctx.setLineDash([3, 3]);
         ctx.stroke();
+        ctx.setLineDash([]);
 
-        ctx.font = 'bold 10.5px Consolas, sans-serif';
+        const badgeText = m.badge || String(i + 1);
+        const badgeFont = badgeText.length >= 3 ? 0.95 : 1;
+        ctx.font = `bold ${(10.5 * badgeFont * (m.size || 1) / 1).toFixed(1)}px Consolas, sans-serif`;
         ctx.fillStyle = '#ffffff';
         ctx.textAlign = 'center';
-        ctx.fillText(String(i + 1), sx, sy + 0.5);
+        ctx.textBaseline = 'middle';
+        ctx.fillText(badgeText, sx, sy + 0.5);
 
         const tagText = m.label || '';
         if (tagText) {
@@ -545,6 +613,8 @@
       });
     }
 
+    drawCoordTarget();
+
     const parts = [
       state.mode === 'overlay'
         ? `叠加 (${(db.floors || []).length}层)`
@@ -553,6 +623,139 @@
     if (view.turns % 4) parts.push(`旋转 ${(view.turns % 4) * 90}°`);
     if (view.flipx) parts.push('镜像 X');
     viewBadge.textContent = parts.join(' · ');
+  }
+
+  // ---- 坐标定位：一次只保留一个点，定位下一个会自动清掉上一个 ----
+  const COORD_COLOR = '#facc15';
+  const coordInput = document.getElementById('coordInput');
+
+  function fmtNum(v) {
+    if (v == null || Number.isNaN(v)) return '-';
+    return Number(v.toFixed ? v.toFixed(1) : v).toString();
+  }
+
+  function roomAtWorld(x, y) {
+    let best = null;
+    (state.db?.rooms || []).forEach(r => {
+      const inside = (r.hulls || []).some(h => pointInPoly(x, y, h));
+      if (inside && (!best || (r.area || 0) < (best.area || 0))) best = r;
+    });
+    return best;
+  }
+
+  function floorOfZ(z) {
+    if (z == null) return null;
+    const f = (state.db?.floors || []).find(item => {
+      const band = item.band || [];
+      const [lo, hi] = band;
+      if (lo == null || hi == null) return false;
+      return z >= lo - 200 && z <= hi + 200;
+    });
+    return f || null;
+  }
+
+  function outsideBBox(x, y) {
+    const box = state.db?.bbox;
+    if (!box) return false;
+    const m = 200;
+    return x < box[0] - m || x > box[2] + m || y < box[1] - m || y > box[3] + m;
+  }
+
+  function parseCoord(text) {
+    const nums = (String(text).match(/-?\d+(?:\.\d+)?/g) || []);
+    if (nums.length < 2) return null;
+    return [Number(nums[0]), Number(nums[1]), nums.length > 2 ? Number(nums[2]) : null];
+  }
+
+  function locateCoord() {
+    if (!state.db) {
+      showToast('地图还没加载好，等一下再定位');
+      return;
+    }
+    const p = parseCoord(coordInput.value);
+    if (!p) {
+      coordInput.classList.add('bad');
+      showToast('坐标至少要两个数：x, y（例如 -139.2, -829.9, 369.2）');
+      return;
+    }
+    coordInput.classList.remove('bad');
+    coordInput.value = `${fmtNum(p[0])}, ${fmtNum(p[1])}${p[2] == null ? '' : ', ' + fmtNum(p[2])}`;
+
+    const room = roomAtWorld(p[0], p[1]);
+    const floor = floorOfZ(p[2]);
+    // 每次定位都重建，旧的点自动消失（同一时刻只展示一个坐标点）
+    state.coordTarget = {
+      p,
+      room: room ? room.raw : null,
+      roomName: room ? roomDisplayName(room) : '',
+      floorLabel: floor ? floor.label : null,
+    };
+    state.selected = { kind: 'coord', id: 0 };
+    view.centerOnWorld(p[0], p[1]);
+    updateInspector(false);
+    requestRender();
+    const coordTxt = `(${fmtNum(p[0])}, ${fmtNum(p[1])}` +
+      (p[2] == null ? ')' : `, ${fmtNum(p[2])})`);
+    let msg = floor
+      ? `已定位到 ${floor.label}${room ? ' · ' + room.raw : ''}`
+      : `已标出坐标点 ${coordTxt}`;
+    if (outsideBBox(p[0], p[1])) msg += '（该坐标在本图范围外）';
+    showToast(msg);
+  }
+
+  function clearCoordTarget() {
+    if (!state.coordTarget) return;
+    state.coordTarget = null;
+    if (state.selected?.kind === 'coord') state.selected = null;
+    coordInput.value = '';
+    coordInput.classList.remove('bad');
+    updateInspector(false);
+    requestRender();
+    showToast('已清除坐标点');
+  }
+
+  function drawCoordTarget() {
+    const m = state.coordTarget;
+    if (!m) return;
+    const [sx, sy] = view.pt(m.p[0], m.p[1]);
+    const isSel = state.selected?.kind === 'coord';
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(sx, sy, 24, 0, Math.PI * 2);
+    ctx.fillStyle = hexToRgba(COORD_COLOR, 0.18);
+    ctx.fill();
+
+    ctx.strokeStyle = hexToRgba(COORD_COLOR, 0.9);
+    ctx.lineWidth = 1.6;
+    ctx.setLineDash([]);
+    ctx.beginPath();
+    ctx.moveTo(sx - 30, sy); ctx.lineTo(sx - 11, sy);
+    ctx.moveTo(sx + 11, sy); ctx.lineTo(sx + 30, sy);
+    ctx.moveTo(sx, sy - 30); ctx.lineTo(sx, sy - 11);
+    ctx.moveTo(sx, sy + 11); ctx.lineTo(sx, sy + 30);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(sx, sy, isSel ? 10 : 8.5, 0, Math.PI * 2);
+    ctx.fillStyle = COORD_COLOR;
+    ctx.fill();
+    ctx.lineWidth = isSel ? 3 : 2;
+    ctx.strokeStyle = isSel ? '#ffffff' : 'rgba(11,17,32,0.9)';
+    ctx.stroke();
+
+    const label = `坐标点 (${fmtNum(m.p[0])}, ${fmtNum(m.p[1])}` +
+      (m.p[2] == null ? ')' : `, ${fmtNum(m.p[2])})`);
+    ctx.font = 'bold 11.5px "Microsoft YaHei UI", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.lineWidth = 3.5;
+    ctx.strokeStyle = state.lightTheme ? 'rgba(255,255,255,0.92)' : 'rgba(11,17,32,0.95)';
+    ctx.strokeText(label, sx + 16, sy);
+    ctx.fillStyle = COORD_COLOR;
+    ctx.fillText(label, sx + 16, sy);
+    ctx.restore();
+
+    hitTargets.push({ kind: 'coord', id: 0, cx: sx, cy: sy, r: 14 });
   }
 
   function drawPoly(pts) {
@@ -582,10 +785,12 @@
   function pickAt(sx, sy) {
     for (let i = hitTargets.length - 1; i >= 0; i--) {
       const t = hitTargets[i];
-      if (t.kind === 'seed' || t.kind === 'point') {
+      if (t.kind === 'seed' || t.kind === 'point' || t.kind === 'coord') {
         if (Math.hypot(sx - t.cx, sy - t.cy) <= t.r) return { kind: t.kind, id: t.id };
       } else if (t.kind === 'door') {
         if (distToSegment(sx, sy, t.p1, t.p2) <= 6) return { kind: 'door', id: t.id };
+      } else if (t.kind === 'stair') {
+        if (distToSegment(sx, sy, t.p1, t.p2) <= 8) return { kind: 'stair', id: t.id };
       }
     }
     for (let i = hitTargets.length - 1; i >= 0; i--) {
@@ -618,6 +823,18 @@
   function describeTarget(target) {
     if (!target || !state.db) return null;
     const db = state.db;
+    if (target.kind === 'coord') {
+      const m = state.coordTarget;
+      if (!m) return null;
+      return {
+        title: `定位点 · (${fmtNum(m.p[0])}, ${fmtNum(m.p[1])}` +
+          (m.p[2] == null ? ')' : `, ${fmtNum(m.p[2])})`),
+        sub: `坐标: (${m.p.map(fmtNum).join(', ')})  |  楼层: ${m.floorLabel || '-'}` +
+          `  |  房间: ${m.room ? `${m.room}${m.roomName ? ' (' + m.roomName + ')' : ''}` : '不在任何房间轮廓内'}`,
+        copyRaw: `${fmtNum(m.p[0])}, ${fmtNum(m.p[1])}` +
+          (m.p[2] == null ? '' : `, ${fmtNum(m.p[2])}`),
+      };
+    }
     if (target.kind === 'room') {
       const r = db.rooms[target.id];
       if (!r) return null;
@@ -656,13 +873,25 @@
         copyRaw: d.name,
       };
     }
+    if (target.kind === 'stair') {
+      const s = (db.stairs || [])[target.id];
+      if (!s) return null;
+      const fls = (s.floors || []).map(floorLabel).join('/') || '-';
+      return {
+        title: `楼梯 · ${s.name || '#' + s.id}`,
+        sub: `z: ${s.z[0]}~${s.z[1]}  |  楼层: ${fls}  |  宽: ${s.w}  |  台阶数: ${s.steps}`,
+        copyRaw: s.name || '',
+      };
+    }
     if (target.kind === 'seed') {
       const m = state.seedMarkers[target.id];
       if (!m) return null;
       const coordStr = m.p.join(', ');
+      const name = m.label || m.badge || `点位 ${target.id + 1}`;
+      const extra = m.badge && m.label ? `  |  值: ${m.badge}` : '';
       return {
-        title: `本局标记 #${target.id + 1} · ${m.label}${m.exact ? '' : ' (≈房间中心)'}`,
-        sub: `分组: ${m.section || '-'}  |  房间: ${m.room || '-'}  |  坐标: (${coordStr})`,
+        title: `分析点位 #${target.id + 1} · ${name}${m.exact ? '' : ' (≈房间中心)'}`,
+        sub: `分组: ${m.section || m.kind || '-'}${extra}  |  房间: ${m.room || '-'}  |  坐标: (${coordStr})`,
         copyRaw: m.room || coordStr,
       };
     }
@@ -841,14 +1070,28 @@
 
   levelSelect.addEventListener('change', async () => {
     const lv = levelSelect.value;
-    state.followGame = false;
-    document.getElementById('chkFollow').checked = false;
+    /* 手动挑关卡 = 只锁当前这一局，不改「跟随游戏」开关，也不写进 config；
+       下一局开始时后端会自动恢复跟随 */
     await fetch('/api/config', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ follow_game: false, level: lv }),
+      body: JSON.stringify({ level: lv }),
     });
     loadMap(lv, true);
+  });
+
+  document.getElementById('mapHint').addEventListener('click', async (e) => {
+    const lv = e.currentTarget.dataset.level;
+    if (!lv) return;
+    await fetch('/api/config', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ follow_game: true }),
+    });
+    state.followGame = true;
+    document.getElementById('chkFollow').checked = true;
+    e.currentTarget.classList.add('hidden');
+    await loadMap(lv, true);
   });
 
   document.getElementById('chkFollow').addEventListener('change', async (e) => {
@@ -863,6 +1106,10 @@
 
   document.getElementById('chkDoors').addEventListener('change', (e) => {
     state.showDoors = e.target.checked;
+    requestRender();
+  });
+  document.getElementById('chkStairs').addEventListener('change', (e) => {
+    state.showStairs = e.target.checked;
     requestRender();
   });
   document.getElementById('chkPoints').addEventListener('change', (e) => {
@@ -888,9 +1135,17 @@
     requestRender();
   });
 
-  document.getElementById('searchInput').addEventListener('input', (e) => {
-    state.searchQuery = e.target.value;
-    requestRender();
+  document.getElementById('btnCoordGo').addEventListener('click', locateCoord);
+  document.getElementById('btnCoordClear').addEventListener('click', clearCoordTarget);
+  coordInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      locateCoord();
+      coordInput.blur();
+    } else if (e.key === 'Escape') {
+      if (state.coordTarget) clearCoordTarget();
+      coordInput.blur();
+    }
+    e.stopPropagation();
   });
 
   document.getElementById('btnRotate').addEventListener('click', () => {
@@ -934,6 +1189,7 @@
   });
 
   document.getElementById('btnRefreshSeed').addEventListener('click', () => pollState(true));
+  document.getElementById('btnCopySeedLine').addEventListener('click', () => copySeedLine());
   document.getElementById('btnCopySeed').addEventListener('click', () => {
     const txt = document.getElementById('seedText').innerText;
     copyText(txt);
@@ -964,7 +1220,9 @@
       chk.dispatchEvent(new Event('change'));
     }
     else if (k === 'r') { pollState(true); }
+    else if (k === 'c') { copySeedLine(); }
     else if (k === 'n') { if (!btnEditNote.disabled) btnEditNote.click(); }
+    else if (k === 'g') { coordInput.focus(); coordInput.select(); }
     else if (k === 'escape') { state.selected = null; updateInspector(); requestRender(); }
     else if (['1', '2', '3', '4'].includes(k)) {
       const idx = parseInt(k, 10) - 1;
@@ -993,6 +1251,27 @@
     pre.innerHTML = html;
   }
 
+  /* 有分析点位时：默认关掉普通任务点位（每个分析批次只自动关一次，用户手动打开后不再抢） */
+  function syncAnalysisToggle() {
+    const an = state.analysis;
+    const hasAnalysis = Boolean(an && an.points && an.points.length && an.hide_points !== false);
+    const chkPoints = document.getElementById('chkPoints');
+    if (hasAnalysis) {
+      const key = `${an.level || ''}|${state.seedLine || ''}`;
+      if (state.autoHiddenPointsFor !== key) {
+        state.autoHiddenPointsFor = key;
+        state.showPoints = false;
+        chkPoints.checked = false;
+        state.showSeed = true;
+        document.getElementById('chkSeed').checked = true;
+      }
+    } else if (state.autoHiddenPointsFor !== null) {
+      state.autoHiddenPointsFor = null;
+      state.showPoints = true;
+      chkPoints.checked = true;
+    }
+  }
+
   async function pollState(force = false) {
     try {
       const res = await fetch('/api/state');
@@ -1000,14 +1279,33 @@
 
       const hkInfo = data.hotkey ? `快捷键 ${data.hotkey}${data.is_admin ? ' (管理员)' : ''}` : '快捷键已关';
       document.getElementById('seedFootInfo').textContent = hkInfo;
+      state.seedLine = data.seed_line || '';
+      document.getElementById('btnCopySeedLine').disabled = !state.seedLine;
+
+      if (data.follow_game !== undefined) {
+        state.followGame = !!data.follow_game;
+        document.getElementById('chkFollow').checked = state.followGame;
+      }
 
       if (data.active_level && data.active_level !== state.level) {
         await loadMap(data.active_level, true);
       }
 
+      /* 日志已经换了关卡、但地图没跟着换（跟随关掉或加载失败）→ 给一个一键切过去的按钮 */
+      const hint = document.getElementById('mapHint');
+      if (data.trial_level && data.trial_level !== state.level) {
+        hint.textContent = `本局是 ${data.trial_level} · 点此切图`;
+        hint.dataset.level = data.trial_level;
+        hint.classList.remove('hidden');
+      } else {
+        hint.classList.add('hidden');
+      }
+
       const sig = JSON.stringify([data.gamelog, data.seed?.seed, data.active_level]);
       if (!force && sig === state.lastSeedSig) return;
       state.lastSeedSig = sig;
+
+      if (data.active_level) levelSelect.value = data.active_level;
 
       const info = data.gamelog;
       const badge = document.getElementById('seedStatusBadge');
@@ -1017,6 +1315,9 @@
       if (info) {
         badge.textContent = statusMap[info.status] || info.status;
         meta.textContent = `${info.trial} · seed ${info.seed} · ${info.players}P · ${info.difficulty} (${info.time})`;
+        if (data.trial_has_map === false) {
+          meta.textContent += ' · 该关卡暂无地图数据';
+        }
       } else {
         badge.textContent = '无对局';
         meta.textContent = '尚未在 OPP.log 中读到对局信息';
@@ -1025,18 +1326,48 @@
       renderSeedText(data.seed?.text || '', data.seed?.ok);
 
       state.seedMarkers = data.seed_markers || [];
-      document.getElementById('lblSeedCount').textContent = `本局标记 (${state.seedMarkers.length})`;
+      state.analysis = data.analysis || null;
+      document.getElementById('lblSeedCount').textContent =
+        `分析点位 (${state.seedMarkers.length})`;
+
+      /* 房间高亮：seed 里的房间名格式和地图 raw 名不一定一致（Room-8-3 vs RBRoom8_3），
+         所以优先用坐标反查所在房间，查不到再退回原始房间名 */
+      state.analysisRoomColor = new Map();
+      state.seedMarkers.forEach(m => {
+        if (!m.color) return;
+        let room = m.room || '';
+        if (m.p && m.p.length > 1) {
+          const hit = roomAtWorld(m.p[0], m.p[1]);
+          if (hit && hit.raw) room = hit.raw;
+        }
+        if (room && !state.analysisRoomColor.has(room)) {
+          state.analysisRoomColor.set(room, m.color);
+        }
+      });
+      syncAnalysisToggle();
 
       const markersBar = document.getElementById('seedMarkersBar');
       const chips = document.getElementById('markerChips');
+      const legendBox = document.getElementById('analysisLegend');
       chips.innerHTML = '';
+      legendBox.innerHTML = '';
       if (state.seedMarkers.length) {
         markersBar.classList.remove('hidden');
+        (state.analysis?.legend || []).forEach(item => {
+          const span = document.createElement('span');
+          span.className = 'legend-dot';
+          span.innerHTML = `<i style="background:${item.color}"></i>${item.label}`;
+          legendBox.appendChild(span);
+        });
         state.seedMarkers.forEach((m, i) => {
           const chip = document.createElement('button');
-          chip.className = 'marker-chip' + (m.kind === 'goal' ? ' goal' : '');
-          chip.textContent = `#${i + 1} ${m.label}`;
-          chip.title = `${m.section} · ${m.room || ''} (${m.p.join(', ')})`;
+          chip.className = 'marker-chip';
+          if (m.color) chip.style.borderColor = m.color;
+          const name = m.label || m.badge || '点位';
+          chip.textContent = m.badge && m.label
+            ? `${name} ${m.badge}`
+            : `${i + 1} ${name}`;
+          chip.title = `${m.section || m.kind} · ${m.room || ''} (${m.p.join(', ')})`;
           chip.addEventListener('click', () => {
             state.selected = { kind: 'seed', id: i };
             view.centerOnWorld(m.p[0], m.p[1]);
@@ -1051,7 +1382,8 @@
 
       requestRender();
     } catch (e) {
-      // ignore transient network errors
+      // 网络抖动忽略，但别的异常要能看见（否则地图/面板会静默不更新）
+      console.error('pollState failed', e);
     }
   }
 

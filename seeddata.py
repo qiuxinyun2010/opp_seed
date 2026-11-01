@@ -71,6 +71,9 @@ CHJ_MT02_ACTORS = {int(seed): actors
                    for seed, actors in _get(_chj2, 'actors', 'chj_mt02').items()}
 CHJ_MT02_ROOMS_20020 = _get(_chj2, 'rooms_20020', 'chj_mt02')
 CHJ_MT02_SYMBOL_NAMES = _get(_chj2, 'symbol_names', 'chj_mt02')
+# 43 个投影图案机位的 actor 坐标 / 所在房间（由 ui/data/maps/CHJ_MT02.json 导出）
+CHJ_MT02_SYMBOL_COORDS = _get(_chj2, 'symbol_coordinates', 'chj_mt02')
+CHJ_MT02_SYMBOL_ROOMS = _get(_chj2, 'symbol_rooms', 'chj_mt02')
 
 # ---------------------------------------------------------------------------
 # MHS_MT01：黑帮据点 · 找到 3 个投影房间
@@ -143,6 +146,14 @@ if PSA_START_ROOM not in PSA_ROOM_POSITIONS:
     raise SeedDataError('data/psa_mt01.json 的 start_room 不在 room_positions 里')
 
 # ---------------------------------------------------------------------------
+# RES_MT02：水疗度假村 · 焚毁莉莉娅的遗物
+# ---------------------------------------------------------------------------
+_res2 = load('res_mt02')
+RES_MT02_COORDINATORS = _get(_res2, 'coordinators', 'res_mt02')
+# 318 个 RE_MannequinTrap 容器：name/level/pool(main|tutorial|base)/room/x,y,z/yaw/spawn_offset
+RES_MT02_POOL = _get(_res2, 'pool', 'res_mt02')
+
+# ---------------------------------------------------------------------------
 # 实测样本（--selftest）
 # ---------------------------------------------------------------------------
 _samples = load('samples')
@@ -173,3 +184,18 @@ TFS_SAMPLE_ROOMS = _get(_samples, 'tfs_mt03_rooms', 'samples')
 SAMPLES_PSA = [(seed, [(symbol, room, list(coordinates))
                        for symbol, room, coordinates in expect])
                for seed, expect in _get(_samples, 'psa_mt01', 'samples')]
+# {密码盘 actor: (房间名或 None, 4 位密码)}
+SAMPLES_SRR = [(seed, {pad: (value[0], str(value[1]))
+                       for pad, value in expect.items()})
+               for seed, expect in _get(_samples, 'srr_mt01', 'samples')]
+
+# ---------------------------------------------------------------------------
+# SRR_MT01：郊区住宅区 · 撬开富豪宅的密码盘
+# ---------------------------------------------------------------------------
+_srr = load('srr_mt01')
+# 协调器（House1..House5）→ 密码盘 actor / 本局要选几间房 / 每个 Section 的候选房
+SRR_HOUSES = _get(_srr, 'houses', 'srr_mt01')
+SRR_HOUSE_ORDER = list(_get(_srr, 'house_order', 'srr_mt01'))
+# 房间名 → RBPuzzleRoomComponent 组件名（compSeed 要用组件名算，不是房间名字本身）
+SRR_ROOM_COMPONENTS = _get(_srr, 'room_components', 'srr_mt01')
+SRR_ROOM_CENTERS = _get(_srr, 'room_centers', 'srr_mt01')
