@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import queue
 import sys
@@ -82,6 +83,7 @@ POINT_CLUE = '#ffffff'
 POINT_GOAL = '#e11d48'
 NOTE_COLOR = '#0f766e'
 SEED_CLUE = '#0f766e'
+STAIR = '#22d3ee'          # 楼梯：与 web 同一套色（青色块 + 中线，跨层实线 / 单层虚线）
 
 FONT_PATHS = ['C:/Windows/Fonts/msyh.ttc', 'C:/Windows/Fonts/simhei.ttf']
 
@@ -372,6 +374,15 @@ def tint(hexcolor, amount=0.82):
                               int(b + (255 - b) * amount))
 
 
+def blend(base, color, alpha):
+    """把 color 按 alpha 盖在 base 上，返回不透明近似色（Tk 画布不支持透明度）。"""
+    b = (base or '#ffffff').lstrip('#')
+    c = (color or '#000000').lstrip('#')
+    return '#%02x%02x%02x' % tuple(
+        int(int(b[i:i + 2], 16) * (1 - alpha) + int(c[i:i + 2], 16) * alpha)
+        for i in (0, 2, 4))
+
+
 def zone_color(db, zid):
     for z in db['zones']:
         if z['id'] == zid:
@@ -391,6 +402,7 @@ class State(object):
         self.mode = 'overlay'          # overlay | floor
         self.floor = 0
         self.show_doors = True
+        self.show_stairs = True        # 楼梯几何图层（web 默认也开）
         self.show_points = True
         self.show_items = False
         self.show_all_names = False
@@ -468,6 +480,34 @@ def build_ops(db, state, view):
             ops.append(('line', [view.pt(x - dx * half, y - dy * half),
                                  view.pt(x + dx * half, y + dy * half)],
                         color, width, dash, ('door', d['id'])))
+
+    # ---- 楼梯（几何图层，和 web 一致）----
+    # 一段楼梯画成一个半透明色块：跨层的画实线（在它覆盖的每一层都出现），
+    # 单层的台阶/坡道画虚线；中线从低端指向高端，方便看出上行方向。
+    if state.show_stairs and db.get('stairs'):
+        for s in db['stairs']:
+            fls = s.get('floors') or []
+            if state.mode == 'floor' and fls and state.floor not in fls:
+                continue
+            x0, y0 = s['a'][0], s['a'][1]
+            x1, y1 = s['b'][0], s['b'][1]
+            dx, dy = x1 - x0, y1 - y0
+            ln = math.hypot(dx, dy)
+            if ln < 1e-6:
+                dx, dy, ln = 0.0, -1.0, 1.0
+            half = max(90.0, s.get('w') or 200.0) / 2.0
+            nx, ny = -dy / ln * half, dx / ln * half
+            quad = [view.pt(x0 - nx, y0 - ny), view.pt(x1 - nx, y1 - ny),
+                    view.pt(x1 + nx, y1 + ny), view.pt(x0 + nx, y0 + ny)]
+            multi = len(fls) > 1
+            hot = bool(sel and sel[0] == 'stair' and sel[1] == s['id'])
+            ops.append(('poly', quad,
+                        blend(BG, STAIR, 0.20 if multi else 0.12),
+                        SELECT if hot else STAIR,
+                        3.0 if hot else (2.0 if multi else 1.3),
+                        ('stair', s['id']), None if multi else (4, 3)))
+            ops.append(('line', [view.pt(x0, y0), view.pt(x1, y1)],
+                        SELECT if hot else STAIR, 1.0, None, ('stair', s['id'])))
 
     # ---- 交互物品（默认不提取，配置里打开才有）----
     if state.show_items and items:
@@ -695,8 +735,9 @@ class TkBackend(object):
                                         outline=stroke or '', width=width,
                                         dash=list(dash) if dash else ())
             elif kind == 'line':
-                _, pts, color, width, _dash, key = op
-                item = c.create_line(*_flat(pts), fill=color, width=width)
+                _, pts, color, width, dash, key = op
+                item = c.create_line(*_flat(pts), fill=color, width=width,
+                                     dash=list(dash) if dash else ())
             elif kind == 'circle':
                 _, (cx, cy), r, fill, stroke, width, key = op
                 item = c.create_oval(cx - r, cy - r, cx + r, cy + r,
@@ -754,6 +795,32 @@ class PilBackend(object):
             self._fonts[key] = self.ImageFont.truetype(path, max(9, int(size * self.ss)))
         return self._fonts[key]
 
+    def _dashed(self, pts, color, width, dash):
+        """沿折线画虚线（PIL 没有 dash 参数，自己按长度切段）。"""
+        s = self.ss
+        w = max(1, int(width * s))
+        on = max(1.0, (dash[0] if dash else 4) * s)
+        off = max(1.0, (dash[1] if dash and len(dash) > 1 else (dash[0] if dash else 4)) * s)
+        drawing, remain = True, on
+        for i in range(len(pts) - 1):
+            x0, y0 = pts[i][0] * s, pts[i][1] * s
+            x1, y1 = pts[i + 1][0] * s, pts[i + 1][1] * s
+            seg = math.hypot(x1 - x0, y1 - y0)
+            if seg <= 1e-6:
+                continue
+            t = 0.0
+            while t < seg - 1e-6:
+                step = min(remain, seg - t)
+                if drawing:
+                    xa, ya = x0 + (x1 - x0) * t / seg, y0 + (y1 - y0) * t / seg
+                    xb, yb = x0 + (x1 - x0) * (t + step) / seg, y0 + (y1 - y0) * (t + step) / seg
+                    self.d.line([(xa, ya), (xb, yb)], fill=color, width=w)
+                t += step
+                remain -= step
+                if remain <= 1e-6:
+                    drawing = not drawing
+                    remain = on if drawing else off
+
     def draw(self, ops):
         s = self.ss
         for op in ops:
@@ -764,11 +831,19 @@ class PilBackend(object):
                     continue
                 self.d.polygon([(x * s, y * s) for x, y in pts], fill=fill or None)
                 if stroke:
-                    self.d.line([(x * s, y * s) for x, y in pts] + [(pts[0][0] * s, pts[0][1] * s)],
-                                fill=stroke, width=max(1, int(width * s)))
+                    ring = list(pts) + [pts[0]]
+                    if dash:
+                        self._dashed(ring, stroke, width, dash)
+                    else:
+                        self.d.line([(x * s, y * s) for x, y in ring],
+                                    fill=stroke, width=max(1, int(width * s)))
             elif kind == 'line':
-                _, pts, color, width, _dash, _key = op
-                self.d.line([(x * s, y * s) for x, y in pts], fill=color, width=max(1, int(width * s)))
+                _, pts, color, width, dash, _key = op
+                if dash:
+                    self._dashed(pts, color, width, dash)
+                else:
+                    self.d.line([(x * s, y * s) for x, y in pts],
+                                fill=color, width=max(1, int(width * s)))
             elif kind == 'circle':
                 _, (cx, cy), r, fill, stroke, width, _key = op
                 box = [(cx - r) * s, (cy - r) * s, (cx + r) * s, (cy + r) * s]
@@ -803,13 +878,14 @@ class _NullPanel(object):
 
 
 class App(object):
-    def __init__(self, db=None, path=None, cfg=None, pinned=False):
+    def __init__(self, db=None, path=None, cfg=None, pinned=False, show_stairs=True):
         self.db = db
         self.path = path
         self.cfg = cfg or load_config()
         self.pinned = bool(pinned and db)
         self.follow = bool(self.cfg.get('follow_game', True)) and not self.pinned
         self.state = State()
+        self.state.show_stairs = bool(show_stairs)
         self.state.show_legend = bool(self.cfg.get('show_legend', False))
         self._flip_manual = bool(self.cfg.get('flip'))
         fx, fy = resolve_flip(db, self.cfg)
@@ -1505,6 +1581,16 @@ class App(object):
                    % (d.get('type') or d['cat'], d['w'],
                       d['p'][0], d['p'][1], d['p'][2], rooms))
             return d, title, d['name'], sub
+        if kind == 'stair':
+            s = next((x for x in (db.get('stairs') or []) if x['id'] == oid), None)
+            if not s:
+                return None, '', '', ''
+            floors = '/'.join(floor_name(db, i) or '?' for i in (s.get('floors') or [])) or '-'
+            title = 'Stair  %s' % (s.get('name') or '#%d' % s['id'])
+            sub = ('z : %.0f ~ %.0f     floors : %s     width : %.0f     steps : %d\nfile : %s'
+                   % (s['z'][0], s['z'][1], floors, s.get('w') or 0,
+                      s.get('steps') or 0, s.get('file') or '-'))
+            return s, title, s.get('name') or '', sub
         if kind == 'item':
             it = db['items'][oid]
             title = 'Item  %s' % it['name']
@@ -1675,6 +1761,8 @@ def main(argv=None):
     ap.add_argument('--floor', type=int, default=0, help='分层模式看第几层（0 起）')
     ap.add_argument('--size', default='2200x1500', help='--png 的输出尺寸')
     ap.add_argument('--all-names', action='store_true', help='--png 时标注所有房间名')
+    ap.add_argument('--no-stairs', action='store_true',
+                    help='不画楼梯图层（默认画，与 web 的「楼梯」开关一致）')
     ap.add_argument('--list', action='store_true', help='列出已生成的关卡数据')
     ap.add_argument('--log', metavar='FILE', help='OPP.log 路径（默认自动找）')
     ap.add_argument('--seed-lib', metavar='FILE', help='seed.py 路径（默认上级目录）')
@@ -1736,6 +1824,7 @@ def main(argv=None):
         state.mode = args.mode
         state.floor = args.floor
         state.show_all_names = args.all_names
+        state.show_stairs = not args.no_stairs
         if args.seed_marks:
             try:
                 import seedinfo
@@ -1777,7 +1866,7 @@ def main(argv=None):
         db, path, pinned = None, None, False
         cfg['follow_game'] = True          # 不给关卡 = 跟着日志走
 
-    App(db, path, cfg, pinned=pinned).run()
+    App(db, path, cfg, pinned=pinned, show_stairs=not args.no_stairs).run()
     return 0
 
 

@@ -3,14 +3,20 @@
 把 `paks/MAP/Maps/<地图>` 里的关卡 JSON 提取成**每关一份**的地图数据，再用 Tkinter 实时渲染。
 改分区、加点位、写备注都只改 JSON，不需要重新出图。
 
-## 两个前端：Web 版（默认）与 Tk 版（`--tk`）
+## 两个前端：Web 版（默认）与 Tk 版（`--tk`，已废弃）
 
 | 入口 | 说明 |
 |---|---|
 | `启动地图工具.bat` | 默认起 **Web 版**（`python mapweb.py`），双击即可 |
-| `启动地图工具.bat --tk` | 起旧的 Tk 版（等价于 `python mapview.py`） |
+| `启动地图工具.bat --tk` | 起旧的 Tk 版（等价于 `python mapview.py`，**已废弃**，只留给 `--png` 导出） |
 | `python mapweb.py` | Web 版：本机 HTTP 服务 + Edge/Chrome 应用窗口，复用 `mapview` 的渲染与 `seedinfo` 的种子推理 |
-| `python mapview.py` | Tk 版：原窗口程序，功能不变 |
+| `python mapview.py` | Tk 版：已废弃；`--png` 静态导出仍走这里 |
+
+**Tk 窗口不再维护，以 Web 版为准。** `mapview.py` 里只剩两件事要管：
+
+1. `--png` / `mapdb.py` 的出图：`build_ops()` 是唯一的绘图指令层，Web 与 PNG 用**同一套图层**（房间 / 门 / **楼梯** / 点位 / 本局答案），
+   所以导出图与网页看到的内容一致（底色是浅色主题，Web 默认深色，这是唯一的显示差异）。
+2. 镜像 / 旋转 / 分层 / 图例这些选项，导出和网页同名同义。
 
 Web 版把页面放在 `web/`（`index.html` / `style.css` / `app.js`），后端接口：
 `/api/state`、`/api/levels`、`/api/map?level=<关卡>`、`/api/note`、`/api/config`、
@@ -479,6 +485,7 @@ python mapview.py [LEVEL|文件] [选项]      # 不给 LEVEL = 跟着日志走
   --mode overlay|floor      默认 overlay
   --floor <N>               N 从 0 开始
   --all-names               标注全部房间名
+  --no-stairs               不画楼梯图层（默认画，与 Web 的「楼梯」开关一致）
   --size 2200x1500
   --list                    已生成的关卡数据
   --log <文件>              OPP.log 路径（默认自动找）

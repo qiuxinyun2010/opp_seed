@@ -53,7 +53,7 @@
 | SRR_MT01 | SuburbRiotResidential | 136 | 6 | A–E 五组密码房 + F 其它 | ⚠ 多一个"其它"兜底区 |
 | FPB_MT01 | FunParkBarn | 53 | 4 | **分区 = 人偶所在区域**：一局 4 个人偶、每区 1 个，26 个候选按所在房间聚成 4 片，每片带自己的解锁开关 | 关卡数据无 section 命名，区域名用序号 + 房间列表 |
 | PF_LD_T12 | PrisonFarm | 114 | 2 | 密码任务分 A / B 两区（四位密码各 2 位） | 猪头 17、阀门 14 是独立任务，不分区 |
-| MHS_MT03 | MobsterHideoutSyndicate | 20 | 3 | 3 片区域各藏 3 个毒品（共 9）：赌场 / Chemco 实验室 / 列车编组场 | 每区候选桶 6/8/5，每局各选 3 个 |
+| MHS_MT03 | MobsterHideoutSyndicate | 20 | 3 | 3 个 `MH_DrugDeliveryCoord_BP_C` 各 1 区：赌场 Casino / Chemco 实验室 / 列车编组场 Train Depot，每区每局 3 个桶（共 9） | 候选桶 6/8/5；`rooms` 通配染整片（25/12/44 房间 = 81），船厂 13 房间是毒品来源不染区 |
 | MHS_MT02 | MobsterHideoutSyndicate | 31 | 1 | 毒气桶全部集中在一片区域（毒品实验室），不分区 | 29 个桶 + 2 个泵/容器（泵在列车编组场，供灌注） |
 | SRR_MT03 | SuburbRiotResidential | 22 | 3 | 3 轮 3 区（完成一区解锁下一区）：富人区房屋 / 学校教学楼 / 学校后院 | 每区 6 个翻牌器；4 个轮次闸门无房间故不带分区 |
 

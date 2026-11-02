@@ -18,6 +18,7 @@
     python seed.py SMC_MT02 453453 --trace              # 附带组洗牌与距离过滤过程
     python seed.py PSA_MT01 219219                      # 最短路径：每把钥匙 + 录像盘的房间与坐标
     python seed.py DTS_MT01 252252                      # 3 个调频器 / 3 条线索 / 最终模型
+    python seed.py SR_Trial 485485                      # 第2阶段：4 间密码房点位 + 4 位密码
     python seed.py RES_MT02 176176                      # 水疗度假村：26 颗宝石（人偶 / 类别 / 坐标）
     python seed.py RES_MT02 69069 --tuto                # 再加教学段 51 人偶的类别图
     python seed.py RES_MT02 69069 --difficulty hard
@@ -52,7 +53,7 @@ from seeddata import (
     SAMPLES_TSR, SAMPLES_FPI_MT01, SAMPLES_TFS, SAMPLES_MHS,
     SAMPLES_MHS_PICK, TFS_SAMPLE_ROOMS, SAMPLES_PSA, SAMPLES_SRR,
     SRR_HOUSES, SRR_HOUSE_ORDER, SRR_ROOM_COMPONENTS, SRR_ROOM_CENTERS,
-    CHJ_MT02_COORDS, CHJ_MT02_ACTORS, CHJ_MT02_ROOMS_20020,
+    CHJ_MT02_COORDS, CHJ_MT02_ACTORS,
     CHJ_MT02_SYMBOL_NAMES, CHJ_MT02_SYMBOL_COORDS, CHJ_MT02_SYMBOL_ROOMS,
     MHS_SYMBOL_NAMES, MHS_ZONES, MHS_ZONE_BY_KEY,
     MHS_SYMBOLS, TSR_BUCKETS, TSR_BUCKET_NAMES, TSR_MANDATORY_ROOM,
@@ -120,7 +121,6 @@ LEVELS = {
         'map': 'CourthouseJudicial',
         'kind': 'ProjectionCode',
         'projection': True,
-        'partial': True,
         'doc': 'release/coop/CHJ_MT02/CHJ_MT02.md',
     },
     'MHS_MT01': {
@@ -184,6 +184,15 @@ LEVELS = {
         'puzzle': True,
         'doc': 'release/home/SRR_MT01.md',
     },
+    'SR_TRIAL': {
+        'name': '骚乱郊区 · 找密码开安全屋',
+        'english': 'Find A Way To Open The Panic Room (phase 2: passcode rooms)',
+        'map': 'SuburbRiot',
+        'kind': 'MultiroomPuzzle',
+        'coordinator': 'SR_B02_ObjCoord_MultiRoomPuzzle',
+        'srtrial': True,   # 只推第 2 阶段：4 间密码房 + 4 位密码
+        'doc': 'release/coop/SR_Trial/SR_Trial.md',
+    },
     'CHJ_MT03': {
         'name': '法院 · 贿赂其余可收买的法官',
         'map': 'CourthouseJudicial',
@@ -215,6 +224,8 @@ ALIASES = {
     'JEWELS': 'RES_MT02', 'RELIC': 'RES_MT02', 'LILIANA': 'RES_MT02',
     'SRR': 'SRR_MT01', 'SUBURB': 'SRR_MT01', 'HOUSES': 'SRR_MT01',
     'KEYPAD': 'SRR_MT01', 'KEYPADS': 'SRR_MT01', 'MULTIROOM': 'SRR_MT01',
+    'SR': 'SR_TRIAL', 'SRT': 'SR_TRIAL', 'SRTRIAL': 'SR_TRIAL',
+    'PANIC': 'SR_TRIAL', 'PANICROOM': 'SR_TRIAL', 'B02': 'SR_TRIAL',
 }
 
 # ---------------------------------------------------------------------------
@@ -612,37 +623,120 @@ def _chj_mt02_draw_code(base, level_seed):
     return ''.join(digits)
 
 
-def _predict_chj_mt02(level_seed):
-    actors = CHJ_MT02_ACTORS.get(level_seed)
-    if actors is None:
-        return [], [
-            'CHJ_MT02 的前置候选过滤/补位尚未泛化；当前只接入了已验证的 '
-            '713713、620620、20020，未对该 seed 输出未经验证的房间或密码。'
-        ]
+# CHJ_MT02 前置随机化（sub_1402B05C0）+ 主循环（sub_1436E95F0），反编译证据与
+# 验证见 release/coop/CHJ_MT02/CHJ_MT02.md §4。713713/620620/20020/135135 的
+# actor+密码 20 条 + 711711（3P）外部验证 4 条共 24/24 全中：
+#   前置：base = crc32_fname("Objective Actors") + GetSeed(协调器)；
+#   机位候选池 = actor 名字序（Yellow/Blue 各 21、Tuto 1），逐个抽取：
+#       idx = RandSeeded(base + 已抽数, 池剩余)（末尾交换删除），
+#   随后按 DistanceBetweenSameObjectives（Yellow/Blue=1200uu、Tuto=120uu）
+#   剔除近邻候选——sub_1402B3C30 语义为「从后向前、末尾交换删除」。
+#   主循环每容器槽位 i：符号组 RandSeeded(i+46541)、真投影器 RandSeeded(i+99041)
+#   各自交换删除抽出配对，密码 Draw(GetSeed(投影器) + GetSeed(协调器) + i)。
+#   真投影器多于容器时走假投影分支 v44=(n-c)/c（盐 99042+i+j / 86550+i+j，
+#   尾部裁剪到 c*(v44+1)）；本关常态 2 抽 2 容器 v44=0，走不到。
+CHJ_MT02_SETUPS = {
+    # coordinator: (机位前缀, DistanceBetweenSameObjectives)
+    'MT02_Projections_Coordinator_BP_YellowSide': ('A', 1200.0),
+    'MT02_Projections_Coordinator_BP_BlueSIde': ('B', 1200.0),
+    'MT02_Projections_Coordinator_BP_Tuto': ('C', 120.0),
+}
+CHJ_MT02_PICK_SALT = 'Objective Actors'   # 前置种子基盐名（24/24 锁定；同分发
+                                          # 路径的 "Projection Actors/Containers"
+                                          # 字符串未生效）
+CHJ_MT02_SYMBOL_SALT = 46541              # 符号组抽签 RandSeeded(i+46541)
+CHJ_MT02_REAL_SALT = 99041                # 真投影器重排 RandSeeded(i+99041)
+# 游戏内实测房间显示名（actor 所在房与投影落点可能不同），其余用 symbol_rooms
+CHJ_MT02_ROOM_IN_GAME = {
+    'CHJ_MT02_ProjectionSymbol_BP_A2': 'RBRoom_West_ConstructionGore',
+    'CHJ_MT02_ProjectionSymbol_BP_A3': 'West_ConstructionGore',
+    'CHJ_MT02_ProjectionSymbol_BP_A6': 'RBRoom_West_PrivateOffice',
+    'CHJ_MT02_ProjectionSymbol_BP_A19': 'RBRoom_West_Blueprints',
+    'CHJ_MT02_ProjectionSymbol_BP_B4': 'RBRoom_EastCorridor_1_Slave_2',
+    'CHJ_MT02_ProjectionSymbol_BP_B14': 'RBRoom_East_Museum',
+    'CHJ_MT02_ProjectionSymbol_BP_B16': 'East_BathRoom_Crawlspace',
+    'CHJ_MT02_ProjectionSymbol_BP_B24': 'Main_CourtRoom_Balcony',
+    'CHJ_MT02_ProjectionSymbol_BP_C_4': 'RBRoom_BackEntrance_Stairs',
+}
+# 实测样本（release/coop/CHJ_MT02/test.txt、release/coop/test.txt）：
+# symbol -> (actor 短名或 None=未实测, 密码)
+CHJ_MT02_SAMPLES_EXTRA = {
+    135135: {'Skull': ('A2', '820'), 'Spiral': ('A19', '067'),
+             'Pentagram': ('B4', '219'), 'Sun': ('B14', '874'),
+             'TriangleCircle': ('C_4', '408')},
+    711711: {'Spiral': (None, '410'), 'Sun': (None, '569'),
+             'Pentagram': (None, '185'), 'TriangleCircle': (None, '340')},
+}
 
+
+def _chj_mt02_pool(letter):
+    prefix = 'CHJ_MT02_ProjectionSymbol_BP_' + letter
+    return sorted(a for a in CHJ_MT02_SYMBOL_COORDS if a.startswith(prefix))
+
+
+def _chj_mt02_pick(letter, coord_name, count, threshold, level_seed):
+    """前置 Actor Randomization：抽 count 个真投影器（含距离剔除）。"""
     level_crc = sc.crc32_fname('PersistentLevel')
-    rooms = CHJ_MT02_ROOMS_20020 if level_seed == 20020 else {}
+    base = (sc.crc32_fname(CHJ_MT02_PICK_SALT) +
+            sc.seed_of_object(coord_name, level_crc)) & sc.M32
+    remaining = _chj_mt02_pool(letter)
+    picked = []
+    while remaining and len(picked) < count:
+        index = sc.rand_seeded((base + len(picked)) & sc.M32,
+                               len(remaining), level_seed)
+        actor = remaining[index]
+        remaining[index] = remaining[-1]
+        remaining.pop()
+        picked.append(actor)
+        if threshold > 0:
+            loc = CHJ_MT02_SYMBOL_COORDS[actor]
+            for i in range(len(remaining) - 1, -1, -1):
+                other = CHJ_MT02_SYMBOL_COORDS[remaining[i]]
+                if math.dist(loc, other) < threshold:
+                    remaining[i] = remaining[-1]
+                    remaining.pop()
+    return picked
+
+
+def _predict_chj_mt02(level_seed, trace=False):
+    if not 0 < level_seed <= sc.M32:
+        raise ValueError('seed 必须在 [1, 2^32-1]')
+    level_crc = sc.crc32_fname('PersistentLevel')
     projections = []
     for coord_name, groups, tutorial in CHJ_MT02_COORDS:
-        clues = list(groups)
+        letter, threshold = CHJ_MT02_SETUPS[coord_name]
+        picked = _chj_mt02_pick(letter, coord_name, len(groups),
+                                threshold, level_seed)
         coord_seed = sc.seed_of_object(coord_name, level_crc)
+        clues = list(groups)
+        order = list(picked)
         for i in range(len(groups)):
-            group_index = sc.rand_seeded(i + 46541, len(clues), level_seed)
+            group_index = sc.rand_seeded(i + CHJ_MT02_SYMBOL_SALT,
+                                        len(clues), level_seed)
             group = clues[group_index]
-            actor = actors[group]
+            clues[group_index] = clues[-1]
+            clues.pop()
+            real_index = sc.rand_seeded(i + CHJ_MT02_REAL_SALT,
+                                       len(order), level_seed)
+            actor = order[real_index]
+            order[real_index] = order[-1]
+            order.pop()
             base = (sc.seed_of_object(actor, level_crc) + coord_seed + i) & sc.M32
+            code = _chj_mt02_draw_code(base, level_seed)
             projections.append({
                 'symbol': group,
                 'symbol_name': CHJ_MT02_SYMBOL_NAMES[group],
-                'room': rooms.get(group) or CHJ_MT02_SYMBOL_ROOMS.get(actor),
+                'room': CHJ_MT02_ROOM_IN_GAME.get(actor)
+                        or CHJ_MT02_SYMBOL_ROOMS.get(actor),
                 'actor': actor,
                 'coordinates': CHJ_MT02_SYMBOL_COORDS.get(actor),
                 'coordinate_type': 'actor',
-                'code': _chj_mt02_draw_code(base, level_seed),
+                'code': code,
                 'tutorial': tutorial,
             })
-            clues[group_index] = clues[-1]
-            clues.pop()
+            if trace:
+                print('    CHJ2 %s 槽%d 符号=%s 投影器=%s 密码=%s'
+                      % (letter, i, group, actor.split('_BP_')[-1], code))
     return projections, []
 
 
@@ -1255,6 +1349,135 @@ def _predict_srr_mt01(level_seed, trace=False):
     return {'selected': selected, 'houses': houses}
 
 
+# ---------------------------------------------------------------------------
+# SR_Trial（SuburbRiot_T08_B02）第 2 阶段：4 间密码房 + 4 位密码
+# ---------------------------------------------------------------------------
+# 只推第 2 阶段「找密码」（MultiroomPuzzle）：4 间房各 1 张数字贴花，按位次拼密码。
+# 链路（release/coop/SR_Trial/SR_Trial.md §4，反编译证据 evidence/）：
+#   抽房  sub_14374E420：Sections 按 JSON 顺序逐区抽 1 间（MinimumPuzzleRoomsInSection=1），
+#         idx = RandSeeded(剩余需求 + 28042, 区内房间数)，保序删除；补位 28088 本关走不到
+#   顺序  同函数原地洗牌：key = RandFraction(compSeed(room)) < 0.5（无 134123 偏移），
+#         n<=8 选择排序「最后一个 key<0.5 者换到末尾」→ 位次 = 洗牌后数组的逆序
+#   数字  sub_143620E70：共享池 0..9（全 4 间房共用），第 k 位
+#         digit = pool[RandSeeded(compSeed(room) + k + 7168, |pool|)]，memmove 保序删除
+#   位次  sub_143621120 对本关恒 -1（每区 1 间 < 需求 4）⇒ 位次只由 k 决定
+SR_SECTIONS = [
+    ['RBRoom_Mansion2nd_GameRoom_Reward', 'RBRoom_Mansion2nd_Fireplace'],  # [0]
+    ['RBRoom_Mansion1st_Office', 'RBRoom_Mansion1st_Bathroom_Reward'],     # [1]
+    ['RBRoom_Mansion1st_Laundry', 'RBRoom_Mansion1st_Garage'],             # [2]
+    ['RBRoom_Mansion2nd_EscortBedroom'],                                   # [3] 唯一房必中
+]
+SR_ROOM_LABEL = {
+    'RBRoom_Mansion2nd_GameRoom_Reward': 'GameRoom',
+    'RBRoom_Mansion2nd_Fireplace': 'Lounge',          # 802802 现场显示名
+    'RBRoom_Mansion1st_Office': 'Office',
+    'RBRoom_Mansion1st_Bathroom_Reward': 'Washroom',  # 802802 现场显示名
+    'RBRoom_Mansion1st_Laundry': 'Laundry',
+    'RBRoom_Mansion1st_Garage': 'Garage',
+    'RBRoom_Mansion2nd_EscortBedroom': 'Bedroom',
+}
+SR_PICK_OFFSET = 28042     # sub_14374E420 抽房：RandSeeded(剩余 + 28042, |池|)
+SR_FILL_OFFSET = 28088     # 同函数补位（本关每区 1 间抽满，走不到，仅备查）
+SR_DIGIT_OFFSET = 7168     # sub_143620E70：RandSeeded(seed + 7168, |池|)
+
+# 实测样本（release/coop/SR_Trial/test.txt）：{seed: {房间: (数字, 位次)}, password}
+SR_SAMPLES = {
+    485485: {
+        'rooms': {'RBRoom_Mansion2nd_EscortBedroom': (0, 1),
+                  'RBRoom_Mansion1st_Office': (8, 2),
+                  'RBRoom_Mansion2nd_GameRoom_Reward': (5, 3),
+                  'RBRoom_Mansion1st_Garage': (6, 4)},
+        'password': '0856',
+    },
+    500500: {
+        'rooms': {'RBRoom_Mansion1st_Office': (0, 1),
+                  'RBRoom_Mansion2nd_GameRoom_Reward': (9, 2),
+                  'RBRoom_Mansion1st_Laundry': (8, 3),
+                  'RBRoom_Mansion2nd_EscortBedroom': (3, 4)},
+        'password': '0983',   # 记录原文 0984 为笔误，逐房数字拼出 0983
+    },
+    166166: {
+        'rooms': {'RBRoom_Mansion2nd_EscortBedroom': (2, 1),
+                  'RBRoom_Mansion1st_Office': (5, 2),
+                  'RBRoom_Mansion2nd_GameRoom_Reward': (3, 3),
+                  'RBRoom_Mansion1st_Laundry': (6, 4)},
+        'password': '2536',
+    },
+    802802: {
+        'rooms': {'RBRoom_Mansion2nd_EscortBedroom': (0, 1),
+                  'RBRoom_Mansion1st_Garage': (4, 2),
+                  'RBRoom_Mansion1st_Bathroom_Reward': (9, 3),
+                  'RBRoom_Mansion2nd_Fireplace': (1, 4)},
+        'password': '0491',   # 现场显示名 Lounge=Fireplace、Washroom=Bathroom_Reward
+    },
+}
+
+
+def _sr_shuffle_rooms(rooms, level_seed, trace=False):
+    """sub_14374E420 处理顺序洗牌（n<=8 分支，无 134123）；位次取洗牌后数组的逆序。"""
+    salt = level_seed % 1000
+    frac = {r: sc.rand_fraction(sc.room_component_seed(r), salt) for r in rooms}
+    out = list(rooms)
+    end = len(out) - 1
+    while end > 0:
+        best = 0
+        for j in range(1, end + 1):
+            if frac[out[j]] < 0.5:
+                best = j              # 最后一个 key<0.5 的元素
+        if best != end:
+            out[best], out[end] = out[end], out[best]
+        end -= 1
+    if trace:
+        print('    SR 洗牌 frac=%s'
+              % {SR_ROOM_LABEL[r]: round(frac[r], 4) for r in rooms})
+    return out
+
+
+def _predict_sr_trial(level_seed, trace=False):
+    """第 2 阶段：4 间密码房点位（含数字/位次）+ 4 位密码。"""
+    if not 0 < level_seed <= sc.M32:
+        raise ValueError('seed 必须在 [1, 2^32-1]')
+    salt = level_seed % 1000
+    # ① 抽房：JSON 区序、每区 1 间
+    pools = {i: list(p) for i, p in enumerate(SR_SECTIONS)}
+    picked, remaining = [], 4
+    for sid in range(len(SR_SECTIONS)):
+        if remaining <= 0:
+            break
+        pool = pools[sid]
+        for _ in range(min(len(pool), 1)):
+            idx = sc.rand_seeded(remaining + SR_PICK_OFFSET, len(pool), salt)
+            room = pool.pop(idx)              # 保序删除
+            picked.append(room)
+            if trace:
+                print('    SR 抽房 section=%d 剩余=%d idx=%d/%d -> %s'
+                      % (sid, remaining, idx, len(pool) + 1, SR_ROOM_LABEL[room]))
+            remaining -= 1
+            if remaining <= 0:
+                break
+    # ② 位次 = 洗牌后数组的逆序
+    order = _sr_shuffle_rooms(picked, level_seed, trace=trace)[::-1]
+    if trace:
+        print('    SR 抽中 = %s' % [SR_ROOM_LABEL[r] for r in picked])
+        print('    SR 位次 = %s' % [SR_ROOM_LABEL[r] for r in order])
+    # ③ 共享数字池逐位抽（k = 位次下标）
+    pool = list(range(10))
+    slots = []
+    for k, room in enumerate(order):
+        comp = sc.room_component_seed(room)
+        idx = sc.rand_seeded((comp + k + SR_DIGIT_OFFSET) & sc.M32, len(pool), salt)
+        digit = pool.pop(idx)                 # 保序删除
+        slots.append({'id': room, 'room': room, 'label': SR_ROOM_LABEL[room],
+                      'digit': digit, 'position': k + 1})
+        if trace:
+            print('    SR k=%d %-10s compSeed=%-10d seed=%-10d pool=%2d idx=%d -> %d'
+                  % (k, SR_ROOM_LABEL[room], comp,
+                     (comp + k + SR_DIGIT_OFFSET) & sc.M32,
+                     len(pool) + 1, idx, digit))
+    return {'slots': slots,
+            'password': ''.join(str(s['digit']) for s in slots)}
+
+
 def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
             digits=4, trace=False, tuto=False):
     key = resolve(level_id)
@@ -1277,6 +1500,10 @@ def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
 
     if cfg.get('puzzle'):
         result.update(_predict_srr_mt01(seed, trace=trace))
+        return result
+
+    if cfg.get('srtrial'):
+        result.update(_predict_sr_trial(seed, trace=trace))
         return result
 
     if cfg.get('gameshow'):
@@ -1309,7 +1536,7 @@ def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
         return result
 
     if cfg.get('projection'):
-        projections, notes = _predict_chj_mt02(seed)
+        projections, notes = _predict_chj_mt02(seed, trace=trace)
         result['projections'] = projections
         for item in projections:
             # 机位 actor 坐标优先，只有拿不到精确坐标时才退回房间中心
@@ -1447,8 +1674,15 @@ def view(result):
                                  None, item.get('number_coordinates')))
 
     elif 'projections' in result:                           # CHJ_MT02
+        # 每个图案一个点位（actor 房间 + 精确坐标）并附密码
+        for item in result['projections']:
+            label = item['symbol_name']
+            if item.get('tutorial'):
+                label += '（教学）'
+            points.append(_point(item['room'], label, item['actor'],
+                                 _actor_coords(item), answer=item['code']))
         out['answer'] = ' '.join('%s=%s' % (i['symbol_name'], i['code'])
-                                  for i in result['projections'])
+                                 for i in result['projections'])
 
     elif 'patterns' in result:                              # MHS_MT01
         out['answer'] = ' '.join('%s=%s' % (i['pattern_name'], i['code'])
@@ -1493,6 +1727,14 @@ def view(result):
                              ('tag', 'code', 'pad', 'pad_room', 'coordinates')
                              if house.get(key)} for house in spare]
 
+    elif 'slots' in result:                                 # SR_Trial 第 2 阶段
+        # 只输出：4 间密码房点位（房间 + 数字）+ 最终密码
+        for slot in result['slots']:
+            point = _point(slot['room'], slot['label'], slot['id'])
+            point['answer'] = slot['digit']
+            points.append(point)
+        out['answer'] = result['password']
+
     else:                                                   # CHJ_MT01 等
         for room in result.get('rooms') or []:
             point = {'room': room['room']}
@@ -1521,10 +1763,12 @@ def render(result):
         lines.append('  ! %s' % v['note'])
     for index, point in enumerate(v.get('points') or [], 1):
         tail = ''
-        if point.get('answer'):
+        if point.get('answer') is not None:
             tail = '  密码 %s' % point['answer']
         if point.get('reel') is not None:
             tail = '  盘%d' % point['reel']
+        if point.get('coordinates'):
+            tail += '  (%s)' % ', '.join('%g' % c for c in point['coordinates'])
         lines.append('  %2d. %-8s %s%s'
                      % (index, point.get('label') or '', point['room'], tail))
     for rd in v.get('rounds') or []:
@@ -1546,16 +1790,43 @@ def selftest(verbose=True):
                       % (seed, room, got.get(room, '---'), code,
                          'OK' if ok else 'MISMATCH'))
     for seed, expect in SAMPLES_CHJ_MT02:
-        got = {r['symbol']: r['code']
-               for r in predict('CHJ_MT02', seed)['projections']}
+        rows = {r['symbol']: r for r in predict('CHJ_MT02', seed)['projections']}
         for symbol, code in expect.items():
             total += 1
-            ok = got.get(symbol) == code
+            ok = rows.get(symbol, {}).get('code') == code
             bad += 0 if ok else 1
             if verbose:
                 print('  CHJ2 %-7d %-16s 预测=%s 实测=%s %s'
-                      % (seed, symbol, got.get(symbol, '---'), code,
+                      % (seed, symbol, rows.get(symbol, {}).get('code', '---'),
+                         code, 'OK' if ok else 'MISMATCH'))
+        for symbol, actor in CHJ_MT02_ACTORS.get(seed, {}).items():
+            total += 1
+            got_actor = rows.get(symbol, {}).get('actor', '')
+            ok = got_actor == actor
+            bad += 0 if ok else 1
+            if verbose:
+                print('  CHJ2 %-7d %-16s 预测=%s 实测=%s %s'
+                      % (seed, symbol + '.actor', got_actor or '---', actor,
                          'OK' if ok else 'MISMATCH'))
+    for seed, expect in CHJ_MT02_SAMPLES_EXTRA.items():
+        rows = {r['symbol']: r for r in predict('CHJ_MT02', seed)['projections']}
+        for symbol, (actor, code) in expect.items():
+            total += 1
+            ok = rows.get(symbol, {}).get('code') == code
+            bad += 0 if ok else 1
+            if verbose:
+                print('  CHJ2 %-7d %-16s 预测=%s 实测=%s %s'
+                      % (seed, symbol, rows.get(symbol, {}).get('code', '---'),
+                         code, 'OK' if ok else 'MISMATCH'))
+            if actor is not None:
+                total += 1
+                got_actor = rows.get(symbol, {}).get('actor', '')
+                ok = got_actor.split('_BP_')[-1] == actor
+                bad += 0 if ok else 1
+                if verbose:
+                    print('  CHJ2 %-7d %-16s 预测=%s 实测=%s %s'
+                          % (seed, symbol + '.actor', got_actor or '---',
+                             actor, 'OK' if ok else 'MISMATCH'))
     for seed, (expect, scene) in SAMPLES_RES:
         info = cg.predict(seed)
         total += 1
@@ -1721,6 +1992,18 @@ def selftest(verbose=True):
             print('  RES2 %-7d 教学 %-6s 预测=%-9s 实测=%-9s %s'
                   % (seed, name.rsplit('_', 1)[-1], cmap[name][1], gem,
                      'OK' if ok else 'MISMATCH'))
+    # SR_Trial 第 2 阶段：4 间密码房 + 4 位密码
+    for seed, sample in SR_SAMPLES.items():
+        res = predict('SR_Trial', seed)
+        got = {s['id']: (s['digit'], s['position']) for s in res['slots']}
+        total += 1
+        ok = res['password'] == sample['password'] and got == sample['rooms']
+        bad += 0 if ok else 1
+        if verbose:
+            print('  SRT %-7d 密码=%s 期望=%s 逐房数字%s %s'
+                  % (seed, res['password'], sample['password'],
+                     'OK' if got == sample['rooms'] else 'MISMATCH: %s' % got,
+                     'OK' if ok else 'MISMATCH'))
     print('自检：%d/%d 通过' % (total - bad, total))
     return bad == 0
 
@@ -1764,7 +2047,7 @@ def main(argv=None):
                   or cfg.get('firepump') or cfg.get('mhs')
                   or cfg.get('mannequin') or cfg.get('dts')
                   or cfg.get('keylockedrooms') or cfg.get('jewels')
-                  or cfg.get('puzzle'))
+                  or cfg.get('puzzle') or cfg.get('srtrial'))
             status = 'PART' if cfg.get('partial') else ('OK' if ok else 'TODO')
             print('%-10s [%-4s] %-24s %s'
                   % (key, status, cfg['name'], cfg['map']))
