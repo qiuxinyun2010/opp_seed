@@ -1,0 +1,387 @@
+CHJ_MT01-592592
+RBRoom_West_PrivateOffice 2671
+RBRoom_East_Museum 4815
+RBRoom_West_Blueprints 2351
+
+Trial ID: FPI_MT02, Program difficulty: Easy, Stage: FunParkIllusion, Mission: FPI_MT02, Seed: 189189, EffectiveNumberOfPlayers: 1
+1 bear=9
+2 space-station-Dumbbells=4+1=5 ；wall of eye-sharing=1+3+1=5
+3 carrots_storage-apple=1+2+1=4 ; child dorm-book=4+2=6
+
+Trial ID: FPI_MT02, Program difficulty: Easy, Stage: FunParkIllusion, Mission: FPI_MT02, Seed: 346346, EffectiveNumberOfPlayers: 1
+1 bear=9
+2 rabbit_dinner-sharing = 3+2=5;wall of hands-water=2+7=9
+3 upside_storm-Dumbbells= 1+2+1=4; illusion_dinner-water=4+3+2=9
+
+Trial ID: RES_MT01, Program difficulty: Easy, Stage: ResortSpa, Mission: RES_MT01, Seed: 339339, EffectiveNumberOfPlayers: 1
+killer weapon room 
+weapon: employee_manager; 1=frying pan
+room: east_1_f_breakroom = 7
+killer: left_hand+left_leg = 6
+
+
+Trial ID: CHJ_MT02, Program difficulty: Easy, Stage: CourthouseJudicial, Mission: CHJ_MT02, Seed: 20020, EffectiveNumberOfPlayers: 1
+三角 973
+螺旋 752 West_ConstructionGore
+五角星 037 Main_CourtRoom_Balcony
+太阳 136 East_BathRoom_Crawlspace
+骷髅 017 RBRoom_West_PrivateOffice
+
+Trial ID: DTS_MT01, Stage: DowntownSewer, Mission: DTS_MT01, Seed: 252252, ENbPlayer: 1
+Body=Women;Letter=A;Number=1;Room=IRISH_PUB
+Store (Photo-Booth)
+Room-14-33 （Electric Room）
+UppSewer_CorridorRightGenerator_01
+weapon = A1=CHAINSAW;room=Pub_Master
+
+Trial ID: DTS_MT01, Program difficulty: Easy, Stage: DowntownSewer, Mission: DTS_MT01, Seed: 61061, EffectiveNumberOfPlayers: 1
+Room_10-21(Speakeasy)
+Room_26-6(FireStation)
+Store(Photo-Booth)
+weapon = B2=Scythe;room=GARAGE
+人物模型编号=DTR_MT01_ManneqinSetup_Scythe_BP5_5
+
+Trial ID: TSR_MT01, Program difficulty: Easy, Stage: TelevisionStudioRooftop, Mission: TSR_MT01, Seed: 695695, EffectiveNumberOfPlayers: 1
+Studio5=21；
+Studio5=J；
+Offices （Offices2nd）=B；
+Audiovisual（Offices3rdVisualArts_Slave01 大概率 / 但不排除Offices3rdVisualArts_Master，房间非常接近） =11;
+Rooftop（Roof）=M；
+Studio4=5；
+
+Trial ID: FPI_MT01, Program difficulty: Easy, Stage: FunParkIllusion, Mission: FPI_MT01, Seed: 335335, EffectiveNumberOfPlayers: 1
+Courtyard_Master = (1: 王冠)
+UpsideDown_Church = (4: 方块)
+RabbitHole_CarrotsStorage = (2：红心)
+Room-31-12 = （3：兔子）
+
+Trial ID: TFS_MT03, Program difficulty: Easy, Stage: ToyFactoryShipping, Mission: TFS_MT03, Seed: 14014, EffectiveNumberOfPlayers: 1
+B3：Ext_LoadingDocks_OfficeTrailer
+B2：East_Laundry
+B1: East_Construction
+A3: ReceivingDocks_OfficeBuilding
+A1: East_Painting
+A2: West_Processing
+
+Trial ID: MHS_MT01, Program difficulty: Easy, Stage: MobsterHideoutSyndicate, Mission: MHS_MT01, Seed: 759759, EffectiveNumberOfPlayers: 1
+骷髅：RBRoom_DrugLab_1F_ChemicalStorage = 854
+三角：RBRoom_Shipyard_01 = 460
+螺旋：RBRoom_TrainDepot2_StairBridge_Master（不确定，在这一块区域内很多编号很接近） = （遗漏）
+
+Trial ID: MHS_MT01, Program difficulty: Easy, Stage: MobsterHideoutSyndicate, Mission: MHS_MT01, Seed: 884884, EffectiveNumberOfPlayers: 1
+骷髅：RBRoom_DrugLab_2F_WalkwayRoom = 806
+三角：RBRoom_Shipyard_01 = 869
+五角星：RBRoom_Train_2ndFloor_Room01 = 245
+
+Trial ID: MHS_MT01, Program difficulty: Easy, Stage: MobsterHideoutSyndicate, Mission: MHS_MT01, Seed: 771771, EffectiveNumberOfPlayers: 1
+骷髅：RBRoom_DrugLab_1F_Corridor = 342
+三角：RBRoom_Shipyard_02 = 123
+太阳：RBRoom_Train_2ndFloor_Cooridor_05 = 015
+
+759759
+Trial ID: SMC_MT02, Program difficulty: Easy, Stage: ShoppingMallCarrefour, Mission: SMC_MT02, Seed: 453453, EffectiveNumberOfPlayers: 1
+RollingDoor-3M_BP_EastRDCStore_4 = Red (N,Hardware)
+RBRoom_DepartmentStore_EastSide_2F = Green (M,Spatin)
+RBRoom_WestCorridorRDC_Store1 = Blue (B ,Pets)
+
+Trial ID: PSB_MT01, Program difficulty: Easy, Stage: PoliceStationBasement, Mission: PSB_MT01, Seed: 111111, EffectiveNumberOfPlayers: 1
+A=五角星；
+B=兔子；
+C=方块；
+
+Trial ID: MHS_MT01, Program difficulty: Easy, Stage: MobsterHideoutSyndicate, Mission: MHS_MT01, Seed: 707707, EffectiveNumberOfPlayers: 1
+骷髅: 384
+螺旋: Train Depot2 Stair Bridge Master = 863
+三角: 102
+
+Trial ID: PSA_MT01, Program difficulty: Easy, Stage: PoliceStationAttic, Mission: PSA_MT01, Seed: 219219, EffectiveNumberOfPlayers: 1
+RBRoom_ReelStorage（眼睛） : 方块，梅花
+RBRoom25_2（梅花）：火焰，星星
+RBRoom_ShootingRange（方块）：王冠，红心
+RBRoom_OfficeBathroom_24（红心）：空
+RBRoom_DetectiveOffices03_50（五角星）：录像盘
+RBRoom6_6（王冠）
+
+Trial ID: PSA_MT01, Program difficulty: Easy, Stage: PoliceStationAttic, Mission: PSA_MT01, Seed: 958958, EffectiveNumberOfPlayers: 1
+PSA_MT01_KeySpawner_FirstKey_1 = 红心； 
+RBRoom_ReelStorage = 红心房（黑桃，火焰）
+PSA_MT01_KeySpawner_ClassRoom_1=黑桃；
+PSA_MT01_KeySpawner_ClassRoom_2 = 火焰；
+RBRoom_Morgue_Master = 黑桃房 （眼睛， 月亮）
+RBRoom_ShootingRange=火焰房（梅花，兔子）
+PSA_MT01_KeySpawner_ShootingRange_1=梅花 
+PSA_MT01_KeySpawner_ShootingRange_2=兔子 
+RBRoom_Generator=梅花房
+RBRoom_ChiefOffice_27=月亮房
+月亮房=RBRoom_CafeteriaBreakRoom_17
+录像盘=DiaporamaWheel_LargeObject_BP7_18
+
+Trial ID: PSO_MT01, Program difficulty: Easy, Stage: PoliceStationOffices, Mission: PSO_MT01, Seed: 519519, EffectiveNumberOfPlayers: 1
+Key-C = PoliceStation_Office_QuestItemSpawner_BP_Child_105 
+room = RBRoom_DetectiveOffices05
+
+Trial ID: CHJ_MT03, Program difficulty: Easy, Stage: CourthouseJudicial, Mission: CHJ_MT03, Seed: 556556, EffectiveNumberOfPlayers: 1
+红心：初始固定点
+梅花：RBRoom_West_PrivateOffice
+黑桃：RBRoom_BackEntrance_Records
+火焰：RBRoom_East_Courtroom_1
+干扰项：
+王冠：RBRoom_East_Courtroom_2
+兔子：RBRoom_East_JudgesOffice
+
+Trial ID: TFW_MT03, Program difficulty: Easy, Stage: ToyFactoryWarehouse, Mission: TFW_MT03, Seed: 938938, EffectiveNumberOfPlayers: 1
+D=眼睛
+C=星星
+B=王冠
+A=方块 
+
+Trial ID: SRR_MT02, Program difficulty: Easy, Stage: SuburbRiotResidential, Mission: SRR_MT02, Seed: 417417, EffectiveNumberOfPlayers: 1
+第一轮：
+显示屏：月亮-兔子-梅花 
+月亮=FrequencyMatchBlacklit_BP
+兔子=FrequencyMatchBlacklit_BP2
+梅花=FrequencyMatchBlacklit_BP3
+红心=FrequencyMatchBlacklit_BP49
+
+第二轮
+显示屏：方块-红心-兔子 
+兔子=FrequencyMatchBlacklit_BP5
+梅花=FrequencyMatchBlacklit_BP6
+月亮=FrequencyMatchBlacklit_BP19
+红心=FrequencyMatchBlacklit_BP26
+方块=FrequencyMatchBlacklit_BP24
+黑桃=FrequencyMatchBlacklit_BP29
+
+第三轮
+方块-月亮-兔子 
+月亮=FrequencyMatchBlacklit_BP45
+方块=FrequencyMatchBlacklit_BP43 
+红心=FrequencyMatchBlacklit_BP31
+梅花=FrequencyMatchBlacklit_BP38
+兔子=FrequencyMatchBlacklit_BP36
+黑桃=FrequencyMatchBlacklit_BP47
+
+Trial ID: SRR_MT02, Program difficulty: Easy, Stage: SuburbRiotResidential, Mission: SRR_MT02, Seed: 737737, EffectiveNumberOfPlayers: 1
+第一轮：显示屏：月亮-黑桃-梅花 
+红心=FrequencyMatchBlacklit_BP
+月亮=FrequencyMatchBlacklit_BP2
+黑桃=FrequencyMatchBlacklit_BP3
+梅花=FrequencyMatchBlacklit_BP49
+第二轮：梅花-月亮-红心
+黑桃=FrequencyMatchBlacklit_BP5
+方块=FrequencyMatchBlacklit_BP8
+红心=FrequencyMatchBlacklit_BP11
+梅花=FrequencyMatchBlacklit_BP21
+兔子=FrequencyMatchBlacklit_BP27_3
+月亮=FrequencyMatchBlacklit_BP25
+第3轮：月亮-红心-方块
+方块=FrequencyMatchBlacklit_BP30
+黑桃=FrequencyMatchBlacklit_BP33
+梅花=FrequencyMatchBlacklit_BP37
+红心=FrequencyMatchBlacklit_BP45
+月亮=FrequencyMatchBlacklit_BP40
+兔子=FrequencyMatchBlacklit_BP47
+
+Trial ID: PSO_MT01, Program difficulty: Easy, Stage: PoliceStationOffices, Mission: PSO_MT01, Seed: 329329, EffectiveNumberOfPlayers: 1
+Key-A=PoliceStation_Office_QuestItemSpawner_BP_Child_40
+room=RBRoom_PatrolEntrance_Slave01
+
+Trial ID: PSO_MT01, Program difficulty: Easy, Stage: PoliceStationOffices, Mission: PSO_MT01, Seed: 876876, EffectiveNumberOfPlayers: 1
+Key-B=PoliceStation_Office_QuestItemSpawner_BP_Child_27
+
+Trial ID: PSO_MT01, Program difficulty: Easy, Stage: PoliceStationOffices, Mission: PSO_MT01, Seed: 235235, EffectiveNumberOfPlayers: 1
+Key-A=PoliceStation_Office_QuestItemSpawner_BP_Child_40
+
+Trial ID: PSB_MT01, Program difficulty: Easy, Stage: PoliceStationBasement, Mission: PSB_MT01, Seed: 565565, EffectiveNumberOfPlayers: 1
+A区=红心 B区=梅花 C区=眼睛
+眼睛=CorpseSearch_PS_Trial02_AgainstWall_BP9_2 （room=RBRoom_Construction）
+方块=CorpseSearch_PS_Trial02_AgainstWall_BP5_2 （room=RBRoom_ShootingRangeMaintenance_Slave03）
+梅花=CorpseSearch_PS_Trial02_BP10_35 （room=RBRoom_Maintenance）
+红心=CorpseSearch_PS_Trial02_AgainstWall_BP3_8（room=RBRoom_GarageBoilerCorridor）
+
+Trial ID: PSB_MT01, Program difficulty: Easy, Stage: PoliceStationBasement, Mission: PSB_MT01, Seed: 378378, EffectiveNumberOfPlayers: 1
+A=月亮 B=火焰 C=黑桃 
+A
+红心=CorpseSearch_PS_Trial02_AgainstWall_BP2_5=（RBRoom_TireStorage）
+王冠=CorpseSearch_PS_Trial02_BP3_8（RBRoom_GarageStorage_Master）
+月亮=CorpseSearch_PS_Trial02_AgainstWall_BP_2（RBRoom_GarageMain_Master?）
+B
+方块=CorpseSearch_PS_Trial02_Desk_BP_5（RBRoom_Morgue_Master）
+火焰=CorpseSearch_PS_Trial02_WallThroat_BP7_26（RBRoom_MorgueStairs）
+兔子=CorpseSearch_PS_Trial02_Desk_BP2_2（RBRoom_MainStairs）
+C
+眼睛=CorpseSearch_PS_Trial02_BP7_2（RBRoom_Construction）
+黑桃=CorpseSearch_PS_Trial02_WallThroat_BP8_32（RBRoom_ShootingRange）
+梅花=CorpseSearch_PS_Trial02_OnChair_BP3_8（RBRoom_Archives01_Master）
+
+Trial ID: RES_MT02, Program difficulty: Easy, Stage: ResortSpa, Mission: RES_MT02, Seed: 176176, EffectiveNumberOfPlayers: 1
+RE_MannequinTrap_Tutorial_BP_96（绿宝石）
+RE_MannequinTrap_Tutorial_BP_139（绿宝石）
+RE_MannequinTrap_Tutorial_BP_106（蓝宝石）
+RE_MannequinTrap_Tutorial_BP_111（蓝宝石）
+RE_MannequinTrap_Setup_BP160 （红宝石）
+RE_MannequinTrap_Setup_BP_295 （蓝宝石）
+
+Trial ID: RES_MT02, Program difficulty: Easy, Stage: ResortSpa, Mission: RES_MT02, Seed: 69069, EffectiveNumberOfPlayers: 1
+RE_MannequinTrap_Tutorial_BP_139（蓝宝石）
+RE_MannequinTrap_Tutorial_BP_106（蓝宝石）
+RE_MannequinTrap_Tutorial_BP_84 （绿宝石）（也有可能是RE_MannequinTrap_Tutorial_BP_86，2个模型距离很近）
+RE_MannequinTrap_Tutorial_BP_117 （绿宝石）
+RE_MannequinTrap_Tutorial_BP_115 （蓝宝石）
+RE_MannequinTrap_Tutorial_BP_109 （绿宝石）（也有可能是RE_MannequinTrap_Tutorial_BP_91）
+
+Trial ID: SRR_MT02, Program difficulty: Easy, Stage: SuburbRiotResidential, Mission: SRR_MT02, Seed: 285285, EffectiveNumberOfPlayers: 1
+1：兔子-黑桃-红心
+2：方块-兔子-月亮
+
+Trial ID: SRR_MT02, Program difficulty: Easy, Stage: SuburbRiotResidential, Mission: SRR_MT02, Seed: 909909, EffectiveNumberOfPlayers: 1
+月亮-梅花-兔子
+兔子=FrequencyMatchBlacklit_BP
+月亮=FrequencyMatchBlacklit_BP2
+梅花=FrequencyMatchBlacklit_BP3
+黑桃=FrequencyMatchBlacklit_BP49
+黑桃-兔子-梅花
+红心=FrequencyMatchBlacklit_BP12
+梅花=FrequencyMatchBlacklit_BP20
+方块=FrequencyMatchBlacklit_BP8
+兔子=FrequencyMatchBlacklit_BP29
+黑桃=FrequencyMatchBlacklit_BP23
+月亮=FrequencyMatchBlacklit_BP22
+黑桃-方块-兔子
+方块=FrequencyMatchBlacklit_BP32
+月亮=FrequencyMatchBlacklit_BP33
+黑桃=FrequencyMatchBlacklit_BP39
+兔子=FrequencyMatchBlacklit_BP44
+梅花=FrequencyMatchBlacklit_BP40
+红心=FrequencyMatchBlacklit_BP45
+
+
+Trial ID: SR_Trial, Program difficulty: Easy, Stage: SuburbRiot, Mission: SR_Trial, Seed: 485485, EffectiveNumberOfPlayers: 1
+红心-月亮-黑桃
+红桃=FrequencyMatchSuburbs_Garden_2
+梅花=FrequencyMatchSuburbs_Garden_4
+月亮=FrequencyMatchSuburbs_Garden_1
+黑桃=FrequencyMatchSuburbs_Garden_3
+Office，Garage，GameRoom，BedRoom
+RBRoom_Mansion2nd_EscortBedroom（Bedroom）=0（1）
+RBRoom_Mansion2nd_GameRoom_Reward（GameRoom）=5（3）
+RBRoom_Mansion1st_Office（Office）=8（2） 
+RBRoom_Mansion1st_Garage（Garage）=6（4）
+password = 0856
+梅花-月亮-心脏
+方块=RBRoom_Rich_House1_Room3=FrequencyMatchSuburbs_Rich_18
+梅花=RBRoom_Rich_House3_Room2=FrequencyMatchSuburbs_Rich_2
+红心=RBRoom_Rich_House2_Room3=FrequencyMatchSuburbs_Rich_11
+月亮=RBRoom_Bunker_Room3=FrequencyMatchSuburbs_Rich_6
+黑桃=RBRoom_Bunker_Room2=FrequencyMatchSuburbs_Rich_5
+兔子=RBRoom_Rich_House4_Room2_Reward=FrequencyMatchSuburbs_Rich_1
+月亮-兔子-梅花
+红心=RBRoom_Poor_House1_Room1=FrequencyMatchSuburbs_Poor_7
+黑桃=RBRoom_Poor_House4_Room2=FrequencyMatchSuburbs_Poor_3
+方块=RBRoom_Poor_House4_2nd_Room3=FrequencyMatchSuburbs_Poor_6
+月亮=RBRoom_Poor_House3_2nd_Room1=FrequencyMatchSuburbs_Poor_5
+梅花=RBRoom_Poor_House2_2ndFloor=FrequencyMatchSuburbs_Poor_2
+兔子=RBRoom_Poor_House3_Room2=FrequencyMatchSuburbs_Poor_9
+-
+手-脚-胸-耳朵
+
+Trial ID: SRR_MT01, Program difficulty: Easy, Stage: SuburbRiotResidential, Mission: SRR_MT01, Seed: 894894, EffectiveNumberOfPlayers: 1
+RBRoom_Rich_House1_Salon=4369-MultiroomPuzzleKeypad_BP_2
+RBRoom_Rich_House3_Salon=5623-MultiroomPuzzleKeypad_BP3_5
+RBRoom_Rich_House4_ConstrcutionRoom2=9217-MultiroomPuzzleKeypad_BP4_8
+
+Trial ID: DTS_MT01, Program difficulty: Easy, Stage: DowntownSewer, Mission: DTS_MT01, Seed: 836836, EffectiveNumberOfPlayers: 1
+RBRoom8_3-FrequencyMatchPanel_DTS_Child16_2
+RBRoom_HairDresser_Slave01-FrequencyMatchPanel_DTS_Child10_14
+RBRoom_MotelRoom203-FrequencyMatchPanel_DTS_Child18_5
+DTR_MT01_ManneqinSetup_Scythe_BP13_2
+
+Trial ID: SR_Trial, Program difficulty: Easy, Stage: SuburbRiot, Mission: SR_Trial, Seed: 500500, EffectiveNumberOfPlayers: 1
+Laundry；GameRoom；Bedroom；Office；
+Bedroom=3（4）
+RBRoom_Mansion1st_Laundry（Laundry）=8（3）
+RBRoom_Mansion1st_Office（Office）=0（1） 
+GameRoom = 9（2）
+password = 0983
+
+Trial ID: SR_Trial, Program difficulty: Easy, Stage: SuburbRiot, Mission: SR_Trial, Seed: 166166, EffectiveNumberOfPlayers: 1
+GameRoom;Office；Laundry；Bedroom；
+GameRoom=3
+Office=5
+Laundry=6
+Bedroom=2
+password=2536
+
+Trial ID: DTS_MT01, Program difficulty: Easy, Stage: DowntownSewer, Mission: DTS_MT01, Seed: 197197, EffectiveNumberOfPlayers: 1
+FrequencyMatchPanel_DTS_Child15_8
+FrequencyMatchPanel_DTS_Child17_2
+FrequencyMatchPanel_DTS_Child10_14
+A-3-Bank_Vault
+
+Trial ID: SRR_MT01, Program difficulty: Easy, Stage: SuburbRiotResidential, Mission: SRR_MT01, Seed: 512512, EffectiveNumberOfPlayers: 1
+MultiroomPuzzleKeypad_BP_2 = 6459
+MultiroomPuzzleKeypad_BP4_8 = 8612
+MultiroomPuzzleKeypad_BP5_11 = 3159
+
+Trial ID: SRR_MT01, Program difficulty: Easy, Stage: SuburbRiotResidential, Mission: SRR_MT01, Seed: 745745, EffectiveNumberOfPlayers: 1
+MultiroomPuzzleKeypad_BP5_11
+MultiroomPuzzleKeypad_BP_2
+MultiroomPuzzleKeypad_BP3_5
+
+Trial ID: CHJ_MT02, Program difficulty: Easy, Stage: CourthouseJudicial, Mission: CHJ_MT02, Seed: 135135, EffectiveNumberOfPlayers: 1
+三角=408
+螺旋=067=RBRoom_West_Blueprints=CHJ_MT02_ProjectionSymbol_BP_A19
+骷髅=820=RBRoom_West_ConstructionGore=CHJ_MT02_ProjectionSymbol_BP_A2
+五角星=219=RBRoom_EastCorridor_1_Slave_2=CHJ_MT02_ProjectionSymbol_BP_B4
+太阳=874=RBRoom_East_Museum=CHJ_MT02_ProjectionSymbol_BP_B14
+
+Trial ID: TFS_MT03, Program difficulty: Easy, Stage: ToyFactoryShipping, Mission: TFS_MT03, Seed: 90090, EffectiveNumberOfPlayers: 1
+B3=RBRoom_Ext_LoadingDocks_OfficeTrailer=MT03_TF_Gas_ValvePanel_BP_Section_B3_2
+B1=RBRoom_East_Electrical=MT03_TF_Gas_ValvePanel_BP_Section_B1_03
+B2=RBRoom_East_ToyStorage=MT03_TF_Gas_ValvePanel_BP_Section_B2_02
+A3=RBRoom_ReceivingDocks_OfficeBuilding=MT03_TF_Gas_ValvePanel_BP_Section_A3_6=
+A1=RBRoom_West_Storage=
+A2=RBRoom_West_Processing
+
+Trial ID: CHJ_MT02, Program difficulty: Easy, Stage: CourthouseJudicial, Mission: CHJ_MT02, Seed: 711711, EffectiveNumberOfPlayers: 3
+三角=340
+五角星=185
+太阳=569
+螺旋=410
+
+
+Trial ID: TFW_MT03, Program difficulty: Normal, Stage: ToyFactoryWarehouse, Mission: TFW_MT03, Seed: 412412, EffectiveNumberOfPlayers: 3
+
+Trial ID: SR_Trial, Program difficulty: Easy, Stage: SuburbRiot, Mission: SR_Trial, Seed: 802802, EffectiveNumberOfPlayers: 1
+Lounge Garage Bedroom Washroom
+Lounge = 1
+Washroom = 9
+Bedroom = 0
+Garage = 4
+0491
+---
+方块-梅花-兔子 
+方块=RBRoom_Rich_House2_Room4_Reward=FrequencyMatchSuburbs_Rich_12
+兔子=RBRoom_Rich_House3_Room1=FrequencyMatchSuburbs_Rich_14
+月亮=RBRoom_Rich_House1_Room3=FrequencyMatchSuburbs_Rich_18
+黑桃=RBRoom_Bunker_Room1=FrequencyMatchSuburbs_Rich_8
+梅花=RBRoom_Bunker_Room2=FrequencyMatchSuburbs_Rich_7
+红心=RBRoom_Rich_House4_Room3=FrequencyMatchSuburbs_Rich_17
+
+
+Trial ID: CHJ_MT03, Program difficulty: Easy, Stage: CourthouseJudicial, Mission: CHJ_MT03, Seed: 184184, EffectiveNumberOfPlayers: 1
+固定位=眼睛
+兔子；黑桃；梅花
+梅花=MannequinBP_SinglePose124；
+兔子=MannequinBP_SinglePose131；
+火焰=MannequinBP_SinglePose127；
+黑桃=MannequinBP_SinglePose130；
+方块=MannequinBP_SinglePose129
+
+Trial ID: CHJ_MT03, Program difficulty: Easy, Stage: CourthouseJudicial, Mission: CHJ_MT03, Seed: 892892, EffectiveNumberOfPlayers: 1
+梅花=TextSignStandBase-4
+火焰=TextSignStandBase-6
+王冠=TextSignStandBase-9
+黑桃=TextSignStandBase-8
+方块=TextSignStandBase-3
+

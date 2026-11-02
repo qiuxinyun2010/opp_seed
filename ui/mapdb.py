@@ -354,7 +354,8 @@ def scan_points(map_name, level, cfg, refresh=False, verbose=True):
         st = os.stat(path)
         stamp.append([os.path.basename(path), st.st_size, int(st.st_mtime)])
     meta = [[t.get('pattern'), t.get('match') or 'name', t.get('label'), t.get('style'),
-             t.get('merge_room', True), t.get('props') or [], t.get('short') or '']
+             t.get('merge_room', True), t.get('props') or [], t.get('short') or '',
+             t.get('types') or []]
             for t in ptypes]
 
     old = load_json(cache_path, None)
@@ -365,9 +366,10 @@ def scan_points(map_name, level, cfg, refresh=False, verbose=True):
 
     # match=type: 按蓝图类名匹配（推荐写法）
     # match=name: 按实例名匹配（旧的 zones/*.json 规则）
+    # types=[...]: 允许匹配非蓝图类的摆件（StaticMeshActor 之类，默认只收 *_C 蓝图）
     pats = [(t['key'], re.compile(t['pattern']), t.get('label') or '',
              t.get('style') or '', t.get('merge_room', True), t.get('match') or 'name',
-             t.get('short') or '')
+             t.get('short') or '', tuple(t.get('types') or ()))
             for t in ptypes]
     prop_keys = sorted({k for t in ptypes for k in (t.get('props') or [])})
 
@@ -381,9 +383,12 @@ def scan_points(map_name, level, cfg, refresh=False, verbose=True):
                 comps[idx] = {k: p[k] for k in mp.COMP_TRIM_KEYS if k in p}
                 continue
             name = obj.get('Name') or ''
-            if not name or not t.endswith('_C'):
+            if not name:
                 continue
-            for key, rx, lab, sty, mrg, mmode, shrt in pats:
+            is_bp = t.endswith('_C')
+            for key, rx, lab, sty, mrg, mmode, shrt, types in pats:
+                if not (t in types if types else is_bp):
+                    continue
                 hay = t if mmode == 'type' else name
                 if rx.search(hay):
                     props = obj.get('Properties') or {}
