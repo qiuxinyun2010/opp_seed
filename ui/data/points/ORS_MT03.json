@@ -1,0 +1,88 @@
+{
+ "_说明": "ORS_MT03（孤儿院服务区 OrphanageServices，调频 + 钥匙图案）。本关任务链：① 12 个调频开关面板（SwitchesMatch_Base_BP_C，全部带 RBObjectiveActor，属于候选，每局随机取一部分）；② 10 具带钥匙图案的尸体（CorpseSearch_OR_*，可搜索，搜出来才知道要哪把钥匙）；③ 大厅两道门内侧各有一块调频显示屏（Clue_TvChannel_BP_C，带 FrequencyAnim，用来读目标频率）和两个钥匙投放箱（KeyItemDestination_Device_Base_BP_C，左/右）。点位都来自 ORS_MT03_B00.json，几何走 OrphanageServices 的缓存（和 ORS_MT01/MT02 同一张图）。分区按地图区域切：任务点集中在自助餐厅和地下室，但开关散布全图。",
+ "level": "ORS_MT03",
+ "map": "OrphanageServices",
+ "title": "ORS_MT03 · 孤儿院服务区 调频器 / 钥匙图案尸体",
+ "subtitle": "OrphanageServices · frequency switch panels & key-pattern corpses",
+ "legend_hint": "橙=调频开关面板（候选）；紫=可搜索的钥匙图案尸体；蓝绿空心=大厅调频显示屏；深灰=钥匙投放箱。",
+ "sources": ["ORS_MT03_B00.json"],
+ "floors": { "levels": [-200, 0], "labels": ["B1", "1F"] },
+ "point_types": [
+  { "key": "freq_switch", "pattern": "^SwitchesMatch_Base_BP", "match": "type",
+    "label": "调频器 · 候选", "short": "F", "color": "#b45309" },
+  { "key": "key_corpse", "pattern": "^CorpseSearch_OR_", "match": "type",
+    "label": "钥匙图案尸体", "short": "Body", "color": "#6d28d9" },
+  { "key": "tv_clue", "pattern": "^Clue_TvChannel_BP_", "match": "type",
+    "label": "调频显示屏（线索）", "short": "TV", "color": "#0e7490", "style": "clue" },
+  { "key": "key_box", "pattern": "^KeyItemDestination_Device_Base_BP_", "match": "type",
+    "label": "钥匙投放箱", "short": "Box", "color": "#1f2937" }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "大厅与取钥匙处",
+   "name_en": "Lobby & Key Drop",
+   "color": "#7c3aed",
+   "note": "Lobby（Master/Slave01/02/04）+ Halls（Entrance/Corridor/Main/Office01-02/Reception）+ LobbyOffice。开局就在这里：两道门内侧各一块调频显示屏和左侧/右侧钥匙投放箱。",
+   "rooms": ["RBRoom_Lobby*", "RBRoom_Halls*"]
+  },
+  {
+   "id": "B",
+   "name": "自助餐厅与厨房",
+   "name_en": "Cafeteria & Kitchen",
+   "color": "#b45309",
+   "note": "Cafeteria、CafeteriaSideRoom、Kitchen。10 具钥匙图案尸体有 7 具在这两间（含侧房 3 具），是最需要搜的一区。",
+   "rooms": ["RBRoom_Cafeteria*", "RBRoom_Kitchen"]
+  },
+  {
+   "id": "C",
+   "name": "洗衣房与后勤走廊",
+   "name_en": "Laundry & Utility",
+   "color": "#0f766e",
+   "note": "LaundryMachines01/02、LaundrySinks、OldLaundry、Lockers、UtilityHallway（Master/Slave01）+ 男女厕所。调频开关 BP3（洗衣池）、BP_2（储物间）、BP5（后勤走廊）在这一区。",
+   "rooms": ["RBRoom_Laundry*", "RBRoom_OldLaundry", "RBRoom_Lockers",
+             "RBRoom_UtilityHallway*", "RBRoom_BoysBathroom*", "RBRoom_GirlsBathroom*"]
+  },
+  {
+   "id": "D",
+   "name": "泳池区",
+   "name_en": "Pool Area",
+   "color": "#0ea5e9",
+   "note": "Pool_2、PoolAccess、PoolBackRoom、PoolHallway01/02（Master+Slave01）、PoolMaintenance 与池区维护走廊。调频开关 BP11 在维护走廊最里头。",
+   "rooms": ["RBRoom_Pool*"]
+  },
+  {
+   "id": "E",
+   "name": "操场与学习区",
+   "name_en": "Playground & Study",
+   "color": "#16a34a",
+   "note": "Playground（Master/Slave01）、PlaygroundStorage、StudyOpenMiddle、StudyOpenMiddleRoom、SideAlley。西侧窄巷 SideAlley 也归这里。",
+   "rooms": ["RBRoom_Playground*", "RBRoom_Study*", "RBRoom_SideAlley"]
+  },
+  {
+   "id": "F",
+   "name": "教堂与长老楼",
+   "name_en": "Church & Presbyter",
+   "color": "#be123c",
+   "note": "Church、ChurchCourtyard、ChurchFrontExterior、Courtyard、以及长老楼一整片 Presbyter（走廊 01/03/04/05、BackChurch、LobbyOffice、Office、Bathroom）。这一区没有任务点，只作为通路参考。",
+   "rooms": ["RBRoom_Church", "RBRoom_ChurchCourtyard", "RBRoom_ChurchFrontExterior",
+             "RBRoom_Courtyard", "RBRoom_Presbyter*"]
+  },
+  {
+   "id": "G",
+   "name": "地下室",
+   "name_en": "Basement",
+   "color": "#475569",
+   "note": "Basement01-04、BasementServiceAccess、ChurchBasementAccess01/02/03、ChurchBasementBathroom/SideRoom/SmallRoom。调频开关有 6 个在这一层（BP10、BP8、BP9、BP6、BP7、BP2_5），是开关最密集的区域。",
+   "rooms": ["RBRoom_Basement*", "RBRoom_ChurchBasement*"]
+  },
+  {
+   "id": "H",
+   "name": "外街与后巷",
+   "name_en": "Street & Back Alley",
+   "color": "#ca8a04",
+   "note": "EntranceStreet、Entance_Slave、EntrancePorch、SASStreet、BackAlley（Master/Slave01/02）。StageEnd 按钮在南边 SAS 街尽头。",
+   "rooms": ["RBRoom_Entrance*", "RBRoom_Entance_Slave", "RBRoom_SASStreet*", "RBRoom_BackAlley*"]
+  }
+ ]
+}

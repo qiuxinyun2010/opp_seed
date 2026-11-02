@@ -48,6 +48,10 @@ PATTERN_COLORS = ['#0ea5e9', '#f59e0b', '#10b981', '#e11d48',
 PANEL_COLOR = '#14b8a6'
 TARGET_COLOR = '#f43f5e'
 
+# FPI_MT02：9 个图案按 symbol_index 固定配色（顺序与 gameshow.SYMBOLS 一致）
+FPI_PATTERN_COLORS = ['#e11d48', '#f59e0b', '#10b981', '#0ea5e9', '#8b5cf6',
+                      '#14b8a6', '#ef4444', '#64748b', '#a16207']
+
 # TFS_MT03：阀门按 A / B 两大区着色（和地图分区颜色一致）
 TFS_AREA_COLORS = {'A': '#1d4ed8', 'B': '#b45309'}
 TFS_AREA_NAMES = {'A': 'A 区（A1/A2/A3）', 'B': 'B 区（B1/B2/B3）'}
@@ -247,6 +251,42 @@ def _smc_mt02(data):
     return points, _legend(legend)
 
 
+def _fpi_mt02(data):
+    """真人秀：每阶段每房间一个点，颜色=目标图案，圆点里写答案，label 写「第N阶段 图案」。
+
+    假板不单独画点（板位与 actor 顺序对不上），只体现在 label 里。
+    """
+    points, legend = [], []
+
+    def take(item, stage):
+        coords = _coords(item)
+        if not coords:
+            return
+        symbol = str(item.get('symbol') or '')
+        index = item.get('symbol_index')
+        if isinstance(index, int) and 0 <= index < len(FPI_PATTERN_COLORS):
+            color = FPI_PATTERN_COLORS[index]
+        else:
+            color = '#64748b'
+        if stage == 1:
+            color = TUTORIAL_COLOR
+        name = symbol or item.get('symbol_zh') or ''      # 图案用英文（翻板上就是英文名）
+        points.append(_pt(coords, item.get('room'),
+                          '%s · Stage %d' % (name, stage),
+                          item.get('answer'), color, 'pattern', 1.35,
+                          section='%d' % stage, exact=_exact(item)))
+        legend.append(('Stage 1 · %s' % name if stage == 1 else name, color))
+
+    for room in data.get('tutorial') or []:
+        take(room, 1)
+    for round_data in data.get('rounds') or []:
+        stage = round_data.get('stage') or (round_data.get('round', 0) + 2)
+        for room in round_data.get('rooms') or []:
+            take(room, stage)
+    points.sort(key=lambda m: (m['section'], m['label']))
+    return points, _legend(legend)
+
+
 def _srr_mt01(data):
     """密码盘点位：只画「哪个房间的密码盘」，圆点里写 4 位密码（不画贴花位）。
 
@@ -294,6 +334,7 @@ ADAPTERS = {
     'TFS_MT03': _tfs_mt03,
     'PSA_MT01': _psa_mt01,
     'DTS_MT01': _dts_mt01,
+    'FPI_MT02': _fpi_mt02,
     'SMC_MT02': _smc_mt02,
     'SRR_MT01': _srr_mt01,
 }

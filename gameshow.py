@@ -41,8 +41,43 @@ SECTIONS = [
     ('RBRoom_DarkMannequin', 'Child Dorm'),
 ]
 ROOM_NAMES = dict(SECTIONS)
+# 房间中文名（图上/信息栏用；与 SECTIONS 一一对应，键是 RBRoom 原名）
+ROOM_NAMES_ZH = {
+    'RBRoom_RabbitTortur': '兔子酷刑室',
+    'RBRoom_RabbitHole_CarrotsStorage': '兔子洞·胡萝卜仓库',
+    'RBRoom_RabbitHole_Bedroom_Master': '兔子洞·卧室',
+    'RBRoom_RabbitHole_DinnerTable': '兔子洞·餐桌',
+    'RBRoom15_9': '厨房仓库',
+    'RBRoom_QueenTrone': '王座',
+    'RBRoom_CreepyHands': '手墙',
+    'RBRoom_Library': '图书馆',
+    'RBRoom_Storm': '风暴',
+    'RBRoom_UpsideDownStorm': '倒置风暴',
+    'RBRoom_UpsideDown_Church': '倒置教堂',
+    'RBRoom_SpaceConsoleStation': '太空站',
+    'RBRoom_UpsideUp_Church': '正向教堂',
+    'RBRoom_ShowRoom_Master': '展厅',
+    'RBRoom_Eyes': '眼墙',
+    'RBRoom_Tesseract': '幻象立方',
+    'RBRoom_DinningIllusion': '幻象餐厅',
+    'RBRoom_DarkMannequin': '儿童宿舍',
+    'RBRoom_Circus': '双面沙漏（教学）',
+}
 SYMBOLS = ['Apple', 'Book', 'BrushTeeth', 'Cleaning', 'Dumbbells',
            'Sharing', 'Sleep', 'WashHands', 'Water', 'Blank']
+# 图案中文名（翻板上画的那个动作/物件）；Blank 是空白板，正式回合不会当目标
+SYMBOL_NAMES_ZH = {
+    'Apple': '苹果',
+    'Book': '书',
+    'BrushTeeth': '刷牙',
+    'Cleaning': '打扫',
+    'Dumbbells': '哑铃',
+    'Sharing': '分享',
+    'Sleep': '睡觉',
+    'WashHands': '洗手',
+    'Water': '喝水',
+    'Blank': '空白板',
+}
 SYMBOL_ASSETS = ['FPI_MT02_Symbol-%s-01' % s for s in SYMBOLS[:9]] + \
                 ['FPI_MT02_Symbol_Blank-01']
 
@@ -189,8 +224,12 @@ class Coordinator(object):
 
         self.used.extend(src)
         return [{'room': SECTIONS[i][0], 'room_name': SECTIONS[i][1],
+                 'room_name_zh': ROOM_NAMES_ZH.get(SECTIONS[i][0], ''),
                  'symbol': SYMBOLS[s], 'symbol_index': s,
-                 'answer': ans, 'digits': digs}
+                 'symbol_zh': SYMBOL_NAMES_ZH.get(SYMBOLS[s], ''),
+                 'answer': ans, 'digits': digs,
+                 'boards': self.boards, 'fakes': fakes[i],
+                 'true_boards': self.boards - fakes[i]}
                 for i, s, ans, digs in plan]
 
 
@@ -231,5 +270,9 @@ def predict_tutorial(level_seed, max_fake=MAX_FAKE):
         return {'round': -1, 'stage': 1, 'rooms': [], 'failed': True}
     return {'round': -1, 'stage': 1, 'failed': False,
             'rooms': [{'room': 'RBRoom_Circus', 'room_name': 'Hourglass',
+                       'room_name_zh': ROOM_NAMES_ZH.get('RBRoom_Circus', ''),
                        'symbol': SYMBOLS[sym], 'symbol_index': sym,
-                       'answer': got[0], 'digits': got[1]}]}
+                       'symbol_zh': SYMBOL_NAMES_ZH.get(SYMBOLS[sym], ''),
+                       'answer': got[0], 'digits': got[1],
+                       'boards': co.boards, 'fakes': 1,
+                       'true_boards': slots}]}

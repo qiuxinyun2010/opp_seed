@@ -23,7 +23,7 @@
     showSeed: true,
     showLegend: false,
     followGame: true,
-    lightTheme: false,
+    lightTheme: true,
     coordTarget: null,
     hiddenZones: new Set(),
     seedMarkers: [],
@@ -481,6 +481,7 @@
       state.showAllNames ||
       pointRooms.has(r.id) ||
       seedRoomNames.has(r.raw) ||
+      r.named ||                                  // 配置里手写了房间名
       Boolean(noteOf('rooms', r.raw)) ||
       (state.selected?.kind === 'room' && state.selected?.id === r.id)
     ).sort((a, b) => b.area - a.area);
@@ -523,15 +524,16 @@
         const [sx, sy] = view.pt(p.p[0], p.p[1]);
         const isGoal = (p.style || '') !== 'clue';
         const zColor = zoneColor(p.zone);
+        const tint = p.color || '';
         const isSel = state.selected?.kind === 'point' && state.selected?.id === p.id;
         const r = isSel ? 12 : 9.5;
 
         ctx.beginPath();
         ctx.arc(sx, sy, r, 0, Math.PI * 2);
-        ctx.fillStyle = isGoal ? '#e11d48' : (state.lightTheme ? '#ffffff' : '#0f172a');
+        ctx.fillStyle = tint || (isGoal ? '#e11d48' : (state.lightTheme ? '#ffffff' : '#0f172a'));
         ctx.fill();
         ctx.lineWidth = isSel ? 3 : 2;
-        ctx.strokeStyle = isSel ? '#f59e0b' : zColor;
+        ctx.strokeStyle = isSel ? '#f59e0b' : (tint ? '#ffffff' : zColor);
         ctx.stroke();
 
         ctx.font = 'bold 10px Consolas, sans-serif';

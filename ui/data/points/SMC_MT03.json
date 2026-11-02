@@ -1,0 +1,145 @@
+{
+ "_说明": "SMC_MT03（商场 ShoppingMallCarrefour，箱子任务）。任务点只有一种：可搬运的箱子 ShoppingBox_BP_C ×109，全部在 SMC_LD_MT03_B00.json，分布在各层店铺与百货楼里（东侧店铺 45、西侧店铺 31、西侧百货 29、中庭大厅 2，中央/东侧百货二层没有箱子）。关卡里另有 PriceScanner_BP_C ×13（收银/条码扫描，objective）、ConveyorDropZoneBase ×4、CashRegisterBelt ×2、Ticket_DropBox_01 ×1，本图暂不列。分区沿用 SMC_MT02 的 6 区（中庭 / 中央百货 / 东侧店铺 / 东侧百货 / 西侧店铺 / 西侧百货），房间归属直接取自上一张图，68 间全覆盖。",
+ "level": "SMC_MT03",
+ "map": "ShoppingMallCarrefour",
+ "title": "SMC_MT03 · 商场 箱子搬运",
+ "subtitle": "ShoppingMallCarrefour · shopping boxes across the mall",
+ "legend_hint": "蓝色=可搬运的箱子（区内编号，共 109 个）。",
+ "sources": [
+  "SMC_LD_MT03_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "box",
+   "pattern": "^ShoppingBox_BP_C$",
+   "match": "type",
+   "label": "箱子",
+   "short": "Box",
+   "color": "#2563eb"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "中庭大厅",
+   "name_en": "Main Hall",
+   "color": "#0f766e",
+   "note": "中庭大厅（1F/2F）：MainHallRDC/2nd 主中庭、MainHallBathroom、ServiceRoom、PrimeAssetOffice。 箱子 6 个。",
+   "rooms": [
+    "RBRoom_BackstoreCashier",
+    "RBRoom_MainHall2ndEast_Master",
+    "RBRoom_MainHall2ndEast_Slave",
+    "RBRoom_MainHall2ndWest_Slave01",
+    "RBRoom_MainHall2ndWest_Slave02",
+    "RBRoom_MainHallBathroom_Master",
+    "RBRoom_MainHallBathroom_Slave01",
+    "RBRoom_MainHallBathroom_Slave02",
+    "RBRoom_MainHallBathroom_Slave03",
+    "RBRoom_MainHallRDC_Master",
+    "RBRoom_MainHallRDC_Slave01",
+    "RBRoom_MainHallRDC_Slave02"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "中央百货与撤离点",
+   "name_en": "Central Store & Exit",
+   "color": "#2563eb",
+   "note": "中央百货二层：DepartmentStore_Central 及其后走廊、SAS、SAS 走廊、保卫室。 箱子 0 个。",
+   "rooms": [
+    "RBRoom_DepartmentStore_Central",
+    "RBRoom_DepartmentStore_Central_BackCorridor",
+    "RBRoom_DepartmentStore_Central_SAS",
+    "RBRoom_DepartmentStore_Central_SASCorridor",
+    "RBRoom_DepartmentStore_Central_SecurityRoom",
+    "RBRoom_PrimeAssetOffice",
+    "RBRoom_ServiceRoom",
+    "RBRoom_ServiceRoom_Valve6"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "东侧店铺与走廊",
+   "name_en": "East Stores & Corridors",
+   "color": "#7c3aed",
+   "note": "东侧 1F：EastCorridorRDC_Store1-4（含 Closed）、EastHallRDC、EastServiceCorridorRDC_*、东南服务走廊 SE_*。 箱子 46 个。",
+   "rooms": [
+    "RBRoom_EastCorridorRDC_Store1_Master",
+    "RBRoom_EastCorridorRDC_Store1_Slave",
+    "RBRoom_EastCorridorRDC_Store2_Master",
+    "RBRoom_EastCorridorRDC_Store2_Slave",
+    "RBRoom_EastCorridorRDC_Store3_Master",
+    "RBRoom_EastCorridorRDC_Store3_Slave01",
+    "RBRoom_EastCorridorRDC_Store3_Slave02",
+    "RBRoom_EastCorridorRDC_Store4_3",
+    "RBRoom_EastCorridorRDC_StoreClosed_2",
+    "RBRoom_EastHall2nd_Slave05",
+    "RBRoom_EastHallRDC_Master",
+    "RBRoom_EastHallRDC_Slave01",
+    "RBRoom_EastHallRDC_Slave02",
+    "RBRoom_EastServiceCorridorRDC_Master",
+    "RBRoom_EastServiceCorridorRDC_Slave01",
+    "RBRoom_EastServiceCorridorRDC_Slave02",
+    "RBRoom_EastServiceCorridorRDC_Slave03",
+    "RBRoom_EastServiceCorridorRDC_Slave04",
+    "RBRoom_EastServiceCorridorRDC_Valve7",
+    "RBRoom_SouthEastServiceCorridorRDC_Master",
+    "RBRoom_SouthEastServiceCorridorRDC_Slave01",
+    "RBRoom_SouthEastServiceCorridorRDC_Slave02",
+    "RBRoom_SouthEastServiceCorridorRDC_Slave03",
+    "RBRoom_SouthEastServiceCorridorRDC_Slave04",
+    "RBRoom_SouthEastServiceCorridorRDC_Valve8"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "东侧百货楼",
+   "name_en": "East Department Store",
+   "color": "#0891b2",
+   "note": "东侧百货 1F/2F、后仓、停车场、SAS、后出口、冷藏药房。 箱子 0 个。",
+   "rooms": [
+    "RBRoom_DepartmentStore_EastSide_1F",
+    "RBRoom_DepartmentStore_EastSide_1F_BackRoom",
+    "RBRoom_DepartmentStore_EastSide_2F",
+    "RBRoom_DepartmentStore_EastSide_2F_PharmColdStorage",
+    "RBRoom_DepartmentStore_EastSide_BackExit",
+    "RBRoom_DepartmentStore_EastSide_ParkingLot",
+    "RBRoom_DepartmentStore_EastSide_SAS"
+   ]
+  },
+  {
+   "id": "E",
+   "name": "西侧店铺与走廊",
+   "name_en": "West Stores & Corridors",
+   "color": "#b45309",
+   "note": "西侧 1F：WestCorridorRDC_Store1-3、WestHall、WestServiceCorridorRDC_*、西南服务走廊。 箱子 32 个。",
+   "rooms": [
+    "RBRoom_SouthWestServiceCorridorRDC_2",
+    "RBRoom_WestCorridorRDC_Store1",
+    "RBRoom_WestCorridorRDC_Store2",
+    "RBRoom_WestCorridorRDC_Store3_Master",
+    "RBRoom_WestCorridorRDC_Store3_Slave",
+    "RBRoom_WestHall_Master",
+    "RBRoom_WestHall_Slave01_0",
+    "RBRoom_WestHall_Slave02",
+    "RBRoom_WestServiceCorridorRDC_Master",
+    "RBRoom_WestServiceCorridorRDC_Slave01",
+    "RBRoom_WestServiceCorridorRDC_Slave02",
+    "RBRoom_WestServiceCorridorRDC_Valve5"
+   ]
+  },
+  {
+   "id": "F",
+   "name": "西侧百货楼",
+   "name_en": "West Department Store",
+   "color": "#be123c",
+   "note": "西侧百货楼 + 卸货码头 SAS_Dock + 仓库 + 收银后仓 BackstoreCashier。 箱子 25 个。",
+   "rooms": [
+    "RBRoom_DepartmentStore_WestSide",
+    "RBRoom_DepartmentStore_WestSide_SAS",
+    "RBRoom_DepartmentStore_WestSide_SAS_Dock",
+    "RBRoom_DepartmentStore_WestSide_Storage"
+   ]
+  }
+ ]
+}

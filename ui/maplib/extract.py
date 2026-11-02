@@ -25,6 +25,12 @@ OVERRIDE_FILE = I18N_FILE          # 兼容原文件里的命名
 # 单个顶层对象的大小上限（字节）。超过就跳过不解析，见 iter_objects。
 MAX_OBJ_BYTES = 24 * 1024 * 1024
 
+# 房间 Brush 的合理上限（世界单位）：正常房间跨度几千、面积百万级，
+# 超大值来自坏笔刷（例如 FunParkIllusion 的 RBRoom_RootCanal_SpaceEntrance_Slave 顶点飞到 -1e6），
+# 不剔除会把整张图的 bbox 撑爆、渲染成一团。
+HULL_SPAN_LIMIT = 50000.0
+HULL_AREA_LIMIT = 5e8
+
 
 import argparse
 import collections
@@ -957,6 +963,21 @@ class MapExtractor:
                     hull = convex_hull([(round(q[0], 2), round(q[1], 2)) for q in pts])
                     if len(hull) >= 3:
                         hulls.append(hull)
+            # 坏笔刷（Brush 顶点飞到百万级）会把整张图的 bbox 撑爆，只留 sane 的 hull
+            sane, dropped = [], 0
+            for hull in hulls:
+                xs = [q[0] for q in hull]
+                ys = [q[1] for q in hull]
+                if (max(xs) - min(xs) > HULL_SPAN_LIMIT
+                        or max(ys) - min(ys) > HULL_SPAN_LIMIT
+                        or poly_area(hull) > HULL_AREA_LIMIT):
+                    dropped += 1
+                    continue
+                sane.append(hull)
+            if dropped:
+                self.log('  ! %s: 丢弃 %d 个异常 hull（跨度/面积超限）'
+                         % (obj.get('Name'), dropped))
+            hulls = sane
             if not hulls:
                 self.log('  ! no geometry for %s' % obj.get('Name'))
                 continue

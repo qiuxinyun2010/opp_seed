@@ -355,7 +355,7 @@ def scan_points(map_name, level, cfg, refresh=False, verbose=True):
         stamp.append([os.path.basename(path), st.st_size, int(st.st_mtime)])
     meta = [[t.get('pattern'), t.get('match') or 'name', t.get('label'), t.get('style'),
              t.get('merge_room', True), t.get('props') or [], t.get('short') or '',
-             t.get('types') or []]
+             t.get('types') or [], t.get('color') or '']
             for t in ptypes]
 
     old = load_json(cache_path, None)
@@ -369,7 +369,7 @@ def scan_points(map_name, level, cfg, refresh=False, verbose=True):
     # types=[...]: 允许匹配非蓝图类的摆件（StaticMeshActor 之类，默认只收 *_C 蓝图）
     pats = [(t['key'], re.compile(t['pattern']), t.get('label') or '',
              t.get('style') or '', t.get('merge_room', True), t.get('match') or 'name',
-             t.get('short') or '', tuple(t.get('types') or ()))
+             t.get('short') or '', tuple(t.get('types') or ()), t.get('color') or '')
             for t in ptypes]
     prop_keys = sorted({k for t in ptypes for k in (t.get('props') or [])})
 
@@ -386,7 +386,7 @@ def scan_points(map_name, level, cfg, refresh=False, verbose=True):
             if not name:
                 continue
             is_bp = t.endswith('_C')
-            for key, rx, lab, sty, mrg, mmode, shrt, types in pats:
+            for key, rx, lab, sty, mrg, mmode, shrt, types, col in pats:
                 if not (t in types if types else is_bp):
                     continue
                 hay = t if mmode == 'type' else name
@@ -394,6 +394,7 @@ def scan_points(map_name, level, cfg, refresh=False, verbose=True):
                     props = obj.get('Properties') or {}
                     actors.append({'actor': name, 'type': t, 'key': key, 'label': lab,
                                    'style': sty, 'merge_room': mrg, 'short': shrt,
+                                   'color': col,
                                    'short_explicit': bool(shrt),
                                    'root': props.get('RootComponent'),
                                    'props': {k: props[k] for k in prop_keys if k in props}})
@@ -402,6 +403,7 @@ def scan_points(map_name, level, cfg, refresh=False, verbose=True):
             loc, yaw = _comp_world(comps, a['root'])
             points.append({'actor': a['actor'], 'type': a['type'], 'key': a['key'],
                            'label': a['label'], 'style': a['style'],
+                           'color': a['color'],
                            'merge_room': a['merge_room'], 'short': a['short'],
                            'short_explicit': a['short_explicit'],
                            'file': os.path.basename(path),
@@ -659,14 +661,19 @@ def build_floors(rooms, doors, items, points, opts=None):
         cand = room_floors.get(near['raw_name']) if near else None
         item_floor[id(it)] = cand[0] if cand else nearest(it['z'])
     # 点位落层：
-    # 1) 点位落在单层房间里、且高度没超出房间上下界 → 跟着房间走。玩具箱码在货架上、
-    #    车斗里（Truck 02 的箱子 z=200，房间地面还是 1F），只按 z 就近会被画到 2F；
-    # 2) 否则取「脚下那一层」：z 往下的最近一层（带 60 容差，照顾点位原点略低于地面）。
-    #    房间跨层（楼梯井、Train Bridge）或点位高出房间（TSR 的 z=825 在 zmax=452 的房间里）
-    #    时走这条。
+    # 1) 默认跟着房间走。玩具箱码在货架上、车斗里（Truck 02 的箱子 z=200，房间地面还是
+    #    1F），只按 z 就近会被画到 2F；
+    # 2) 两种例外走「脚下那一层」（z 往下最近一层，带 60 容差，照顾点位原点略低于地面）：
+    #    a. 点位高出房间底面超过一个层高 —— 说明这个 hull 把下面的楼层也包进来了。
+    #       Room 24-10 的 hull 从 B1(-350) 一直包到 2F 楼板，车库里的钱箱 z=101 会被 zmin
+    #       拽到 B1；SR_TRIAL 的 Poor Street3 也是把 2F 的墙一起包了；
+    #    b. 点位高度超出房间上下界（TSR 的 z=825 在 zmax=452 的房间里）。
+    #    ORS 洗衣房的漂白剂在洗衣机上（房间底面 -2、点位 z=98、层距 185）不受影响。
     levels = [f['level'] for f in out]
     tol = 60.0
     room_span = {r['raw_name']: (r['zmin'], r['zmax']) for r in rooms}
+    gaps = [levels[i + 1] - levels[i] for i in range(len(levels) - 1)]
+    storey = min(g for g in gaps if g > 1.0) if len(levels) > 1 else 1e9
 
     def _floor_below(z):
         below = [i for i, lv in enumerate(levels) if lv <= z + tol]
@@ -677,7 +684,9 @@ def build_floors(rooms, doors, items, points, opts=None):
     for p in points:
         rf = room_floors.get(p.get('room')) if p.get('room') else None
         span = room_span.get(p.get('room'))
-        if rf and len(rf) == 1 and span and span[0] - tol <= p['z'] <= span[1]:
+        if (rf and len(rf) == 1 and span
+                and span[0] - tol <= p['z'] <= span[1]
+                and p['z'] - span[0] <= storey):
             p['floor'] = rf[0]
         else:
             p['floor'] = _floor_below(p['z'])
@@ -722,8 +731,9 @@ def build_level(level, map_override=None, refresh=False, verbose=True, opts=None
         if not p.get('zone') and p.get('room'):
             p['zone'] = owner.get(p['room'])
 
+    # 楼层参数：关卡配置里的 floors 优先（个别图要手动分层），否则用 data/extract.json 的
     floor_meta, room_floors, door_floor, item_floor, nearest, floor_trace = build_floors(
-        rooms, doors, items, points, ecfg.get('floors'))
+        rooms, doors, items, points, cfg.get('floors') or ecfg.get('floors'))
 
     names = zm.Names(cfg)
     raw2id = {r['raw_name']: i for i, r in enumerate(rooms)}
@@ -751,14 +761,19 @@ def build_level(level, map_override=None, refresh=False, verbose=True, opts=None
 
     out_rooms = []
     for i, r in enumerate(rooms):
-        en_name = pretty_en(names.get(r, 'en')) or ''
-        if not en_name.isascii():                 # 别名表里只有中文名时，回落到原始名的英文
-            en_name = pretty_en(zm.raw_display(r))
+        alias = names.get(r, 'en') or ''
+        if names.explicit(r) and alias and not alias.isascii():
+            en_name = alias                       # 人工写的中文名直接当显示名，不再机翻
+        else:
+            en_name = pretty_en(alias) or ''
+            if not en_name.isascii():             # 别名表里只有中文名时，回落到原始名的英文
+                en_name = pretty_en(zm.raw_display(r))
         out_rooms.append({
             'id': i,
             'raw': r['raw_name'],
             'name': en_name or r['raw_name'],
             'name_zh': names.get(r, 'zh'),
+            'named': names.explicit(r),
             'hulls': [[[_r1(x), _r1(y)] for x, y in h] for h in r['hulls']],
             'z': [_r1(r['zmin']), _r1(r['zmax'])],
             'c': [_r1(r['cx']), _r1(r['cy'])],
@@ -853,6 +868,7 @@ def build_level(level, map_override=None, refresh=False, verbose=True, opts=None
             'id': i, 'actor': p['actor'], 'key': p['key'],
             'label': label_en, 'label_zh': p['label'],
             'style': p['style'], 'short': short, 'num': counter[zid],
+            'color': p.get('color') or '',
             'p': [p['x'], p['y'], p['z']],
             'room': raw2id.get(p.get('room')),
             'zone': p.get('zone'), 'floor': p.get('floor'),

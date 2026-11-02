@@ -1650,15 +1650,29 @@ def view(result):
                                  for c in result['clues'])
 
     elif 'rounds' in result:                                # FPI_MT02
-        rounds = []
-        tut = result.get('tutorial') or []
-        if tut:
-            rounds.append({'round': 0,
-                           'answers': [str(r['answer']) for r in tut]})
+        # 每个房间一条点位：第几阶段 / 目标图案 / 答案与数字串 / 假板数 / 坐标
+        # 房间与图案都用游戏里的英文标注（墙上/翻板上写的就是这些），方便对着找
+        def add_room(stage, r):
+            digits = '+'.join(str(d) for d in (r.get('digits') or []))
+            label = '第%d阶段 · %s' % (stage, r['symbol'])
+            detail = '答案 %s' % r['answer']
+            if digits:
+                detail += '（%s）' % digits
+            if r.get('fakes'):
+                detail += ' · 假板%d / 真板%d' % (r['fakes'], r.get('true_boards') or 0)
+            points.append(_point(r['room'], label, None, r.get('coordinates'),
+                                 answer=r['answer'], detail=detail, stage=stage,
+                                 room_name=r.get('room_name'),
+                                 symbol=r['symbol'], symbol_zh=r.get('symbol_zh'),
+                                 digits=r.get('digits'), fakes=r.get('fakes')))
+
+        for r in result.get('tutorial') or []:
+            add_room(1, r)
         for rd in result['rounds']:
-            rounds.append({'round': rd['round'] + 1,
-                           'answers': [str(r['answer']) for r in rd['rooms']]})
-        out['rounds'] = rounds
+            for r in rd['rooms']:
+                add_room(rd.get('stage') or (rd['round'] + 2), r)
+        out['rounds'] = [{'stage': rd.get('stage'), 'rooms': rd['rooms']}
+                         for rd in result['rounds']]
         return out
 
     elif 'clue' in result:                                  # RES_MT01
@@ -1763,15 +1777,20 @@ def render(result):
         lines.append('  ! %s' % v['note'])
     for index, point in enumerate(v.get('points') or [], 1):
         tail = ''
-        if point.get('answer') is not None:
+        if point.get('detail'):
+            tail = '  %s' % point['detail']
+        elif point.get('answer') is not None:
             tail = '  密码 %s' % point['answer']
         if point.get('reel') is not None:
             tail = '  盘%d' % point['reel']
         if point.get('coordinates'):
             tail += '  (%s)' % ', '.join('%g' % c for c in point['coordinates'])
+        room = point.get('room_name') or point['room']
         lines.append('  %2d. %-8s %s%s'
-                     % (index, point.get('label') or '', point['room'], tail))
+                     % (index, point.get('label') or '', room, tail))
     for rd in v.get('rounds') or []:
+        if not rd.get('answers'):
+            continue
         name = '教学' if rd['round'] == 0 else '第%d轮' % rd['round']
         lines.append('  [%s] %s' % (name, '  '.join(rd['answers'])))
     return '\n'.join(lines)

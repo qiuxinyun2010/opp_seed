@@ -1,0 +1,136 @@
+{
+ "_说明": "DT_Trial（闹市区 DowntownRiot，人偶搬运）。点位只有两类：① 人偶房——DTR_ZoneDef_ManneqinSetup_*_BP_<建筑>：7 个建筑各一处（Cinema 是 A 型，Bank/Dealership/Diner/Garage/Motel/Pub 是 B/C/D 型）。同一建筑下 A/B/C/D 四型坐标几乎重合（相差几十单位），是「每局随机挑一型生成人偶」的候选，所以每个建筑只画 1 个点（取 Cinema=A、其余=B 作代表），四个 actor 都带 RBObjectiveActor + LowerBodyActor + UpperBodyActor；② 密室/奖励房——LD_Rooms 里挂 RBRewardRoomComponent 的房间，共 6 间：Drugstore、GarageStorage、MotelRoom204、Store、TheaterBackstage_Upper、TheaterDisplay。剧院里另有 8 个 DTR_TheaterMannequinUpper/Lower_Type* 与 4 个 Lower_InteractionPanel，是剧院自己的上下半身机关，不是人偶房，未列点位。",
+ "level": "DT_TRIAL",
+ "map": "DowntownRiot",
+ "title": "DT_Trial · 闹市区 人偶房 / 密室",
+ "subtitle": "DowntownRiot · mannequin rooms (7 buildings) & reward rooms (6)",
+ "legend_hint": "紫色实心=人偶房（每栋建筑一处）；绿色空心=密室/奖励房。",
+ "sources": [
+  "DowntownRiot_B00.json",
+  "DowntownRiot_B01.json",
+  "DowntownRiot_B02.json",
+  "DowntownRiot_B03.json",
+  "DowntownRiot_B04.json",
+  "DowntownRiot_B05.json",
+  "DowntownRiot_B06.json",
+  "DowntownRiot_01_LD_Rooms.json",
+  "DowntownRiot_LD_Events.json"
+ ],
+ "point_types": [
+  {
+   "key": "mannequin_room",
+   "match": "name",
+   "pattern": "^DTR_ZoneDef_ManneqinSetup_(TypeA_BP_Cinema|TypeB_BP_(Bank|Dealership|Diner|Garage|Motel|Pub))$",
+   "label": "人偶房",
+   "short": "Mann",
+   "color": "#7c3aed"
+  },
+  {
+   "key": "reward_room",
+   "match": "name",
+   "types": [
+    "RBRoom"
+   ],
+   "pattern": "^RBRoom_(Drugstore|GarageStorage|MotelRoom204|Store|TheaterBackstage_Upper|TheaterDisplay)$",
+   "label": "密室/奖励房",
+   "short": "Secret",
+   "color": "#15803d",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "银行区",
+   "name_en": "Bank",
+   "color": "#2563eb",
+   "note": "BankLobby / BankBalcony / BankUpstairs，人偶房在 BankLobby 二层平台。",
+   "rooms": [
+    "RBRoom_Bank*"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "电影院区",
+   "name_en": "Cinema",
+   "color": "#7c3aed",
+   "note": "CinemaEntrance / Display01-02 / Bathroom01-02 + 意大利餐厅。Cinema 是全图唯一 A 型人偶（其余建筑都是 B/C/D 型）。",
+   "rooms": [
+    "RBRoom_Cinema*",
+    "RBRoom_ItalianRestaurant"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "汽车行与餐厅区",
+   "name_en": "Dealership & Diner",
+   "color": "#c2410c",
+   "note": "Dealership（主厅 + 4 个副厅 + Admin）、Diner（主厅/副厅/仓库/厕所）、中式餐厅。汽车行和餐厅各有一间人偶房。",
+   "rooms": [
+    "RBRoom_Dealership*",
+    "RBRoom_Diner*",
+    "RBRoom_ChineseRestaurant*"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "汽车旅馆区",
+   "name_en": "Motel",
+   "color": "#be123c",
+   "note": "Motel 一层的 Lobby / Room101-103 / Storage / Laundry / 公共厕所 + 二层 Room201-204。人偶房在 Room102；Room204 是奖励房。",
+   "rooms": [
+    "RBRoom_Motel*"
+   ]
+  },
+  {
+   "id": "E",
+   "name": "剧院区",
+   "name_en": "Theater",
+   "color": "#0f766e",
+   "note": "Theater 主厅/副厅 01-03、Lobby、Balcony、Corridor、Backstage（含上层）、Display。剧院里另有一组上下半身人偶（8 个，属于剧院自己的机关），两间奖励房都在这里。",
+   "rooms": [
+    "RBRoom_Theater*",
+    "RBRoom_StreetsTheater*"
+   ]
+  },
+  {
+   "id": "F",
+   "name": "商店街",
+   "name_en": "Shops",
+   "color": "#b45309",
+   "note": "服装店一二层与楼梯、杂货店、药店、百货 Store、理发店。药店和 Store 是奖励房。",
+   "rooms": [
+    "RBRoom_Clothing*",
+    "RBRoom_Grocery*",
+    "RBRoom_Drugstore",
+    "RBRoom_Store",
+    "RBRoom_HairDresser*"
+   ]
+  },
+  {
+   "id": "G",
+   "name": "车库与酒吧",
+   "name_en": "Garage & Pub",
+   "color": "#0ea5e9",
+   "note": "Garage（人偶房）/ GarageStorage（奖励房）/ OuterGarage、酒吧 Pub 与厨房仓库、工装店。",
+   "rooms": [
+    "RBRoom_Garage*",
+    "RBRoom_OuterGarage",
+    "RBRoom_Pub*",
+    "RBRoom_WorkerFashion*"
+   ]
+  },
+  {
+   "id": "H",
+   "name": "地铁与街道",
+   "name_en": "Metro & Streets",
+   "color": "#a8a29e",
+   "note": "MetroSAS 地铁口 01-04、各条 Streets* 连接街（影院街/汽车旅馆街/酒吧街/剧院街/工装街…）、以及街角 RBRoom_2。",
+   "rooms": [
+    "RBRoom_MetroSAS*",
+    "RBRoom_Streets*",
+    "RBRoom_2"
+   ]
+  }
+ ]
+}

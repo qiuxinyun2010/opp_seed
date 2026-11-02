@@ -41,6 +41,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(HERE, 'data', 'maps')
 CONFIG_PATH = os.path.join(HERE, 'config.json')
 
+
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
 
@@ -518,7 +519,7 @@ def build_ops(db, state, view):
                         ('item', it['id'])))
 
     # ---- 房间名 ----
-    # 默认只标：有任务点位的房间 + 有备注的房间（备注优先显示）
+    # 默认只标：有任务点位的房间 + 有备注的房间（备注优先显示）+ 配置里手写了中文名的房间
     # 勾选 “All names” 后标全部房间（点位不准时用）
     point_rooms = {p['room'] for p in points if p.get('room') is not None}
     placed = []
@@ -526,7 +527,8 @@ def build_ops(db, state, view):
         cand = list(visible)
     else:
         cand = [r for r in visible
-                if r['id'] in point_rooms or note_of(db, 'rooms', r['raw'])]
+                if r['id'] in point_rooms or r.get('named')
+                or note_of(db, 'rooms', r['raw'])]
     cand.sort(key=lambda r: -r['area'])
     for r in cand:
         x0, y0, x1, y1 = _scr_bbox(view, r)
@@ -561,12 +563,17 @@ def build_ops(db, state, view):
         for p in vis:
             sx, sy = view.pt(p['p'][0], p['p'][1])
             goal = (p.get('style') or '') != 'clue'
+            # 点位类型可以自带颜色（point_types[].color），没写就按分区上色
+            pcolor = p.get('color') or ''
             color = zone_color(db, p.get('zone'))
+            fill = pcolor or (POINT_GOAL if goal else '#ffffff')
+            ring = pcolor or color
             r = 12.0 if sel == ('point', p['id']) else 9.0
             ops.append(('circle', (sx, sy), r + 2.5,
-                        POINT_GOAL if goal else '#ffffff', color, 2.0, ('point', p['id'])))
+                        POINT_GOAL if (goal and not pcolor) else '#ffffff', ring, 2.0,
+                        ('point', p['id'])))
             ops.append(('circle', (sx, sy), r - 1.0,
-                        POINT_GOAL if goal else POINT_CLUE, color, 1.6, ('point', p['id'])))
+                        fill if goal else POINT_CLUE, ring, 1.6, ('point', p['id'])))
             ops.append(('text', (sx, sy), str(p.get('num') or ''), 10,
                         '#ffffff' if goal else INK, 'mm', True, ('point', p['id'])))
             if with_name or sel == ('point', p['id']):

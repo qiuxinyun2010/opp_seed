@@ -1,0 +1,136 @@
+{
+ "_说明": "RE_Trial（度假村 Resort，多阶段大关）。本关机制：地图上有 4 把特殊钥匙（鹿 Stag / 狼 Wolf / 熊 Bear / 猫头鹰 Owl），每把钥匙锁在对应的钥匙座（RE_LargeKey_Spawner_BP_C）上，要先把该钥匙名下所有「电源模块」（BatteryPoweredDevice_BP_<动物><编号>）断掉/拆掉才能取钥匙；每把钥匙开同名的特殊门（RE_LargeKeyLocked_Door_BP_C，门上嵌该动物的浮雕）。钥匙座的 Key Type 枚举与门上的浮雕一致：Stag=0、Wolf=2、Bear=3（门的默认值，导出时被省略）、Owl=4。门→动物的对应靠门下 FrontOrnament/BackOrnament 的静态网格名（RE_DoorBearOrnament-01 等）确认。分区按地图翼区切（不是按任务切），本关任务点位后续还会补。",
+ "level": "RE_TRIAL",
+ "map": "Resort",
+ "title": "RE_Trial · 度假村 电源模块 / 特殊钥匙（鹿·狼·熊·猫头鹰）/ 密室",
+ "legend_hint": "四色=四把钥匙各自的电源模块（实心）与钥匙座（空心同色）；深灰=特殊钥匙门；绿色空心=密室/奖励房。",
+ "subtitle": "Resort · power modules → animal keys → animal doors · seals",
+ "sources": [
+  "RE_LD_KeyHolders_Batteries.json",
+  "RE_LD_SpecialDoors.json",
+  "RE_LD_Rooms.json",
+  "RE_LD_T10_B01.json",
+  "RE_LD_T10_B02.json",
+  "RE_LD_T10_B03.json",
+  "RE_LD_T10_B05.json",
+  "RE_LD_T10_SE.json",
+  "RE_LD_T10_EasterEgg.json",
+  "RE_LD_Event-01.json",
+  "RE_LD_Items.json"
+ ],
+ "point_types": [
+  { "key": "power_stag", "pattern": "^BatteryPoweredDevice_BP_Stag\\d+$", "match": "name",
+    "label": "电源模块·鹿", "short": "PwrS", "color": "#b45309", "merge_room": false },
+  { "key": "power_wolf", "pattern": "^BatteryPoweredDevice_BP_Wolf\\d+$", "match": "name",
+    "label": "电源模块·狼", "short": "PwrW", "color": "#6d28d9", "merge_room": false },
+  { "key": "power_bear", "pattern": "^BatteryPoweredDevice_BP_Bear\\d+$", "match": "name",
+    "label": "电源模块·熊", "short": "PwrB", "color": "#0e7490", "merge_room": false },
+  { "key": "power_owl", "pattern": "^BatteryPoweredDevice_BP_Owl\\d+$", "match": "name",
+    "label": "电源模块·猫头鹰", "short": "PwrO", "color": "#be123c", "merge_room": false },
+
+  { "key": "key_stag", "pattern": "^RE_LargeKey_Spawner_Stag$", "match": "name",
+    "label": "鹿钥匙", "short": "KeyS", "color": "#b45309", "style": "clue" },
+  { "key": "key_wolf", "pattern": "^RE_LargeKey_Spawner_Wolf$", "match": "name",
+    "label": "狼钥匙", "short": "KeyW", "color": "#6d28d9", "style": "clue" },
+  { "key": "key_bear", "pattern": "^RE_LargeKey_Spawner_Bear$", "match": "name",
+    "label": "熊钥匙", "short": "KeyB", "color": "#0e7490", "style": "clue" },
+  { "key": "key_owl", "pattern": "^RE_LargeKey_Spawner_Owl$", "match": "name",
+    "label": "猫头鹰钥匙", "short": "KeyO", "color": "#be123c", "style": "clue" },
+
+  { "key": "door_stag", "pattern": "^RE_LargeKeyLocked_Door_BP(35|36)$", "match": "name",
+    "label": "鹿门", "short": "DoorS", "color": "#1f2937", "props": ["Key Type"] },
+  { "key": "door_wolf", "pattern": "^RE_LargeKeyLocked_Door_BP(5|6|13|9_12)$", "match": "name",
+    "label": "狼门", "short": "DoorW", "color": "#1f2937", "props": ["Key Type"] },
+  { "key": "door_bear", "pattern": "^RE_LargeKeyLocked_Door_BP(10|17_11|3_2|4_2|8)$", "match": "name",
+    "label": "熊门", "short": "DoorB", "color": "#1f2937", "props": ["Key Type"] },
+  { "key": "door_owl", "pattern": "^RE_LargeKeyLocked_Door_BP(22|23|27)$", "match": "name",
+    "label": "猫头鹰门", "short": "DoorO", "color": "#1f2937", "props": ["Key Type"] },
+
+  { "key": "secret_room", "pattern": "^RBRoom_.*(RewardRoom|EasterEgg)$", "match": "name",
+    "types": ["RBRoom"], "label": "密室/奖励房", "short": "Secret", "color": "#15803d",
+    "style": "clue" }
+ ],
+ "zones": [
+  {
+   "id": "H",
+   "name": "中庭与拍卖厅",
+   "name_en": "Hub & Auction Halls",
+   "color": "#7c3aed",
+   "note": "整张图的十字中心：Hub 是四向中枢，南边接 LiveAuction（活人拍卖厅），北边接 Lobby。狼门 2 道在 Hub 西侧。",
+   "rooms": ["RBRoom_Hub", "RBRoom_LiveAuction"]
+  },
+  {
+   "id": "L",
+   "name": "入口大厅",
+   "name_en": "Lobby & Entrance",
+   "color": "#0ea5e9",
+   "note": "Lobby 是 1F 北侧大厅，接 2F 阅读室和西翼走廊。熊门 1 道（BP3_2）在 Lobby 二层平台。",
+   "rooms": ["RBRoom_Lobby"]
+  },
+  {
+   "id": "E1",
+   "name": "东翼一层",
+   "name_en": "East Wing 1F",
+   "color": "#dc2626",
+   "note": "East1F 一圈（FineArts 美术厅、Telephones、BreakRoom、ChangingRoom、Corridor 1-3、Office）+ 东北角员工区 Employee（走廊 1-4、Locker、Manager、Storage、Maintenance）。狼门 BP13 在 ChangingRoom 楼上，熊门 BP17_11 在东北角。Owl10 站在 2F 酒吧楼下的走廊里，按 XY 会被算进酒吧，这里手工归到东翼一层。",
+   "rooms": ["RBRoom_East1F_*", "RBRoom_Employee_*"],
+   "actors": ["BatteryPoweredDevice_BP_Owl10"]
+  },
+  {
+   "id": "E2",
+   "name": "东翼二层",
+   "name_en": "East Wing 2F",
+   "color": "#f97316",
+   "note": "East2F 走廊 1-2 + Room205-207 + Laundry + RewardRoom + BrokenWall。狼的 20 个模块有 9 个在这里（Laundry、Room206、Room207）。",
+   "rooms": ["RBRoom_East2F_*"]
+  },
+  {
+   "id": "N2",
+   "name": "中央二层（餐厅/酒吧）",
+   "name_en": "Central 2F Restaurant & Bar",
+   "color": "#16a34a",
+   "note": "2F 六个房间：Restaurant、Kitchen、Bar、Bar_Back、ReadingRoom、2F_Corridor。狼钥匙座在 Restaurant 西侧（269,-4011,550）。",
+   "rooms": ["RBRoom_2F_*"]
+  },
+  {
+   "id": "W1",
+   "name": "西翼一层",
+   "name_en": "West Wing 1F",
+   "color": "#b45309",
+   "note": "West1F（Hub、Corridor_1、GameRoom、Stairs、Cloak/Janitor 两间奖励房）+ 两间拍卖厅（SilentAuction、West1F_SilentAuction_B）。熊钥匙座在 West1F_Hub（-2029,-2605,153），熊模块 6 个在 Cloak/GameRoom。",
+   "rooms": ["RBRoom_West1F_*", "RBRoom_SilentAuction*"]
+  },
+  {
+   "id": "W2",
+   "name": "西翼二层",
+   "name_en": "West Wing 2F",
+   "color": "#0f766e",
+   "note": "West2F 走廊 1-4、Room201/202/203/204、Balcony、AntiChamber、Electrical、Storage_RewardRoom。狼的模块另有 7 个在这里。",
+   "rooms": ["RBRoom_West2F_*"]
+  },
+  {
+   "id": "O",
+   "name": "外场与客房楼",
+   "name_en": "Exterior & Guest Building",
+   "color": "#ca8a04",
+   "note": "室外区：Exterior_Big（主庭院）、Exterior_3/4/5、AntiChamber、COOP、RewardRoom，以及南侧独立客房楼 Building_Room1-3。熊的模块有 9 个在庭院和客房楼（Building_Room1/3 各 2、Exterior_5 3、庭院散点）。熊门 BP8/BP10 在西南酒窖口。",
+   "rooms": ["RBRoom_Exterior_*", "RBRoom_Building_*"]
+  },
+  {
+   "id": "C",
+   "name": "地下室与墓穴",
+   "name_en": "Basement & Crypt",
+   "color": "#475569",
+   "note": "负一层：Crypt（墓穴）走廊 3/5/6/7 + Room1-4 + AuctionStorage 1/2 + RewardRoom + EasterEgg，酒窖 WineCellar 及其楼梯/前室，还有 FinalKill 正下方的 Basement。",
+   "rooms": ["RBRoom_Crypt_*", "RBRoom_WineCellar*", "RBRoom_FinalKill_Basement*", "RBRoom_FinalKill_Stairs"]
+  },
+  {
+   "id": "F",
+   "name": "终局区",
+   "name_en": "Final Kill Arena",
+   "color": "#be123c",
+   "note": "FinalKill 大厅（275,-3938），本关最后阶段的封闭场地。",
+   "rooms": ["RBRoom_FinalKill"]
+  }
+ ]
+}

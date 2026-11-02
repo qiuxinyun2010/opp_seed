@@ -39,6 +39,10 @@
     "map": "ShoppingMallCarrefour",
     "name": "商场 · 4 个人偶按颜色配对下半身"
   },
+  "SMC_MT03": {
+    "map": "ShoppingMallCarrefour",
+    "name": "商场 · 箱子搬运"
+  },
   "TSR_MT01": {
     "map": "TelevisionStudioRooftop",
     "name": "电视台屋顶 · 密码接线面板"
@@ -54,6 +58,10 @@
   "PSO_MT01": {
     "map": "PoliceStationOffices",
     "name": "警察局办公区 · 四区各一把钥匙"
+  },
+  "PSO_MT02": {
+    "map": "PoliceStationOffices",
+    "name": "警察局办公区 · 四区毒品投放"
   },
   "PSB_MT03": {
     "map": "PoliceStationBasement",
@@ -71,6 +79,10 @@
     "map": "OrphanageServices",
     "name": "孤儿院服务区 · 调频并打开大厅闸门"
   },
+  "ORS_MT03": {
+    "map": "OrphanageServices",
+    "name": "孤儿院服务区 · 调频器与钥匙图案尸体"
+  },
   "SRR_MT01": {
     "map": "SuburbRiotResidential",
     "name": "郊区住宅区 · 五组密码房"
@@ -82,6 +94,10 @@
   "RES_MT02": {
     "map": "ResortSpa",
     "name": "水疗度假村 · 焚毁莉莉娅的遗物"
+  },
+  "RE_TRIAL": {
+    "map": "Resort",
+    "name": "度假村 · 电源模块 / 特殊钥匙（鹿·狼·熊·猫头鹰）/ 密室"
   },
   "TFW_MT03": {
     "map": "ToyFactoryWarehouse",
@@ -115,9 +131,9 @@
     "map": "MobsterHideoutSyndicate",
     "name": "黑帮据点 · 把毒品藏进桶里（3 区 ×3）"
   },
-  "PF_LD_T12": {
+  "PF_TRIAL": {
     "map": "PrisonFarm",
-    "name": "监狱农场 · 猪头 / 阀门 / 四位密码"
+    "name": "监狱农场 · 猪头 / 阀门 / 密码房 / 炸墙 / 密室"
   },
   "ShoppingMall_LD_B00": {
     "map": "ShoppingMall",
@@ -142,6 +158,14 @@
   "DTS_MT01": {
     "map": "DowntownRiotSewers",
     "name": "闹市区 · 调频线索与目标人体模型"
+  },
+  "DT_TRIAL": {
+    "map": "DowntownRiot",
+    "name": "闹市区 · 人偶房与密室"
+  },
+  "DTS_MT03": {
+    "map": "DowntownRiotSewers",
+    "name": "闹市区 · 交易窗口与钱箱"
   },
   "TOYFACTORY_T05": {
     "map": "ToyFactory",

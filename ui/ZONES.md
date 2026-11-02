@@ -43,6 +43,7 @@
 | FPC_MT02 | FunParkCanal | 71 | 2 | 2 个售票亭 → Canals / Offices | 每区 5 张票 |
 | DRS_MT03 | DowntownRiotSewers | 20 | 11 | 4 轮钱箱任务，1 钱箱 = 1 分区 | 第 1 轮固定 + 3 随机 |
 | PSO_MT01 | PoliceStationOffices | 89 | 4 | 4 个区各 1 把钥匙 | — |
+| PSO_MT02 | PoliceStationOffices | 9 | 4 | **4 个区 = 4 个毒品投放点**：房间按「离哪个投放点最近」归属，每区正好 1 个 `PSO_DrugMuleDelivery_BP_C` + 1 辆运毒卡车 | A 西区（Street，25 房）/ B 北区（ChiefOfficeEntrance，6 房）/ C 东北区（TruckStreet，25 房）/ D 南区（ParkingPath，37 房）；毒包 `DrugPacketBox_BP_C` 在 D 区 SecurityRoom。仅 1 层（街道 z≈170 与办公层 z≈300 判定为同一层，否则 4 个投放点会被拆到两层） |
 | PSB_MT01 | PoliceStationBasement | 41 | 3 | 3 个扇区各 1 把图案钥匙，点位 = 41 具尸体候选（A15/B10/C16） | 钥匙藏在尸体里；体育馆 3 台电视给图案，Gym 不分区 |
 | POLICESTATION_T02 | PoliceStation | 65 | 4 | 4 道钥匙门 → 门 1…门 4 | 顺序开门 |
 | RES_MT02 | ResortSpa | 318 | 4 | 4 个 section，每区 6–7 个人偶 | — |
@@ -52,7 +53,6 @@
 | CHJ_MT03 | CourthouseJudicial | 9 | 4 | 7 个法官按翼/庭院分布 | ⚠ 按地理切，不是按"每区几把钥匙" |
 | SRR_MT01 | SuburbRiotResidential | 136 | 6 | A–E 五组密码房 + F 其它 | ⚠ 多一个"其它"兜底区 |
 | FPB_MT01 | FunParkBarn | 53 | 4 | **分区 = 人偶所在区域**：一局 4 个人偶、每区 1 个，26 个候选按所在房间聚成 4 片，每片带自己的解锁开关 | 关卡数据无 section 命名，区域名用序号 + 房间列表 |
-| PF_LD_T12 | PrisonFarm | 114 | 2 | 密码任务分 A / B 两区（四位密码各 2 位） | 猪头 17、阀门 14 是独立任务，不分区 |
 | MHS_MT03 | MobsterHideoutSyndicate | 20 | 3 | 3 个 `MH_DrugDeliveryCoord_BP_C` 各 1 区：赌场 Casino / Chemco 实验室 / 列车编组场 Train Depot，每区每局 3 个桶（共 9） | 候选桶 6/8/5；`rooms` 通配染整片（25/12/44 房间 = 81），船厂 13 房间是毒品来源不染区 |
 | MHS_MT02 | MobsterHideoutSyndicate | 31 | 1 | 毒气桶全部集中在一片区域（毒品实验室），不分区 | 29 个桶 + 2 个泵/容器（泵在列车编组场，供灌注） |
 | SRR_MT03 | SuburbRiotResidential | 22 | 3 | 3 轮 3 区（完成一区解锁下一区）：富人区房屋 / 学校教学楼 / 学校后院 | 每区 6 个翻牌器；4 个轮次闸门无房间故不带分区 |
@@ -62,10 +62,15 @@
 | 关卡 | 地图 | 点位 | 分区 | 现在的逻辑 | 疑问 |
 |---|---|---|---|---|---|
 | DRS_MT01 | DowntownRiotSewers | 104 | 35 | 一房一区（34 房间）+ 调频器区 | 已声明为特例，但 35 个区是否仍太碎 |
-| PSB_MT03 | PoliceStationBasement | 60 | 3 | 射击场军械库 / 停尸房体育馆 / 车库后巷 | 任务是投 10 个箱，3 区是否等于任务区 |
+| PSB_MT03 | PoliceStationBasement | 60 | 6 | **按地图区域**：车库 G、射击场与军械库 S、停尸房与健身房 M、档案与施工 A、厕所与更衣 B、后巷与街道 O | 任务点只有一种：`PrivateFilesBox-01_BP_C` ×60（全部在 `PSB_MT03_B01.json`，每个都在房间里）。车库 17 / 射击场 18 / 停尸房 16 / 档案 4 / 厕所 5，箱子按区内编号。投放点（`Mansion_Grinder_BP` + `ChildrenGrinder_InteractionPanel`）暂未作点位 |
 | SMC_MT02 | ShoppingMallCarrefour | 13 | 6 | 中庭 / 中央百货撤离 / 东西侧店铺 / 东西侧百货 | 任务是 4 个人偶配对，按建筑切可能不对 |
+| SMC_MT03 | ShoppingMallCarrefour | 109 | 6 | **沿用 SMC_MT02 的 6 区**（中庭 A / 中央百货 B / 东侧店铺 C / 东侧百货 D / 西侧店铺 E / 西侧百货 F），房间归属直接复用上一张图 | 任务点只有 `ShoppingBox_BP_C` ×109，全在 1F：东侧店铺 46、西侧店铺 31、西侧百货 25、中庭大厅 7；中央百货与东侧百货二层没有箱子。`PriceScanner_BP_C` ×13 等扫描设备未列为点位 |
 | SRR_MT02 | SuburbRiotResidential | 63 | 3 | 别墅车库 / 住宅与校门 / 校区 | 任务是调频器 + 发电机 |
 | PSA_MT01 | PoliceStationAttic | 48 | 5 | 起点钥匙 / 钥匙房 / 钥匙房 / 目标与撤离 / 其它区域 | 含"其它区域"兜底区 |
+| PF_TRIAL | PrisonFarm | 87 | 7 | **按地图区域**：密室/奖励房 S、牢房 A、牢房 B、农场 C、地下室 D、典狱长楼 E、入口/序章 F | 关卡 key 用日志 Trial ID（`PF_Trial`，UE 资产名 `PF_LD_T12`）；本关是整张大图多阶段，任务物（猪头/阀门/密码房/炸墙/拉杆）同时散布各区，无法按"任务区域"切；已在 `_说明` 里声明。131 房间全覆盖 |
+| RE_TRIAL | Resort | 82 | 10 | **按地图翼区**：中庭/拍卖厅 H、入口大厅 L、东翼一层 E1、东翼二层 E2、中央二层 N2、西翼一层 W1、西翼二层 W2、外场/客房楼 O、地下室/墓穴 C、终局 F | 关卡 key 用日志 Trial ID（`RE_Trial`）。任务链：4 把动物钥匙（Stag/Wolf/Bear/Owl）各自的电源模块 ×57 → 钥匙座 ×4 → 同名特殊门 ×14；门与动物的对应靠门下 `RE_Door<Animal>Ornament-01` 浮雕网格确定（门的 `Key Type` 默认值就是 Bear）。6 间 RewardRoom + Crypt_EasterEgg 记为密室。点位颜色用 `point_types[].color`，四色区分四把钥匙 |
+| ORS_MT03 | OrphanageServices | 26 | 8 | **按地图区域**：大厅/取钥匙处 A、餐厅与厨房 B、洗衣房与后勤 C、泳池 D、操场与学习区 E、教堂与长老楼 F、地下室 G、外街与后巷 H | 任务点：调频开关面板 12（候选）+ 钥匙图案尸体 10 + 大厅调频显示屏 2（线索）+ 钥匙投放箱 2。尸体 10 具全在餐厅/侧房；开关 6 个在地下室、5 个在洗衣后勤、1 个在泳池维护走廊。本关与 ORS_MT01/MT02 同图，`floors` 手动定成 B1/1F（自动聚层会把 135 并进 1F） |
+| DT_TRIAL | DowntownRiot | 13 | 8 | **按街区**：银行区 A、电影院区 B、汽车行与餐厅区 C、汽车旅馆区 D、剧院区 E、商店街 F、车库与酒吧 G、地铁与街道 H | 点位只有两类：**人偶房 7 个**（`DTR_ZoneDef_ManneqinSetup_*_BP_<建筑>`，Cinema=A 型、Bank/Dealership/Diner/Garage/Motel/Pub=B 型；同建筑 A/B/C/D 四型坐标重合，只画 1 个代表）+ **密室/奖励房 6 间**（`LD_Rooms` 里挂 `RBRewardRoomComponent` 的：Drugstore、GarageStorage、MotelRoom204、Store、TheaterBackstage_Upper、TheaterDisplay）。剧院 8 个上下半身人偶是剧院机关，未列点位 |
 
 ### C. 还没分区或还没配点位
 

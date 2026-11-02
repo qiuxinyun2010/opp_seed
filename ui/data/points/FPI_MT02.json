@@ -1,0 +1,31 @@
+{
+ "_说明": "FPI_MT02（游乐场 · 在真人秀中幸存 FunParkIllusion）。本关没有固定任务点位：每局由 seed 决定去哪些房间、找哪个图案，所以这份配置只做两件事——① room_names：把 18 个分区房间 + 教学房间映射成游戏里显示的英文名（房间里的门牌就是这些英文，线索也照英文给）；② 点位由 seed 推理给出（seed.py 的 FPI_MT02 输出、网页的「分析点位」），不在 data/points 里写死。",
+ "level": "FPI_MT02",
+ "map": "FunParkIllusion",
+ "title": "FPI_MT02 · 游乐场 真人秀（数图案）",
+ "subtitle": "FunParkIllusion · 18 sections, pattern comes from the seed",
+ "sources": [],
+ "point_types": [],
+ "zones": [],
+ "room_names": {
+  "RBRoom_RabbitTortur": "Rabbit Torture",
+  "RBRoom_RabbitHole_CarrotsStorage": "Carrots Storage",
+  "RBRoom_RabbitHole_Bedroom_Master": "Rabbit Bedroom",
+  "RBRoom_RabbitHole_DinnerTable": "Rabbit Dinner",
+  "RBRoom15_9": "Kitchen Storage",
+  "RBRoom_QueenTrone": "Queen Throne",
+  "RBRoom_CreepyHands": "Wall Of Hands",
+  "RBRoom_Library": "Library",
+  "RBRoom_Storm": "Storm",
+  "RBRoom_UpsideDownStorm": "Upside Storm",
+  "RBRoom_UpsideDown_Church": "Upside Church",
+  "RBRoom_SpaceConsoleStation": "Space Station",
+  "RBRoom_UpsideUp_Church": "Church",
+  "RBRoom_ShowRoom_Master": "Showroom",
+  "RBRoom_Eyes": "Wall Of Eyes",
+  "RBRoom_Tesseract": "Illusion Cube",
+  "RBRoom_DinningIllusion": "Illusion Dinner",
+  "RBRoom_DarkMannequin": "Child Dorm",
+  "RBRoom_Circus": "Hourglass (tutorial)"
+ }
+}

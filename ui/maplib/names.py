@@ -81,6 +81,13 @@ class Names(object):
         self.alias.update({k: v for k, v in (cfg.get('room_names') or {}).items()
                            if not k.startswith('_')})
 
+    def explicit(self, room):
+        """这个房间名是不是人工写进别名表/配置的（而不是机翻出来的）。"""
+        for key in (room.get('raw_name'), room.get('name')):
+            if key and key in self.alias:
+                return True
+        return False
+
     def get(self, room, lang):
         for key in (room.get('raw_name'), room.get('name')):
             if key and key in self.alias:

@@ -1,74 +1,66 @@
 {
- "_说明": "PSB_MT03（警察局地下 · 限时投箱 / No Time to Waste）。任务点位 = 箱子 PrivateFilesBox-01_BP_C：关卡文件 PSB_MT03_B01 里摆了 60 个候选点，本局由 PSB_MT03_GatherAndDeliver_ObjCoord_BP 随机挑 10 个（FixedMaxCount 1P/2P/3P 都是 10，同一个点随机化后彼此至少相距 1000uu），所以图上要把 60 个候选全标出来，进局后按编号找实箱。箱子要投进 Mansion_Grinder_BP_2（PSB_MT03_B01），换撤离时间；RBRoomGroup_MT03_FullBasement 的 37 个房间开局全开。",
+ "_说明": "PSB_MT03（警察局地下 PoliceStationBasement，限时投箱）。任务点只有一种：可搬运的大箱子 PrivateFilesBox-01_BP_C ×60（全部在 PSB_MT03_B01.json，且每个都在房间里，无悬空点）。关卡蓝图 ORS/PSB_MT03_B00_C 里的 GatherAndDeliver_ObjCoord_BP 挂 LargePickupActors + DeliveryZoneUISettings，说明流程是「搬箱 → 送到投放点」；投放点在 Mansion_Grinder_BP（绞肉机）＋ ChildrenGrinder_InteractionPanel 那一带，本图暂不作为点位（以后要的话再加一个 clue 类型）。4 个 TimerCountdown_Base + 10 个 RedLightCounter-01 说明是分轮计时投箱。分区按地图区域切：车库 / 后巷与街道 / 射击场与军械库 / 停尸房与健身房 / 厕所与管道 / 档案与施工。",
  "level": "PSB_MT03",
  "map": "PoliceStationBasement",
  "title": "PSB_MT03 · 警察局地下 限时投箱",
- "subtitle": "地图上 60 个点都是箱子候选，本局只随机出 10 个（每局位置不同，同局箱子间至少 1000uu）；把箱子搬进粉碎机换撤离时间，时间到前去 Shuttle 撤离。",
- "sources": [
-  "PSB_MT03_B01.json"
- ],
+ "subtitle": "PoliceStationBasement · private files boxes (gather & deliver)",
+ "legend_hint": "蓝色=可搬运的箱子（区内编号，共 60 个候选）。",
+ "sources": ["PSB_MT03_B00.json", "PSB_MT03_B01.json"],
  "point_types": [
-  {
-   "key": "box",
-   "pattern": "^PrivateFilesBox-01_BP_C$",
-   "match": "type",
-   "label": "箱子",
-   "short": "Box",
-   "style": ""
-  }
+  { "key": "box", "pattern": "^PrivateFilesBox-01_BP_C$", "match": "type",
+    "label": "箱子", "short": "Box", "color": "#2563eb" }
  ],
  "zones": [
   {
+   "id": "G",
+   "name": "车库区",
+   "name_en": "Garage",
+   "color": "#0f766e",
+   "note": "GarageMain（Master/Slave01/02）、GarageBoiler 及走廊、GarageStorage（Master/Slave01）、GarageWorkshop、GarageOffice、TireStorage、PipesHallway01。箱子最密的一区，锅炉房和主车库各 3-4 个。",
+   "rooms": ["RBRoom_Garage*", "RBRoom_TireStorage", "RBRoom_PipesHallway01"]
+  },
+  {
+   "id": "S",
+   "name": "射击场与军械库",
+   "name_en": "Shooting Range & Armory",
+   "color": "#6d28d9",
+   "note": "ShootingRange、ShootingRangeCorridor01/02、ShootingRangeMaintenance（Master/Slave01-03）、armory、ArmoryAccess、ArmoryWOrkshop。维护间 Slave03 一间就有 4 个箱子。",
+   "rooms": ["RBRoom_ShootingRange*", "RBRoom_armory", "RBRoom_ArmoryAccess",
+             "RBRoom_ArmoryWOrkshop"]
+  },
+  {
+   "id": "M",
+   "name": "停尸房与健身房",
+   "name_en": "Morgue & Gym",
+   "color": "#be123c",
+   "note": "Morgue（Master/Slave01）、MorgueAccess、MorgueStairs、Gym、GymAccess、GymAccessCorridor、GymStorage、MainStairs、Maintenance。停尸房 7 个箱子是全图单间最多的地方。",
+   "rooms": ["RBRoom_Morgue*", "RBRoom_Gym*", "RBRoom_MainStairs", "RBRoom_Maintenance"]
+  },
+  {
    "id": "A",
-   "name": "A 区 · 射击场与军械库（西）",
-   "color": "#7c3aed",
-   "note": "射击场主厅与两条维护通道、军械库/军械车间、档案室、施工区、发电机房、西侧管道走廊与街道入口。片区最大，箱子候选最密。",
-   "rooms": [
-    "RBRoom_ShootingRange*",
-    "RBRoom_armory",
-    "RBRoom_Armory*",
-    "RBRoom_Archives*",
-    "RBRoom_Construction*",
-    "RBRoom_Generator",
-    "RBRoom_Street*",
-    "RBRoom_PipesHallway03",
-    "RBRoom_PipesHallway04*",
-    "RBRoom_PipesHallway05",
-    "RBRoom_PipesHallway06"
-   ],
-   "name_en": "Shooting range & armory (west)"
+   "name": "档案与施工区",
+   "name_en": "Archives & Construction",
+   "color": "#b45309",
+   "note": "Archives01（Master/Slave01）、Archives02、Archives03、Construction、ConstructionCorridor、Generator、PipesHallway03-06。",
+   "rooms": ["RBRoom_Archives*", "RBRoom_Construction*", "RBRoom_Generator",
+             "RBRoom_PipesHallway03", "RBRoom_PipesHallway04*", "RBRoom_PipesHallway05",
+             "RBRoom_PipesHallway06"]
   },
   {
    "id": "B",
-   "name": "B 区 · 停尸房 / 体育馆 / 后勤（中）",
-   "color": "#b45309",
-   "note": "停尸房本体/停尸房楼梯/停尸房通道、体育馆及其通道与储藏、维修间、卫生间 4 间、主楼梯、管道走廊 02。扔箱子的粉碎机（Mansion_Grinder_BP_2）就在体育馆里；候选 21 个。",
-   "rooms": [
-    "RBRoom_Morgue*",
-    "RBRoom_Gym",
-    "RBRoom_GymAccess",
-    "RBRoom_GymStorage",
-    "RBRoom_GymAccessCorridor",
-    "RBRoom_Maintenance",
-    "RBRoom_Bathroom*",
-    "RBRoom_MainStairs",
-    "RBRoom_PipesHallway02"
-   ],
-   "name_en": "Morgue, gym & maintenance (center)"
+   "name": "厕所与更衣",
+   "name_en": "Bathrooms & Lockers",
+   "color": "#0ea5e9",
+   "note": "Bathroom、BathroomCorridor01（Master/Slave01）、BathroomCorridor02、BathroomLockers、PipesHallway02。",
+   "rooms": ["RBRoom_Bathroom*", "RBRoom_PipesHallway02"]
   },
   {
-   "id": "C",
-   "name": "C 区 · 车库与后巷（东）",
-   "color": "#0f766e",
-   "note": "车库主厅/锅炉房/储藏/车间/办公室、轮胎库、后巷与后巷仓库、东侧管道走廊。箱子候选 17 个，是三个区里最少的，跑车库时顺路捡即可。",
-   "rooms": [
-    "RBRoom_Garage*",
-    "RBRoom_TireStorage",
-    "RBRoom_Alley",
-    "RBRoom_BackAlleyStore",
-    "RBRoom_PipesHallway01"
-   ],
-   "name_en": "Garage & back alley (east)"
+   "id": "O",
+   "name": "后巷与街道",
+   "name_en": "Alley & Street",
+   "color": "#ca8a04",
+   "note": "Alley、BackAlleyStore、Street、StreetAccess。Street 是外部高台（z 170-995），从停车库一侧的坡道上到后巷。",
+   "rooms": ["RBRoom_Alley", "RBRoom_BackAlleyStore", "RBRoom_Street*"]
   }
  ]
 }

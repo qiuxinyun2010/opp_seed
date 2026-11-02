@@ -1,0 +1,184 @@
+{
+ "_说明": "PF_Trial（监狱农场 PrisonFarm，多阶段大关；关卡 key 用日志里的 Trial ID，UE 关卡资产名是 PF_LD_T12_*）。本关一次跑完全图，任务物分散在整座监狱，所以分区不按「任务区域」而是按地图区域（牢房区/农场/地下/典狱长楼/入口/密室），每个区里能同时出现猪头、阀门或密码房。任务点：①猪头 PigHead_BP_C ×17（农场 15 + 农场奖励房 1 + Block B 主走廊 1）；②阀门 ValveSystem_BP_C ×14（Block A 洗衣房/服务通道/牢房共 6 个、地下室水域 7 个、地下奖励房 1 个）；③密码房：密码键盘 MultiroomPuzzleKeypad_BP_C ×1（典狱长 2F 走廊 1），候选牢房 15 间用每间离中心最近的那片密码数字贴花 PasscodeDecal_BP* 代表（82 片贴花里挑 15 片，避免图上糊成一片）；④炸弹炸墙 ItemBreakableWall_Base_BP_C ×7；⑤拉杆 LeverFlipFlop_Base_BP_C ×3 + 拉杆箱 BASE_LeverBox-01_BP_C ×1，它们控制的卷帘门 RollingDoor-*（图上另算一类点位）；⑥大钥匙门 RE_LargeKeyLocked_Door_BP_C ×1（Block B 密室 Secret 1 的门，大钥匙的 ObjCoord 在序章 SAS）；⑦密室/奖励房 8 间 + 奖励箱 RewardCrate_Container_BP_C ×10。卷帘门本来就画在「门」图层里（蓝色 rolling），这里再单列一遍是因为本关的门大多要拉杆/闸门开关才能开，属于要找的点位。",
+ "level": "PF_TRIAL",
+ "map": "PrisonFarm",
+ "title": "PF_Trial · 监狱农场 猪头 / 阀门 / 密码房 / 炸墙 / 密室",
+ "subtitle": "全图任务点位：猪头 17、阀门 14、密码房候选牢房 15（键盘在典狱长 2F）、炸弹炸墙 7、拉杆 3 + 拉杆箱 1、拉杆卷帘门 17、大钥匙门 1、密室奖励房 8 间 + 奖励箱 10。分区 = 地图区域（牢房 A/B、农场、地下室、典狱长楼、入口、密室）。",
+ "sources": [
+  "PF_LD_T12_B01.json",
+  "PF_LD_T12_B02.json",
+  "PF_LD_T12_B03.json",
+  "PF_LD_T12_B04.json",
+  "PF_LD_T12_B05.json",
+  "PF_LD_Items.json",
+  "PF_LD_EasterEgg.json",
+  "PF_ART_Basement.json",
+  "PF_ART_PigFarm.json",
+  "PF_ART_BlockA.json",
+  "PF_ART_BlockB.json",
+  "PF_ART_FrontFacade.json",
+  "PF_ART_Panopticon.json",
+  "PF_ART_ShowerScene.json",
+  "PF_ART_WardenOffice.json"
+ ],
+ "point_types": [
+  {
+   "key": "pig_head",
+   "pattern": "^PigHead_BP_C$",
+   "match": "type",
+   "label": "猪头",
+   "short": "Pig"
+  },
+  {
+   "key": "valve",
+   "pattern": "^ValveSystem_BP_C$",
+   "match": "type",
+   "label": "阀门",
+   "short": "Valve"
+  },
+  {
+   "key": "keypad",
+   "pattern": "^MultiroomPuzzleKeypad_BP_C$",
+   "match": "type",
+   "label": "密码键盘",
+   "short": "Pad"
+  },
+  {
+   "key": "passcode_decal",
+   "pattern": "^PasscodeDecal_BP(72|2|7|8|17|18|30|35|31|32|53|66|68|52|51)$",
+   "match": "name",
+   "label": "密码房候选牢房",
+   "short": "Code",
+   "style": "clue"
+  },
+  {
+   "key": "breakable_wall",
+   "pattern": "^ItemBreakableWall_Base_BP_C$",
+   "match": "type",
+   "label": "炸弹炸墙",
+   "short": "Wall"
+  },
+  {
+   "key": "lever",
+   "pattern": "^LeverFlipFlop_Base_BP_C$",
+   "match": "type",
+   "label": "拉杆",
+   "short": "Lever"
+  },
+  {
+   "key": "lever_box",
+   "pattern": "^BASE_LeverBox-01_BP_C$",
+   "match": "type",
+   "label": "拉杆箱",
+   "short": "LBox",
+   "style": "clue"
+  },
+  {
+   "key": "lever_door",
+   "pattern": "^RollingDoor-(3M|DoubleDoor|SingleDoor|2M)_BP_C$",
+   "match": "type",
+   "label": "拉杆卷帘门",
+   "short": "Door",
+   "style": "clue"
+  },
+  {
+   "key": "large_key_door",
+   "pattern": "^RE_LargeKeyLocked_Door_BP_C$",
+   "match": "type",
+   "label": "大钥匙门",
+   "short": "BigKey"
+  },
+  {
+   "key": "large_key",
+   "pattern": "^RE_LargeKey_ObjCoord_BP_C$",
+   "match": "type",
+   "label": "大钥匙（彩蛋）",
+   "short": "Key",
+   "style": "clue"
+  },
+  {
+   "key": "loot_crate",
+   "pattern": "^RewardCrate_Container_BP_C$",
+   "match": "type",
+   "label": "奖励箱",
+   "short": "Crate",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "S",
+   "name": "密室 / 奖励房",
+   "name_en": "Secret & Reward Rooms",
+   "color": "#ca8a04",
+   "note": "Block B 的 3 间 Secret（Secret 1 要大钥匙门、Secret 3 要炸弹炸墙）＋ 5 间 RewardRoom（地下 3 间、Block B 东房、农场）。共 8 间，10 个奖励箱里 4 间地下/东房各 2 个、农场 2 个。",
+   "rooms": [
+    "RBRoom_*_RewardRoom",
+    "RBRoom_BlockB_Secret_*"
+   ]
+  },
+  {
+   "id": "A",
+   "name": "A 区 · Block A（阀门 + 密码 2 位）",
+   "name_en": "Zone A - Block A",
+   "color": "#7c3aed",
+   "note": "牢房区 A：6 个阀门在洗衣房 / 服务通道 / Cell 5-6，密码数字候选牢房 Cell 102-107（6 间），另有 Guard Post 拉杆 1 个和 3 道卷帘门。",
+   "rooms": [
+    "RBRoom_BlockA*"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "B 区 · Block B（密码 2 位 + 大钥匙门）",
+   "name_en": "Zone B - Block B",
+   "color": "#b45309",
+   "note": "牢房区 B：密码数字候选牢房 Cell 101-105 / 107-110（9 间），Guard Post 拉杆 1 个，Cell 108 的炸墙可炸开，1 个猪头在 Corridor Main；西南角 3 间密室归 S 区。",
+   "rooms": [
+    "RBRoom_BlockB*"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "C 区 · 农场（猪头）",
+   "name_en": "Zone C - Farm",
+   "color": "#0f766e",
+   "note": "农场区：15 个猪头（Hub / Room 2-6 / Room 8 / 走廊），Room 2 有 1 面炸墙，奖励房归 S 区（另有 2 个奖励箱）。",
+   "rooms": [
+    "RBRoom_Farm*"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "D 区 · 地下室（阀门）",
+   "name_en": "Zone D - Basement",
+   "color": "#1d4ed8",
+   "note": "地下室：7 个阀门在 Water 1/2/4/5、Room 5/6、Hub；拉杆箱在 Room 6，Hub 有 1 面炸墙，3 间奖励房归 S 区（6 个奖励箱）。",
+   "rooms": [
+    "RBRoom_Basement*"
+   ]
+  },
+  {
+   "id": "E",
+   "name": "E 区 · 典狱长楼 / 主楼（密码键盘）",
+   "name_en": "Zone E - Warden & Main",
+   "color": "#be123c",
+   "note": "典狱长 1F/2F 与主楼：四位密码的键盘在 2F 走廊 1，属于「猜完数字回来输入」的地方。",
+   "rooms": [
+    "RBRoom_Warden*",
+    "RBRoom_Main_*"
+   ]
+  },
+  {
+   "id": "F",
+   "name": "F 区 · 入口 / 序章（炸墙 + 拉杆）",
+   "name_en": "Zone F - Intro & Entrance",
+   "color": "#64748b",
+   "note": "序章与入口大厅：炸墙 3 面（Intro Explosive Wall 1、Prison Facade、Entrance Corridor 3）、入口拉杆 1 个（Entrance Room Lever）、大钥匙 ObjCoord 在 SAS、通往 Block A/B 的卷帘门 5 道。",
+   "rooms": [
+    "RBRoom_Intro*",
+    "RBRoom_IntrO_*",
+    "RBRoom_Entrance*"
+   ]
+  }
+ ]
+}

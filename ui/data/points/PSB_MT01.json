@@ -64,7 +64,8 @@
     "RBRoom_PipesHallway02",
     "RBRoom_PipesHallway03",
     "RBRoom_PipesHallway04*",
-    "RBRoom_PipesHallway05"
+    "RBRoom_PipesHallway05",
+    "RBRoom_Gym*"
    ],
    "actors": [
     "CorpseSearch_PS_Trial02_BP10_35",

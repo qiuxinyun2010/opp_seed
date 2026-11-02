@@ -167,6 +167,11 @@ python mapdb.py <LEVEL>          # 先跑一次（还没配点位时也能出图
 说明该关卡的关卡文件不在 `paks/MAP/Maps` 里，用 `--map <目录名>` 指定；
 关卡 → 地图的对照写在 `data/levels.json`。
 
+关卡 key **以日志里的 Trial ID 为准**（`PrisonFarm` 的日志报 `Trial ID: PF_Trial`，
+关卡就叫 `PF_Trial`，文件是 `data/points/PF_TRIAL.json` + `data/maps/PF_TRIAL.json`，
+数据里的 `level` 字段写 `PF_TRIAL`）。这样窗口/网页跟随日志时不用任何映射就能对上；
+与 UE 里的关卡资产名（`PF_LD_T12_*`）不同没关系，那串名字只出现在 `sources` 里。
+
 ### 步骤 1：读原始关卡 JSON，找出点位类
 
 UE 导出的 JSON 是逐行缩进的，直接搜就行（`Type` 就是蓝图类名）：
@@ -245,7 +250,8 @@ PSB_MT03 的结论：`LargePickupActors=PrivateFilesBox-01_BP_C`、`DesiredCount
   "match": "type",                          // type=按蓝图类名；name=按实例名
   "label": "箱子",                           // 中文标签（信息栏 label_zh）
   "short": "Box",                           // 图上短名，ASCII
-  "style": "" }                             // clue=空心（线索）；省略/空=实心（目标）
+  "style": "",                              // clue=空心（线索）；省略/空=实心（目标）
+  "color": "#b45309" }                      // 可选：该类型点位自己的颜色（不写=按分区上色）
 ```
 
 一个点位类型一个条目，多个类型就多个条目；字段含义见 §4，`data/points/` 下已有几份
@@ -421,6 +427,7 @@ python mapview.py TSR_MT01 --png data/preview/TSR_MT01.overlay.png
   "level": "TSR_MT02",
   "map": "TelevisionStudioRooftop",
   "sources": ["TSR_LD_MT02_B00.json"],   // 扫哪些关卡文件；不写会自动猜 <前缀>_LD_<MTxx>_B00.json
+  "floors": { "levels": [-200, 0], "labels": ["B1", "1F"] },  // 可选：手动指定楼层（默认按房间高度自动聚，夹层会被合并）
   "point_types": [
     { "key": "photo", "pattern": "^SMC_MT02_TriggerablePhotoDispenser", "match": "name",
       "label": "Photo", "style": "clue", "props": ["ObjectiveIndex"], "merge_room": true }
@@ -437,13 +444,14 @@ python mapview.py TSR_MT01 --png data/preview/TSR_MT01.overlay.png
 | `style` | `clue` = 空心圆（线索/可交互）；不写 = 实心（目标） |
 | `short` | 图上标记的短名（ASCII，如 `Judge`）；不写就按实例名推，推不出来时退回类型名。**显式写了就照用**，哪怕只有 2 个字符（如 `TOYFACTORY_T05` 的 `1A` `4C`）；只有自动推出来的短名才会因为「太短/BP 开头/非 ASCII/区内重名」退回类型名 |
 | `props` | 额外读取的 actor 属性，`ObjectiveIndex` 可用来按组自动分区 |
+| `color` | 该类型点位自己的颜色（`#rrggbb`），窗口/网页/PNG 都按它上色；不写就按分区颜色 |
 | `merge_room` | 默认 `true`：点位所在房间并入该点位所属分区 |
 
 ### `data/maps/<关卡>.json`（机器生成）
 
 | 字段 | 内容 |
 |---|---|
-| `rooms[]` | `raw`（原始名，主键）、`name`（英文）、`name_zh`、`hulls`（世界坐标多边形）、`z`、`c`、`area`、`kind`（room/corridor/connector）、`floors`、`zone` |
+| `rooms[]` | `raw`（原始名，主键）、`name`（英文）、`name_zh`、`named`（配置里手写了名字 → 图上默认标出来）、`hulls`（世界坐标多边形）、`z`、`c`、`area`、`kind`（room/corridor/connector）、`floors`、`zone` |
 | `doors[]` | `name`、`type`、`kind`（spawn/normal/rolling/sliding/access/backdrop/other）、`trial_only`、`w`、`p`、`yaw`、`rooms`、`floor` |
 | `points[]` | `actor`（实例名，主键）、`key`、`label`、`style`、`short`、`num`（区内编号）、`p`、`room`、`zone`、`floor` |
 | `floors[]` | `index`、`level`（z 均值）、`label`（`B1/1F/2F…`）、`band` |

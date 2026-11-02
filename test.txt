@@ -385,3 +385,34 @@ Trial ID: CHJ_MT03, Program difficulty: Easy, Stage: CourthouseJudicial, Mission
 黑桃=TextSignStandBase-8
 方块=TextSignStandBase-3
 
+Trial ID: DTS_MT03, Program difficulty: Easy, Stage: DowntownSewer, Mission: DTS_MT03, Seed: 446446, EffectiveNumberOfPlayers: 1
+MT03_Briefcase_AutoParts
+MT03_Briefcase_BP_MotelReception
+MT03_Briefcase_BP_IrishPub_2F
+
+Trial ID: PF_Trial, Program difficulty: Easy, Stage: PrisonFarm, Mission: PF_Trial, Seed: 701701, EffectiveNumberOfPlayers: 1
+---
+阀门
+A1-B1-C1-D2
+B=ValveSystem_BP11
+C=ValveSystem_BP8
+D=ValveSystem_BP22
+---
+A103=RBRoom_BlockA_Cell_103=0（1） 
+A106=RBRoom_BlockA_Cell_106=8（3）
+B105=RBRoom_BlockB_Cell_105=2（2）
+B108=RBRoom_BlockB_Cell_108=3（0）
+password=3208
+---
+密室=RBRoom_BlockB_EastRoom_RewardRoom
+
+Trial ID: RE_Trial, Program difficulty: Easy, Stage: Resort, Mission: RE_Trial, Seed: 169169, EffectiveNumberOfPlayers: 1
+
+Trial ID: ORS_MT03, Program difficulty: Normal, Stage: OrphanageServices, Mission: ORS_MT03, Seed: 739739, EffectiveNumberOfPlayers: 3
+
+Trial ID: PSO_MT01, Program difficulty: Insane, Stage: PoliceStationOffices, Mission: PSO_MT01, Seed: 384384, EffectiveNumberOfPlayers: 3
+A=PoliceStation_Office_QuestItemSpawner_BP_Child_40
+
+Trial ID: PSO_MT02, Program difficulty: Insane, Stage: PoliceStationOffices, Mission: PSO_MT02, Seed: 90090, EffectiveNumberOfPlayers: 3
+
+Trial ID: DT_Trial, Program difficulty: Insane, Stage: DowntownRiot, Mission: DT_Trial, Seed: 294294, EffectiveNumberOfPlayers: 1

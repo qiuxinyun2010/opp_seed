@@ -1,0 +1,181 @@
+{
+ "_说明": "PSO_MT02（警察局办公区 PoliceStationOffices，毒品投放）。任务结构：全图分 4 个区域，每区各 1 个毒品投放点（PSO_DrugMuleDelivery_BP_C，名字后缀 SASA/SASB/SASC/SASD 对应 4 个 MH_DrugDeliveryCoord_BP 投放坐标），把毒包（DrugPacketBox_BP_C ×1，在 SecurityRoom）送到任意一个投放点即可；每个投放点旁边停着一辆运毒卡车（PSO_DrugTruck_BP_C）。4 个投放点坐标：A (-4747,1453) 街道、B (-3127,4457) 局长办公室入口、C (1054,3444) 卡车街、D (1180,-4521) 停车通道。分区就是把 93 个房间按「离哪个投放点最近」划成 4 片，所以每区正好 1 个投放点。",
+ "level": "PSO_MT02",
+ "map": "PoliceStationOffices",
+ "title": "PSO_MT02 · 警察局办公区 毒品投放（4 区 / 4 投放点）",
+ "subtitle": "PoliceStationOffices · 4 delivery zones, one drug drop each",
+ "legend_hint": "玫红实心=毒品投放点（每区 1 个）；紫色空心=毒包；青绿空心=运毒卡车。",
+ "sources": [
+  "PSO_MT02_B00.json",
+  "PSO_MT02_B01.json",
+  "PSO_MT02_B02.json",
+  "PSO_MT02_B03.json"
+ ],
+ "floors": {
+  "levels": [
+   300
+  ],
+  "labels": [
+   "1F"
+  ]
+ },
+ "point_types": [
+  {
+   "key": "drug_drop",
+   "pattern": "^PSO_DrugMuleDelivery_BP_C$",
+   "match": "type",
+   "label": "毒品投放点",
+   "short": "Drop",
+   "color": "#be123c"
+  },
+  {
+   "key": "drug_packet",
+   "pattern": "^DrugPacketBox_BP_C$",
+   "match": "type",
+   "label": "毒包（搬运物）",
+   "short": "Pack",
+   "color": "#6d28d9",
+   "style": "clue"
+  },
+  {
+   "key": "drug_truck",
+   "pattern": "^PSO_DrugTruck_BP_C$",
+   "match": "type",
+   "label": "运毒卡车",
+   "short": "Truck",
+   "color": "#0f766e",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "西区 · 街道与办公楼",
+   "name_en": "Zone A - Street & Admin",
+   "color": "#b45309",
+   "note": "投放点 A 在 Street 西侧广场（-4747,1453），旁边是运毒卡车。区内有 Street/StreetEntrance、局长办公室西半（ChiefOfficeAccess/SideRoom）、行政走廊与会议室、调度台、巡逻办公室、食堂厨房、更衣室。",
+   "rooms": [
+    "RBRoom_AdminCorridor_Master",
+    "RBRoom_AdminCorridor_Slave01",
+    "RBRoom_AdminMeetingRoom",
+    "RBRoom_BehindDonutTruck",
+    "RBRoom_Cafeteria",
+    "RBRoom_CafeteriaAccess01_Master",
+    "RBRoom_CafeteriaHallway",
+    "RBRoom_ChiefOfficeAccess",
+    "RBRoom_ChiefOfficeSideRoom",
+    "RBRoom_Dispatch01",
+    "RBRoom_Dispatch02",
+    "RBRoom_Kitchen",
+    "RBRoom_LockerRoom",
+    "RBRoom_OfficeBathroom",
+    "RBRoom_OfficeSideAccess",
+    "RBRoom_PatrolEntrance_Corridor",
+    "RBRoom_PatrolEntrance_Slave01",
+    "RBRoom_PatrolOfficeAccess",
+    "RBRoom_PatrolOffice_Slave01",
+    "RBRoom_PatrolOffice_Slave02",
+    "RBRoom_PatrolWashroom01",
+    "RBRoom_PatrolWashroom02",
+    "RBRoom_SASDonut_Slave02",
+    "RBRoom_Street",
+    "RBRoom_StreetEntrance"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "北区 · 局长办公室与接待",
+   "name_en": "Zone B - Chief Office & Reception",
+   "color": "#2563eb",
+   "note": "投放点 B 在 ChiefOfficeEntrance（-3127,4457），从行政街入口进来最近。区内 6 间：ChiefOffice、ChiefOfficeEntrance、AdministrationDesks02、AdministrationStreetEntrance、ReceptionAccess、CafeteriaAccess01_Slave01。",
+   "rooms": [
+    "RBRoom_AdministrationDesks02",
+    "RBRoom_AdministrationStreetEntrance",
+    "RBRoom_CafeteriaAccess01_Slave01",
+    "RBRoom_ChiefOffice",
+    "RBRoom_ChiefOfficeEntrance",
+    "RBRoom_ReceptionAccess"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "东北区 · 卡车街与警探区",
+   "name_en": "Zone C - Truck Street & Detectives",
+   "color": "#0f766e",
+   "note": "投放点 C 在卡车街（1054,3444），TruckStreet/TruckEntrance 就在旁边。区内有警探办公室 01/03/04/05、审讯室 01/02、证物入口、犯罪档案、医务室、接待与等候区、男女厕所、大厅楼梯。",
+   "rooms": [
+    "RBRoom_BathroomAccess",
+    "RBRoom_BathroomBoys",
+    "RBRoom_BathroomGirls",
+    "RBRoom_CafeteriaAccess02",
+    "RBRoom_CafeteriaBreakRoom",
+    "RBRoom_CafeteriaHallwayAccess",
+    "RBRoom_CriminalRecordAccess",
+    "RBRoom_CriminalRecords",
+    "RBRoom_DetectiveBreakroom",
+    "RBRoom_DetectiveOffices01",
+    "RBRoom_DetectiveOffices03",
+    "RBRoom_DetectiveOffices04",
+    "RBRoom_DetectiveOffices05",
+    "RBRoom_DetectivesBathroom",
+    "RBRoom_EvidenceEntrance",
+    "RBRoom_InfirmaryAccess",
+    "RBRoom_Infirmary_3",
+    "RBRoom_InterrogationRoom01",
+    "RBRoom_InterrogationRoom02",
+    "RBRoom_Lobby_Stairs",
+    "RBRoom_Reception",
+    "RBRoom_TruckEntrance",
+    "RBRoom_TruckStreet",
+    "RBRoom_WaitingRoom",
+    "RBRoom_WaitingRoomAccess"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "南区 · 停车场与监狱",
+   "name_en": "Zone D - Parking & Jail",
+   "color": "#be123c",
+   "note": "投放点 D 在 ParkingPath（1180,-4521）。区内最大，含 ParkingPath/停车安全室、Execution 行刑区、BackAlley 后巷、Evidence 证物室与实验室、DarkRoom、JailHall 监狱走廊、CellAccess、SecurityRoom（毒包在这里）、Restaurant/SASDonut、StationEntrance。",
+   "rooms": [
+    "RBRoom_BackAlleyStoreroom",
+    "RBRoom_BackAlley_Master",
+    "RBRoom_BackAlley_Slave01",
+    "RBRoom_CellAccess_Master",
+    "RBRoom_CellAccess_Slave01",
+    "RBRoom_DarkRoom",
+    "RBRoom_Evidence01",
+    "RBRoom_Evidence02",
+    "RBRoom_EvidenceAccess",
+    "RBRoom_Evidence_Backstage",
+    "RBRoom_Execution",
+    "RBRoom_ExecutionEntrance",
+    "RBRoom_ExecutionSideAccess",
+    "RBRoom_JailHallSide",
+    "RBRoom_JailHall_Master",
+    "RBRoom_JailHall_Slave01",
+    "RBRoom_JailHall_Slave02",
+    "RBRoom_JailHall_Slave03",
+    "RBRoom_JailHall_Slave04",
+    "RBRoom_JailHall_Slave05",
+    "RBRoom_JailParkingAccess",
+    "RBRoom_KeyRoom",
+    "RBRoom_Laboratory",
+    "RBRoom_LaboratoryAccess",
+    "RBRoom_ParkingPath_Master",
+    "RBRoom_ParkingPath_Slave01",
+    "RBRoom_ParkingSecurity",
+    "RBRoom_PatrolEntrance_Master",
+    "RBRoom_PatrolOffice_Master",
+    "RBRoom_Restaurant",
+    "RBRoom_RestaurantGarage",
+    "RBRoom_SASDonut_Master",
+    "RBRoom_SASDonut_Slave01",
+    "RBRoom_SecurityRoom",
+    "RBRoom_StationEntrance",
+    "RBRoom_Sully_SAS",
+    "RBRoom_Witness"
+   ]
+  }
+ ]
+}
