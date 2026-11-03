@@ -13,3 +13,6 @@ __pycache__/
 
 # Web 版（mapweb.py）运行时生成的 Edge 配置目录
 ui/data/cache/web_profile/
+
+# 大型资源包（单文件 >100MB，改用 GitHub Release 分发）
+paks/*.7z

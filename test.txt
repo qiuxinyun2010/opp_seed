@@ -416,3 +416,31 @@ A=PoliceStation_Office_QuestItemSpawner_BP_Child_40
 Trial ID: PSO_MT02, Program difficulty: Insane, Stage: PoliceStationOffices, Mission: PSO_MT02, Seed: 90090, EffectiveNumberOfPlayers: 3
 
 Trial ID: DT_Trial, Program difficulty: Insane, Stage: DowntownRiot, Mission: DT_Trial, Seed: 294294, EffectiveNumberOfPlayers: 1
+
+Trial ID: CHJ_MT03, Program difficulty: Easy, Stage: CourthouseJudicial, Mission: CHJ_MT03, Seed: 327327, EffectiveNumberOfPlayers: 1
+红心；方块；黑桃；火焰
+TextSignStandBase-01_16=红心
+TextSignStandBase-4=火焰
+TextSignStandBase-8=方块
+TextSignStandBase-6=兔子 
+TextSignStandBase-7=黑桃 
+TextSignStandBase-9=王冠
+
+Trial ID: DTS_MT03, Program difficulty: Easy, Stage: DowntownSewer, Mission: DTS_MT03, Seed: 899899, EffectiveNumberOfPlayers: 1
+MT03_Briefcase_BP_CommunityCenter （固定）
+MT03_Briefcase_BP_PoliceStation
+MT03_Briefcase_BP_SexShop
+MT03_Briefcase_BP_MotelReception
+
+Trial ID: FPC_MT02, Program difficulty: Easy, Stage: FunParkCanal, Mission: FPC_MT02, Seed: 80080, EffectiveNumberOfPlayers: 1
+MT03_FPC_TriggerableTicketDispenser_01_BP_Intro
+MT02_FPC_TriggerableTicketDispenser_01_BP_CanalA_3
+MT02_FPC_TriggerableTicketDispenser_01_BP_CanalA_6
+FPC_TriggerableTicketDispenser_01_A_BP_56
+FPC_TriggerableTicketDispenser_01_A_BP_80
+
+FPC_TriggerableTicketDispenser_01_B_BP_26
+FPC_TriggerableTicketDispenser_01_B_BP_38
+FPC_TriggerableTicketDispenser_01_B_BP_50
+FPC_TriggerableTicketDispenser_01_B_BP_58
+FPC_TriggerableTicketDispenser_01_B_BP_16
