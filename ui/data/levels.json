@@ -67,6 +67,10 @@
     "map": "PoliceStationBasement",
     "name": "警察局地下 · 限时投箱"
   },
+  "PS_TRIAL": {
+    "map": "PoliceStation",
+    "name": "警察局 · 尸体钥匙与图案钥匙门"
+  },
   "ORI_MT01": {
     "map": "OrphanageInstitution",
     "name": "孤儿院附楼 · 收集小孩人偶"
@@ -82,6 +86,10 @@
   "ORS_MT03": {
     "map": "OrphanageServices",
     "name": "孤儿院服务区 · 调频器与钥匙图案尸体"
+  },
+  "OR_TRIAL": {
+    "map": "Orphanage",
+    "name": "孤儿院 · 调频器 / 放映机 / 钥匙"
   },
   "SRR_MT01": {
     "map": "SuburbRiotResidential",
@@ -146,6 +154,10 @@
   "FPB_MT01": {
     "map": "FunParkBarn",
     "name": "游乐场谷仓 · 人偶与解锁开关"
+  },
+  "FPB_MT03": {
+    "map": "FunParkBarn",
+    "name": "游乐场谷仓 · 移动靶"
   },
   "PSB_MT01": {
     "map": "PoliceStationBasement",

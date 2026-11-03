@@ -1,0 +1,134 @@
+{
+ "_说明": "OR_Trial（孤儿院 Orphanage，Trial 3）。任务点位三类：① 调频器 FrequencyMatchPanel_BP_C ×10：宿舍区 7 个（幼儿左寝 2、幼儿右寝 1、女生左寝 2、女生右寝 1、男生右寝 1）、广播室 RadioRoom 1 个、学习区 2 个（StudyBathroom、StudyCorridor01）；② 放映机 DiaporamaProjector_02_BP_C ×4：Classroom01-04 各一台；③ 钥匙（十字架锁）KeyItem_CrucifixionLockDevice_BP_C ×2：都在教堂 RBRoom_Church 里（-4928,3250 与 -4928,2851，相距 400），对应两台线索电视 Clue_TvChannel_10/11。另外把 7 个影片盘 DiaporamaWheel_LargeObject_BP_C 标成线索点（放映机要用它，全在 StudyFilm / StudyFilmBack）。钥匙本身来自搜尸（CorpseSearch_OR_* ×15，带 RBObjectiveActor），本图未列。",
+ "level": "OR_TRIAL",
+ "map": "Orphanage",
+ "title": "OR_Trial · 孤儿院 调频器 / 放映机 / 钥匙",
+ "subtitle": "Orphanage T03 · frequency panels, diaporama projectors, crucifixion keys",
+ "legend_hint": "橙=调频器；紫=放映机；玫红=钥匙锁（十字架锁）；绿色空心=影片盘。",
+ "sources": [
+  "ORPH_T03_B00.json",
+  "ORPH_T03_B01.json",
+  "ORPH_T03_B02.json",
+  "ORPH_T03_B03.json",
+  "ORPH_T03_B04.json",
+  "ORPH_T03_B05.json",
+  "ORPH_T03_B06.json",
+  "ORPH_T03_B07.json",
+  "ORPH_T03_B08.json",
+  "ORPH_T03_B09.json",
+  "ORPH_T03_B10.json"
+ ],
+ "point_types": [
+  {
+   "key": "freq_panel",
+   "match": "type",
+   "pattern": "^FrequencyMatchPanel_BP_C$",
+   "label": "调频器",
+   "short": "Freq",
+   "color": "#b45309"
+  },
+  {
+   "key": "projector",
+   "match": "type",
+   "pattern": "^DiaporamaProjector_02_BP_C$",
+   "label": "放映机",
+   "short": "Proj",
+   "color": "#6d28d9"
+  },
+  {
+   "key": "key_lock",
+   "match": "type",
+   "pattern": "^KeyItem_CrucifixionLockDevice_BP_C$",
+   "label": "钥匙锁（十字架）",
+   "short": "Key",
+   "color": "#be123c",
+   "props": [
+    "AssociatedTvChannel"
+   ]
+  },
+  {
+   "key": "film_wheel",
+   "match": "type",
+   "pattern": "^DiaporamaWheel_LargeObject_BP_C$",
+   "label": "影片盘",
+   "short": "Reel",
+   "color": "#0f766e",
+   "style": "clue"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "教堂与神父楼",
+   "name_en": "Church & Presbyter",
+   "color": "#7c3aed",
+   "note": "教堂本体与神父楼一圈（Church、前庭、Presbyter 走廊/办公室/浴室）。两把十字架钥匙锁都在教堂里（z≈150 的门口高度），教堂地下室这片只作通路。",
+   "rooms": [
+    "RBRoom_Church*",
+    "RBRoom_Presbyter*"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "宿舍区",
+   "name_en": "Dormitories",
+   "color": "#be123c",
+   "note": "男生/女生/幼儿三片宿舍：走廊、洗漱间、左右寝室、屋顶、连接走廊。调频器 7 个全在这三片寝室里。",
+   "rooms": [
+    "RBRoom_Dorm*"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "教室与放映区",
+   "name_en": "Classrooms & Study",
+   "color": "#2563eb",
+   "note": "Classroom01-04、Study 一整套（走廊 01/02/03/05/06、Film、FilmBack、前后楼梯、OpenMiddle、Bathroom、SmallStudy）、泳池更衣、医务厕所。4 台放映机各在一间教室，7 个影片盘集中在 StudyFilm / StudyFilmBack，另有 2 个调频器在 StudyBathroom 与 StudyCorridor01。",
+   "rooms": [
+    "RBRoom_Classroom*",
+    "RBRoom_Study*",
+    "RBRoom_SmallStudy*",
+    "RBRoom_PoolLocker",
+    "RBRoom_Medical_Bathroom"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "大堂与入口",
+   "name_en": "Lobby & Entrance",
+   "color": "#0f766e",
+   "note": "Lobby 主楼（Master/Slave02/03、Backstage、Office、LobbyTop 走廊/Hall）、前台、入口门廊与入口街、SAS 街、RadioRoom。广播室里另有 1 个调频器。",
+   "rooms": [
+    "RBRoom_Lobby*",
+    "RBRoom_Reception*",
+    "RBRoom_Entance_Slave",
+    "RBRoom_Entrance*",
+    "RBRoom_SASStreet*",
+    "RBRoom_RadioRoom"
+   ]
+  },
+  {
+   "id": "E",
+   "name": "墓地",
+   "name_en": "Cemetery",
+   "color": "#475569",
+   "note": "上/下墓穴、后墓穴及其多个 Slave 房间，从教堂西侧进去。",
+   "rooms": [
+    "RBRoom_Cemetary*",
+    "RBRoom_LowerCemetary*",
+    "RBRoom_UpperCemetary*"
+   ]
+  },
+  {
+   "id": "F",
+   "name": "食堂与温室",
+   "name_en": "Cafeteria & Greenhouse",
+   "color": "#ca8a04",
+   "note": "旧食堂 OOT_Cafeteria 与温室 GreenHouse，两片各自独立。",
+   "rooms": [
+    "RBRoom_OOT_Cafeteria",
+    "RBRoom_GreenHouse"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,166 @@
+{
+ "_说明": "PS_Trial（警察局主楼 PoliceStation，Trial 2 · 尸体钥匙）。任务链：全图 61 具可搜索尸体（CorpseSearch_PS_Trial02_*，普通 12 / 靠墙 19 / 洞喉 11 / 坐椅 8 / 办公桌 11），搜出来的是「图案钥匙」——任务道具按花色分：PoliceStation_Trial2_QuestItem_Spade / Club / Diamond；把钥匙插进对应的图案钥匙门（KeyItem_RollingGateDevice_BP_C，全图 4 处）就开卷帘门。4 处门与花色：G1 Spade→RollingDoor-01_BP9（TV 线索 FirstGate）、G2 Club→RollingDoor-01_BP6_2（SecondGate）、G3 Diamond→RollingDoor-Base_BP（ThirdGate）、G4 Spade→RollingDoor-Base_BP4（额外一处，花色同为 Spade）。分区按「离哪道门最近」切成 4 区，不是任务分阶段。注意：尸体和门都在 PoliceStation_T02_B05.json 里，其它 B01-B07 是同一局的其它层。",
+ "level": "PS_TRIAL",
+ "map": "PoliceStation",
+ "title": "PS_Trial · 警察局 尸体钥匙 / 图案钥匙门",
+ "subtitle": "PoliceStation T02 · corpse keys & pattern key-hole gates",
+ "legend_hint": "紫色实心=可搜索的尸体（钥匙）；深红实心=图案钥匙门（插钥匙开卷帘门）。",
+ "sources": [
+  "PoliceStation_T02_B01.json",
+  "PoliceStation_T02_B02.json",
+  "PoliceStation_T02_B03.json",
+  "PoliceStation_T02_B04.json",
+  "PoliceStation_T02_B05.json",
+  "PoliceStation_T02_B06.json",
+  "PoliceStation_T02_B07.json"
+ ],
+ "point_types": [
+  {
+   "key": "corpse_key",
+   "match": "type",
+   "pattern": "^CorpseSearch_PS_Trial02_(BP_C|AgainstWall_BP_C|WallThroat_BP_C|OnChair_BP_C|Desk_BP_C)$",
+   "label": "尸体钥匙",
+   "short": "Body",
+   "color": "#7c3aed"
+  },
+  {
+   "key": "key_gate",
+   "match": "type",
+   "pattern": "^KeyItem_RollingGateDevice_BP_C$",
+   "label": "图案钥匙门",
+   "short": "Gate",
+   "color": "#9f1239",
+   "props": [
+    "ItemClass",
+    "DoorToOpen",
+    "AssociatedTvChannel"
+   ]
+  }
+ ],
+ "zones": [
+  {
+   "id": "G1",
+   "name": "黑桃 门区",
+   "name_en": "Spade Gate area",
+   "color": "#2563eb",
+   "note": "图案钥匙门 First Gate（Spade）在 (-1418, 1373)，门是 RollingDoor-01_BP9。区内房间 14 间，尸体钥匙都按「离这道门最近」归类。",
+   "rooms": [
+    "RBRoom11_44",
+    "RBRoom23_84",
+    "RBRoom45_4",
+    "RBRoom7_31",
+    "RBRoom_16",
+    "RBRoom_17",
+    "RBRoom_19",
+    "RBRoom_20",
+    "RBRoom_24",
+    "RBRoom_28",
+    "RBRoom_3",
+    "RBRoom_41",
+    "RBRoom_87",
+    "RBRoom_9"
+   ]
+  },
+  {
+   "id": "G2",
+   "name": "梅花 门区",
+   "name_en": "Club Gate area",
+   "color": "#b45309",
+   "note": "图案钥匙门 Second Gate（Club）在 (380, 1121)，门是 RollingDoor-01_BP6_2。区内房间 17 间，尸体钥匙都按「离这道门最近」归类。另有 2 具尸体（BP3_8、BP4）站在房间外的大厅/走廊里，没有房间归属，按位置归到这里。",
+   "rooms": [
+    "RBRoom15_5",
+    "RBRoom18_89",
+    "RBRoom21_5",
+    "RBRoom2_2",
+    "RBRoom43_4",
+    "RBRoom4_3",
+    "RBRoom5_6",
+    "RBRoom6_11",
+    "RBRoom_1",
+    "RBRoom_13",
+    "RBRoom_2",
+    "RBRoom_21",
+    "RBRoom_5",
+    "RBRoom_52",
+    "RBRoom_60",
+    "RBRoom_7",
+    "RBRoom_TRAP"
+   ],
+   "actors": [
+    "CorpseSearch_PS_Trial02_BP3_8",
+    "CorpseSearch_PS_Trial02_BP4"
+   ]
+  },
+  {
+   "id": "G3",
+   "name": "方块 门区",
+   "name_en": "Diamond Gate area",
+   "color": "#0f766e",
+   "note": "图案钥匙门 Third Gate（Diamond）在 (940, -2779)，门是 RollingDoor-Base_BP。区内房间 26 间，尸体钥匙都按「离这道门最近」归类。",
+   "rooms": [
+    "RBRoom12_19",
+    "RBRoom14",
+    "RBRoom16",
+    "RBRoom24_87",
+    "RBRoom25_4",
+    "RBRoom28_99",
+    "RBRoom29",
+    "RBRoom30_40",
+    "RBRoom31_5",
+    "RBRoom34_5",
+    "RBRoom3_5",
+    "RBRoom46_31",
+    "RBRoom47_37",
+    "RBRoom49_50",
+    "RBRoom51_46",
+    "RBRoom52_38",
+    "RBRoom8_13",
+    "RBRoom_10",
+    "RBRoom_31",
+    "RBRoom_38",
+    "RBRoom_42",
+    "RBRoom_44",
+    "RBRoom_BackAlleySAS_Master",
+    "RBRoom_BackAlleySAS_Slave01",
+    "RBRoom_Execution",
+    "RBRoom_Witness"
+   ]
+  },
+  {
+   "id": "G4",
+   "name": "黑桃 门区",
+   "name_en": "Spade Gate area",
+   "color": "#be123c",
+   "note": "图案钥匙门 Extra Gate（Spade）在 (-1891, -736)，门是 RollingDoor-Base_BP4。区内房间 27 间，尸体钥匙都按「离这道门最近」归类。",
+   "rooms": [
+    "RBRoom10",
+    "RBRoom13_7",
+    "RBRoom19_5",
+    "RBRoom20_5",
+    "RBRoom26_19",
+    "RBRoom32_19",
+    "RBRoom36_5",
+    "RBRoom37",
+    "RBRoom42_34",
+    "RBRoom48_13",
+    "RBRoom50_4",
+    "RBRoom54_41",
+    "RBRoomSASDonutMaster",
+    "RBRoom_0",
+    "RBRoom_22",
+    "RBRoom_29",
+    "RBRoom_61",
+    "RBRoom_8",
+    "RBRoom_BehindDonutTruckMaster",
+    "RBRoom_ControlRoom",
+    "RBRoom_DonutSASslave",
+    "RBRoom_DonutTruckSlave",
+    "RBRoom_LockerRoom",
+    "RBRoom_PatrolCorridorToAdminSlave",
+    "RBRoom_PatrolEntranceMaster",
+    "RBRoom_PatrolOfficeMaster",
+    "RBRoom_PatrolWashroom"
+   ]
+  }
+ ]
+}

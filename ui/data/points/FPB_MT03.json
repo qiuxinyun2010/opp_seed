@@ -1,0 +1,134 @@
+{
+ "_说明": "FPB_MT03（游乐场谷仓 FunParkBarn，移动靶射击）。任务点位只有一种：可击落的移动靶 FunParkCanal_Drop_DamageableButton_BP_LeftCanal_C ×59，全部带 RBObjectiveActor；每个靶子都挂在一台 TranslationMovable_BP_C 上（59 个移动件，1:1），靠轨道来回滑动，所以图上给的是靶子的初始位置，实际会沿轨道路径移动。靶子分布在下层（z≈210-400）与上层（z≈550-930）两条高度上，分区按「一层/二层 × 东/西」切 4 块（房间按主体高度分上下、再各自按 x 中位数分东西）。另有 RedLightCounter-01 ×15（命中计数灯）、BatteryPoweredDevice ×5、GoreDispenser_Container ×3，本图未列。",
+ "level": "FPB_MT03",
+ "map": "FunParkBarn",
+ "title": "FPB_MT03 · 游乐场谷仓 移动靶",
+ "subtitle": "FunParkBarn · 59 moving drop targets on translation movers",
+ "legend_hint": "红色实心=移动靶（初始位置，会沿轨道滑动）。",
+ "sources": [
+  "FPB_MT03_B00.json",
+  "FPB_MT03_B01.json"
+ ],
+ "point_types": [
+  {
+   "key": "moving_target",
+   "match": "type",
+   "pattern": "^FunParkCanal_Drop_DamageableButton_BP_LeftCanal_C$",
+   "label": "移动靶",
+   "short": "Tgt",
+   "color": "#dc2626"
+  }
+ ],
+ "zones": [
+  {
+   "id": "A",
+   "name": "一层西靶区",
+   "name_en": "1F West",
+   "color": "#2563eb",
+   "note": "一层（房间主体 z≈0-400）西半边，长条谷仓的西段，房间 31 间。",
+   "rooms": [
+    "RBRoom12_4",
+    "RBRoom13_7",
+    "RBRoom14_12",
+    "RBRoom16_10",
+    "RBRoom17_13",
+    "RBRoom18_16",
+    "RBRoom19_15",
+    "RBRoom22_18",
+    "RBRoom23",
+    "RBRoom25_4",
+    "RBRoom26_20",
+    "RBRoom27_23",
+    "RBRoom28_26",
+    "RBRoom29_29",
+    "RBRoom2_2",
+    "RBRoom30_32",
+    "RBRoom31_35",
+    "RBRoom32_38",
+    "RBRoom33_46",
+    "RBRoom37_3",
+    "RBRoom38",
+    "RBRoom40",
+    "RBRoom48_25",
+    "RBRoom52_3",
+    "RBRoom56_3",
+    "RBRoom57_3",
+    "RBRoom58_6",
+    "RBRoom59_3",
+    "RBRoom64",
+    "RBRoom66_3",
+    "RBRoom67"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "一层东靶区",
+   "name_en": "1F East",
+   "color": "#b45309",
+   "note": "一层（房间主体 z≈0-400）东半边，RBRoom8 一间就有 7 个靶，是整张图最密的，房间 31 间。",
+   "rooms": [
+    "RBRoom10_6",
+    "RBRoom11",
+    "RBRoom15_25",
+    "RBRoom20",
+    "RBRoom21",
+    "RBRoom24",
+    "RBRoom36_3",
+    "RBRoom39",
+    "RBRoom3_3",
+    "RBRoom4",
+    "RBRoom41_6",
+    "RBRoom44_33",
+    "RBRoom47_3",
+    "RBRoom65_3",
+    "RBRoom6_2",
+    "RBRoom70_13",
+    "RBRoom77_42",
+    "RBRoom78_25",
+    "RBRoom7_3",
+    "RBRoom8",
+    "RBRoom9_9",
+    "RBRoom_101",
+    "RBRoom_105",
+    "RBRoom_113",
+    "RBRoom_115",
+    "RBRoom_117",
+    "RBRoom_118",
+    "RBRoom_29",
+    "RBRoom_39",
+    "RBRoom_82",
+    "RBRoom_91"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "二层西靶区",
+   "name_en": "2F West",
+   "color": "#0f766e",
+   "note": "二层（房间主体 z≈550-1000）西半边，走楼梯/坡道上去，房间 6 间。",
+   "rooms": [
+    "RBRoom35_3",
+    "RBRoom45_6",
+    "RBRoom62",
+    "RBRoom63_11",
+    "RBRoom68",
+    "RBRoom_1"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "二层东靶区",
+   "name_en": "2F East",
+   "color": "#be123c",
+   "note": "二层（房间主体 z≈550-1000）东半边，看台与高处靶道，房间 6 间。",
+   "rooms": [
+    "RBRoom34_53",
+    "RBRoom42_3",
+    "RBRoom43",
+    "RBRoom46_3",
+    "RBRoom60_6",
+    "RBRoom61"
+   ]
+  }
+ ]
+}
