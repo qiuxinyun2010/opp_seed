@@ -199,3 +199,18 @@ SRR_HOUSE_ORDER = list(_get(_srr, 'house_order', 'srr_mt01'))
 # 房间名 → RBPuzzleRoomComponent 组件名（compSeed 要用组件名算，不是房间名字本身）
 SRR_ROOM_COMPONENTS = _get(_srr, 'room_components', 'srr_mt01')
 SRR_ROOM_CENTERS = _get(_srr, 'room_centers', 'srr_mt01')
+
+# ---------------------------------------------------------------------------
+# SRR_MT02：郊区住宅区 · 调频图案 OrderedClueFrequency（三轮）
+# ---------------------------------------------------------------------------
+_srr2 = load('srr_mt02')
+# 协调器 → 显式表池序 / PossibleClueNames / DesiredCount / 距离 / bSplitByObjectiveType
+SRR_MT02_COORDS = _get(_srr2, 'coordinators', 'srr_mt02')
+# SectionIndex=1 的调频器短名（缺省 0；分桶键）
+SRR_MT02_SECTION1 = set(_get(_srr2, 'section1', 'srr_mt02'))
+SRR_MT02_PATTERN_ZH = _get(_srr2, 'pattern_zh', 'srr_mt02')
+# 调频器短名 → (房间, [x, y, z])；actor 全名 = FrequencyMatchBlacklit_<短名>
+SRR_MT02_TUNERS = _get(_srr2, 'tuners', 'srr_mt02')
+# {调频器短名: 图案}（salt → 三轮绑定）
+SAMPLES_SRR_MT02 = [(seed, rounds)
+                    for seed, rounds in _get(_samples, 'srr_mt02', 'samples')]

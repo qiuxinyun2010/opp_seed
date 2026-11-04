@@ -1,0 +1,351 @@
+{
+ "z_tol": 105.0,
+ "salt": "Objective Actors",
+ "note": "exclude = sub_1402B4CA0 跨协调器距离排除（DistanceBetweenDifferentObjectives，全局默认 R∈(693,791]）：两 seed 联合唯一解的经验集合，与 seed 无关；区域4 记录不全未闭环。详见 release/coop/FPB_MT03/FPB_MT03.md §5.5",
+ "areas": {
+  "MT03_FirstDoor_Target": {
+   "zone": "区域1",
+   "title": "第一道闸门（FirstGate 移动靶）",
+   "count": 4,
+   "dist": 1000.0,
+   "force": [
+    "FunParkBarn_DropTarget_FirstGate-01",
+    "FunParkBarn_DropTarget_FirstGate-25"
+   ],
+   "exclude": [],
+   "coords": {
+    "FunParkBarn_DropTarget_FirstGate-01": [
+     9902.5,
+     12414.2,
+     222.5
+    ],
+    "FunParkBarn_DropTarget_FirstGate-3": [
+     10754.2,
+     14165.5,
+     382.7
+    ],
+    "FunParkBarn_DropTarget_FirstGate-4": [
+     9509.6,
+     13632.0,
+     208.3
+    ],
+    "FunParkBarn_DropTarget_FirstGate-2": [
+     9509.5,
+     13165.5,
+     208.4
+    ],
+    "FunParkBarn_DropTarget_FirstGate-6": [
+     11779.2,
+     14356.3,
+     265.1
+    ],
+    "FunParkBarn_DropTarget_FirstGate-8": [
+     9366.2,
+     11423.7,
+     303.4
+    ],
+    "FunParkBarn_DropTarget_FirstGate-11": [
+     9376.8,
+     14332.9,
+     312.4
+    ],
+    "FunParkBarn_DropTarget_FirstGate-12": [
+     9275.0,
+     14922.1,
+     353.2
+    ],
+    "FunParkBarn_DropTarget_FirstGate-17": [
+     11022.5,
+     11139.7,
+     322.4
+    ],
+    "FunParkBarn_DropTarget_FirstGate-16": [
+     11760.6,
+     12291.0,
+     417.0
+    ],
+    "FunParkBarn_DropTarget_FirstGate-5": [
+     10755.6,
+     13727.3,
+     382.7
+    ],
+    "FunParkBarn_DropTarget_FirstGate-19": [
+     10362.8,
+     14617.2,
+     425.2
+    ],
+    "FunParkBarn_DropTarget_FirstGate-20": [
+     9884.4,
+     13637.8,
+     383.4
+    ],
+    "FunParkBarn_DropTarget_FirstGate-21": [
+     9884.5,
+     13136.0,
+     381.8
+    ],
+    "FunParkBarn_DropTarget_FirstGate-9": [
+     10811.2,
+     13121.4,
+     384.7
+    ],
+    "FunParkBarn_DropTarget_FirstGate-23": [
+     11228.3,
+     13121.8,
+     384.7
+    ],
+    "FunParkBarn_DropTarget_FirstGate-7": [
+     11611.8,
+     12060.4,
+     383.7
+    ],
+    "FunParkBarn_DropTarget_FirstGate-24": [
+     11286.1,
+     11735.0,
+     383.7
+    ],
+    "FunParkBarn_DropTarget_FirstGate-25": [
+     11762.2,
+     12867.3,
+     349.8
+    ]
+   }
+  },
+  "MT03_SecondDoor_Target": {
+   "zone": "区域2",
+   "title": "第二道闸门（SecondGate 移动靶）",
+   "count": 4,
+   "dist": 1000.0,
+   "force": [
+    "FunParkBarn_DropTarget_SecondGate-13"
+   ],
+   "exclude": [
+    "FunParkBarn_DropTarget_SecondGate-10",
+    "FunParkBarn_DropTarget_SecondGate-18",
+    "FunParkBarn_DropTarget_SecondGate-4"
+   ],
+   "coords": {
+    "FunParkBarn_DropTarget_SecondGate-4": [
+     6876.1,
+     11336.6,
+     361.3
+    ],
+    "FunParkBarn_DropTarget_SecondGate-3": [
+     7444.0,
+     11044.5,
+     277.3
+    ],
+    "FunParkBarn_DropTarget_SecondGate-10": [
+     9434.8,
+     12926.0,
+     265.3
+    ],
+    "FunParkBarn_DropTarget_SecondGate-5": [
+     8614.0,
+     13494.3,
+     236.0
+    ],
+    "FunParkBarn_DropTarget_SecondGate-6": [
+     7947.3,
+     13752.7,
+     343.4
+    ],
+    "FunParkBarn_DropTarget_SecondGate-8": [
+     6865.6,
+     14343.5,
+     333.8
+    ],
+    "FunParkBarn_DropTarget_SecondGate-16": [
+     9324.3,
+     13180.6,
+     296.7
+    ],
+    "FunParkBarn_DropTarget_SecondGate-15": [
+     8482.1,
+     13754.0,
+     343.2
+    ],
+    "FunParkBarn_DropTarget_SecondGate-12": [
+     8826.3,
+     12694.1,
+     392.3
+    ],
+    "FunParkBarn_DropTarget_SecondGate-13": [
+     7899.0,
+     11572.6,
+     408.1
+    ],
+    "FunParkBarn_DropTarget_SecondGate-17": [
+     9150.5,
+     12168.7,
+     382.1
+    ],
+    "FunParkBarn_DropTarget_SecondGate-11": [
+     8576.5,
+     12986.4,
+     399.4
+    ],
+    "FunParkBarn_DropTarget_SecondGate-18": [
+     9171.0,
+     13813.2,
+     406.4
+    ]
+   }
+  },
+  "MT03_ThirdDoor_Target": {
+   "zone": "区域3",
+   "title": "第三道闸门（ThirdGate 移动靶）",
+   "count": 4,
+   "dist": 1000.0,
+   "force": [],
+   "exclude": [],
+   "coords": {
+    "FunParkBarn_DropTarget_ThirdGate-3": [
+     4275.0,
+     14330.9,
+     269.5
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-4": [
+     5103.8,
+     14333.9,
+     268.4
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-12": [
+     6637.5,
+     13875.2,
+     383.5
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-14": [
+     5308.6,
+     12875.8,
+     290.6
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-10": [
+     5160.8,
+     12292.4,
+     393.2
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-9": [
+     5559.8,
+     10636.4,
+     352.2
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-8": [
+     6549.9,
+     10928.8,
+     248.7
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-7": [
+     6736.5,
+     11565.2,
+     302.4
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-6": [
+     6182.5,
+     12780.9,
+     370.5
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-29": [
+     5066.6,
+     11811.7,
+     384.9
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-28": [
+     5401.9,
+     11567.8,
+     384.9
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-26": [
+     4138.6,
+     11542.5,
+     370.7
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-30": [
+     4483.6,
+     14764.6,
+     253.0
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-27_11": [
+     5966.2,
+     13059.7,
+     236.0
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-31": [
+     6170.0,
+     13920.2,
+     383.4
+    ]
+   }
+  },
+  "MT03_EscapeGate_Target": {
+   "zone": "区域4",
+   "title": "出口闸门（ThirdGate 名移动靶，记录不全，计数按 Default=3）",
+   "count": 3,
+   "dist": 800.0,
+   "force": [],
+   "exclude": [],
+   "coords": {
+    "FunParkBarn_DropTarget_ThirdGate-25": [
+     3845.8,
+     12484.9,
+     831.2
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-16": [
+     4166.0,
+     13269.5,
+     875.0
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-32": [
+     4073.9,
+     13476.6,
+     863.9
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-34": [
+     3522.8,
+     13477.0,
+     863.4
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-15": [
+     3778.1,
+     13711.1,
+     864.4
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-18": [
+     3058.8,
+     13303.8,
+     929.0
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-22": [
+     1719.3,
+     13249.7,
+     928.4
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-33": [
+     2309.6,
+     13515.9,
+     811.0
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-24": [
+     2923.8,
+     12267.5,
+     872.6
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-23": [
+     1797.9,
+     12762.0,
+     928.1
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-21": [
+     2606.0,
+     12802.3,
+     875.3
+    ],
+    "FunParkBarn_DropTarget_ThirdGate-20": [
+     3497.7,
+     12874.1,
+     810.7
+    ]
+   }
+  }
+ }
+}

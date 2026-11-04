@@ -9,16 +9,22 @@
     python seed.py CHJ_MT01 592592                      # 谜题房间 + 4 位密码
     python seed.py CHJ_MT01 592592 --trace              # 附带分区抽取过程
     python seed.py CHJ_MT02 20020                       # 投影符号 / 房间 / 3 位密码
+    python seed.py CHJ_MT03 327327                      # 图案立牌点位（各图案在哪块立牌）
+    python seed.py CHJ_MT03 327327 --seats BP_1,BP_2,BP_5,BP_6,BP_8
     python seed.py MHS_MT01 707707                       # 3 个图案 + 房间 + 3 位密码
     python seed.py MHS_MT01 707707 --trace               # 附带抽取池与房间去重
     python seed.py TSR_MT01 695695                      # 字母数字位置 / 接线密码
     python seed.py FPI_MT01 335335                      # 放映机坐标 / 录像盘 / 图案
     python seed.py TFS_MT03 14014                       # 六阀门位置与坐标
+    python seed.py FPB_MT03 249249                      # 三个区域各 4 个移动靶点位
     python seed.py SMC_MT02 453453                      # 4 个人偶下半身所在房间（按颜色）
     python seed.py SMC_MT02 453453 --trace              # 附带组洗牌与距离过滤过程
     python seed.py PSA_MT01 219219                      # 最短路径：每把钥匙 + 录像盘的房间与坐标
     python seed.py DTS_MT01 252252                      # 3 个调频器 / 3 条线索 / 最终模型
     python seed.py SR_Trial 485485                      # 第2阶段：4 间密码房点位 + 4 位密码
+    python seed.py PF_Trial 701701                      # 拧阀门点位+拧格数 + 密码房逐位数字
+    python seed.py SRR_MT02 909909                      # 三轮调频：图案 / 台点位 / 陷阱
+    python seed.py SRR_MT02 909909 --trace              # 附带选中集与记录绘制过程
     python seed.py RES_MT02 176176                      # 水疗度假村：26 颗宝石（人偶 / 类别 / 坐标）
     python seed.py RES_MT02 69069 --tuto                # 再加教学段 51 人偶的类别图
     python seed.py RES_MT02 69069 --difficulty hard
@@ -52,7 +58,9 @@ from seeddata import (
     SAMPLES_CHJ, SAMPLES_CHJ_MT02, SAMPLES_RES, SAMPLES_SMC, SAMPLES_GS,
     SAMPLES_TSR, SAMPLES_FPI_MT01, SAMPLES_TFS, SAMPLES_MHS,
     SAMPLES_MHS_PICK, TFS_SAMPLE_ROOMS, SAMPLES_PSA, SAMPLES_SRR,
+    SAMPLES_SRR_MT02,
     SRR_HOUSES, SRR_HOUSE_ORDER, SRR_ROOM_COMPONENTS, SRR_ROOM_CENTERS,
+    SRR_MT02_COORDS, SRR_MT02_SECTION1, SRR_MT02_PATTERN_ZH, SRR_MT02_TUNERS,
     CHJ_MT02_COORDS, CHJ_MT02_ACTORS,
     CHJ_MT02_SYMBOL_NAMES, CHJ_MT02_SYMBOL_COORDS, CHJ_MT02_SYMBOL_ROOMS,
     MHS_SYMBOL_NAMES, MHS_ZONES, MHS_ZONE_BY_KEY,
@@ -105,6 +113,15 @@ LEVELS = {
         'coordinator': gs.COORDINATOR,
         'gameshow': True,
         'doc': 'release/coop/FPI_MT02/FPI_MT02.md',
+    },
+    'FPB_MT03': {
+        'name': '游乐场谷仓 · 击倒移动靶开闸门',
+        'english': 'Drop the moving targets to open the gates',
+        'map': 'FunParkBarn',
+        'kind': 'SimpleObjectiveCoordinator',
+        'movingtargets': True,
+        'partial': True,     # 区域4（出口闸门）记录不全，未闭环
+        'doc': 'release/coop/FPB_MT03/FPB_MT03.md',
     },
     'RES_MT01': {
         'name': '水疗度假村 · 推理谋杀案',
@@ -184,6 +201,15 @@ LEVELS = {
         'puzzle': True,
         'doc': 'release/home/SRR_MT01.md',
     },
+    'SRR_MT02': {
+        'name': '郊区住宅区 · 调频图案三轮匹配',
+        'english': 'Tune the frequency panels to the displayed patterns (3 rounds)',
+        'map': 'SuburbRiotResidential',
+        'kind': 'OrderedClueFrequency',
+        'coordinator': 'SRR_MT02_OrderedClueFrequency_RichDistrict',
+        'freqclue': True,
+        'doc': 'release/coop/SRR_MT02/ANALYSIS.md',
+    },
     'SR_TRIAL': {
         'name': '骚乱郊区 · 找密码开安全屋',
         'english': 'Find A Way To Open The Panic Room (phase 2: passcode rooms)',
@@ -193,12 +219,23 @@ LEVELS = {
         'srtrial': True,   # 只推第 2 阶段：4 间密码房 + 4 位密码
         'doc': 'release/coop/SR_Trial/SR_Trial.md',
     },
+    'PF_TRIAL': {
+        'name': '监狱农场 · 拧阀门与密码房',
+        'english': 'PrisonFarm trial: valve maze + passcode cells',
+        'map': 'PrisonFarm',
+        'kind': 'ValveMaze+MultiroomPuzzle',
+        'pftrial': True,
+        'doc': 'release/coop/PF_Trial/PF_Trial.md',
+    },
     'CHJ_MT03': {
         'name': '法院 · 贿赂其余可收买的法官',
+        'english': 'Bribe the remaining judges (match briefcases to sign patterns)',
         'map': 'CourthouseJudicial',
-        'kind': 'MiniTrial',
-        'sections': None,
-        'todo': '同上',
+        'kind': 'SignBoards',
+        'coordinator': 'CHJ_MT03_RemainingBribes',
+        'signboards': True,
+        'partial': True,   # 8 选 5 未闭环：无实测席位集时需 --seats 才能落到立牌
+        'doc': 'release/coop/CHJ_MT03/CHJ_MT03_R6.md',
     },
 }
 
@@ -211,6 +248,8 @@ ALIASES = {
     'CLUE': 'RES_MT01',
     'TSR': 'TSR_MT01', 'SWITCHBOARD': 'TSR_MT01',
     'FPI1': 'FPI_MT01', 'DIAPORAMA': 'FPI_MT01',
+    'FPB': 'FPB_MT03', 'FPB3': 'FPB_MT03', 'BARN': 'FPB_MT03',
+    'MOVINGTARGET': 'FPB_MT03', 'MOVINGTARGETS': 'FPB_MT03',
     'TFS': 'TFS_MT03', 'VALVES': 'TFS_MT03',
     'MHS': 'MHS_MT01', 'MOBSTER': 'MHS_MT01', 'SYNDICATE': 'MHS_MT01',
     'PROJECTION': 'MHS_MT01',
@@ -224,8 +263,14 @@ ALIASES = {
     'JEWELS': 'RES_MT02', 'RELIC': 'RES_MT02', 'LILIANA': 'RES_MT02',
     'SRR': 'SRR_MT01', 'SUBURB': 'SRR_MT01', 'HOUSES': 'SRR_MT01',
     'KEYPAD': 'SRR_MT01', 'KEYPADS': 'SRR_MT01', 'MULTIROOM': 'SRR_MT01',
+    'SRR2': 'SRR_MT02', 'SRR-MT02': 'SRR_MT02', 'FREQ': 'SRR_MT02',
+    'FREQUENCY': 'SRR_MT02', 'ORDEREDCLUE': 'SRR_MT02',
+    'ORDEREDCLUEFREQUENCY': 'SRR_MT02', 'TUNER': 'SRR_MT02', 'TUNERS': 'SRR_MT02',
     'SR': 'SR_TRIAL', 'SRT': 'SR_TRIAL', 'SRTRIAL': 'SR_TRIAL',
     'PANIC': 'SR_TRIAL', 'PANICROOM': 'SR_TRIAL', 'B02': 'SR_TRIAL',
+    'PF': 'PF_TRIAL', 'PFTRIAL': 'PF_TRIAL', 'PRISON': 'PF_TRIAL',
+    'PRISONFARM': 'PF_TRIAL', 'B04': 'PF_TRIAL', 'B05': 'PF_TRIAL',
+    'VALVEMAZE': 'PF_TRIAL', 'CELLS': 'PF_TRIAL',
 }
 
 # ---------------------------------------------------------------------------
@@ -241,6 +286,7 @@ ALIASES = {
 #   data/chj_mt02.json        CHJ_MT02 协调器组 / 符号 actor / 房间
 #   data/psa_mt01.json        PSA_MT01 图案表 / 房间生成点 / 录像盘
 #   data/srr_mt01.json        SRR_MT01 协调器 Sections / 房间组件 / 密码盘坐标
+#   data/srr_mt02.json        SRR_MT02 三协调器池序 / SectionIndex / 调频器坐标
 #   data/room_centers.json    各 map 的房间中心参考点
 #   data/samples.json         全部 --selftest 实测样本
 # ---------------------------------------------------------------------------
@@ -585,6 +631,127 @@ def _predict_tfs_mt03(level_seed, trace=False):
         'notes': ['TFS_MT03 的有效路径仅由 seed=14014 单样本确定；'
                   '其他 seed 需用新实测复核 TFS_MAIN_SECOND。'],
     }
+
+
+# FPB_MT03（游乐场谷仓 · 击倒移动靶开闸门）：四个 RBSimpleObjectiveCoordinator
+# （MT03_FirstDoor/SecondDoor/ThirdDoor/EscapeGate_Target）各带显式 ObjectiveActors 表，
+# 走 sub_1402AE7F0 → sub_1402AF490 → sub_1402B05C0 通用抽取引擎（盐名 "Objective Actors"，
+# base = crc32_fname(盐) + GetSeed(协调器)，与 CHJ_MT02 前置同链）。复刻要点
+# （反编译与两 seed 6/6 闭环过程见 release/coop/FPB_MT03/FPB_MT03.md）：
+#   ① 池按名字典序升序 → 分类趟（尾→头，helper+217 必选 swap 删除）
+#   ② sub_1402B4CA0 再一趟（尾→头 swap 删除「与其它协调器目标距离 <
+#      DistanceBetweenDifferentObjectives」的候选——引擎用 RBObjectiveActorComponent
+#      运行期位置，静态不可复原，按两 seed 联合唯一解的经验集合复刻：
+#      区域2 排除 SecondGate-10/-18/-4，与 seed 无关）
+#   ③ 逐抽 idx = RandSeeded(base + 已选数, 池剩余) RemoveAtSwap，每抽后按
+#      DistanceBetweenSameObjectives=1000（区域4 为 800）剔除近邻（|ΔZ| ≤ z_tol=105）。
+# 区域1-3 两 seed（249249/520520）逐靶全中；区域4 记录不全未闭环，不输出。
+FPB_MT03_AREAS = ('MT03_FirstDoor_Target', 'MT03_SecondDoor_Target',
+                  'MT03_ThirdDoor_Target')
+FPB_MT03_SAMPLES = {
+    249249: {
+        'MT03_FirstDoor_Target': {'FunParkBarn_DropTarget_FirstGate-25',
+                                  'FunParkBarn_DropTarget_FirstGate-01',
+                                  'FunParkBarn_DropTarget_FirstGate-5',
+                                  'FunParkBarn_DropTarget_FirstGate-4'},
+        'MT03_SecondDoor_Target': {'FunParkBarn_DropTarget_SecondGate-13',
+                                   'FunParkBarn_DropTarget_SecondGate-8',
+                                   'FunParkBarn_DropTarget_SecondGate-6',
+                                   'FunParkBarn_DropTarget_SecondGate-16'},
+        'MT03_ThirdDoor_Target': {'FunParkBarn_DropTarget_ThirdGate-8',
+                                  'FunParkBarn_DropTarget_ThirdGate-26',
+                                  'FunParkBarn_DropTarget_ThirdGate-4',
+                                  'FunParkBarn_DropTarget_ThirdGate-12'},
+    },
+    520520: {
+        'MT03_FirstDoor_Target': {'FunParkBarn_DropTarget_FirstGate-25',
+                                  'FunParkBarn_DropTarget_FirstGate-6',
+                                  'FunParkBarn_DropTarget_FirstGate-01',
+                                  'FunParkBarn_DropTarget_FirstGate-4'},
+        'MT03_SecondDoor_Target': {'FunParkBarn_DropTarget_SecondGate-17',
+                                   'FunParkBarn_DropTarget_SecondGate-15',
+                                   'FunParkBarn_DropTarget_SecondGate-13',
+                                   'FunParkBarn_DropTarget_SecondGate-8'},
+        'MT03_ThirdDoor_Target': {'FunParkBarn_DropTarget_ThirdGate-8',
+                                  'FunParkBarn_DropTarget_ThirdGate-9',
+                                  'FunParkBarn_DropTarget_ThirdGate-14',
+                                  'FunParkBarn_DropTarget_ThirdGate-30'},
+    },
+}
+
+
+def _fpb_data():
+    with open(os.path.join(_HERE, 'data', 'fpb_mt03.json'), encoding='utf-8') as fp:
+        return json.load(fp)
+
+
+def _fpb_purge(pool, ref, coords, dxy, dz):
+    """sub_1402B3C30：尾→头剔除「水平 < dxy 且 |ΔZ| <= dz」的候选（swap 删除）。"""
+    i = len(pool) - 1
+    while i >= 0:
+        a = coords[pool[i]]
+        if dxy > 0 and (a[0] - ref[0]) ** 2 + (a[1] - ref[1]) ** 2 < dxy * dxy \
+                and (dz < 0 or abs(a[2] - ref[2]) <= dz):
+            pool[i] = pool[-1]
+            pool.pop()
+        i -= 1
+
+
+def _fpb_draw(area, coord, level_seed, z_tol, trace):
+    """sub_1402B05C0 单区域复刻：返回（选中列表[必选在前, 其后为抽中顺序], base）。"""
+    pool = sorted(area['coords'], key=str.lower)      # sub_1402B46B0 名字典序升序
+    coords = {k: tuple(v) for k, v in area['coords'].items()}
+    force, exclude = set(area['force']), set(area.get('exclude', ()))
+    picked = []                                       # v250 必选（尾→头遇到序）
+    for remover in (force, exclude):                  # ① 分类趟；② sub_1402B4CA0 趟
+        i = len(pool) - 1
+        while i >= 0:
+            if pool[i] in remover:
+                if remover is force:
+                    picked.append(pool[i])
+                pool[i] = pool[-1]
+                pool.pop()
+            i -= 1
+    result = list(picked)                             # v248（无 helper 恒选）本关恒空
+    base = (sc.crc32_fname(area['salt']) +
+            sc.seed_chain([sc.LEVEL_OBJECT, coord])) & sc.M32
+    for name in picked:                               # 必选先各剔除一轮近邻
+        _fpb_purge(pool, coords[name], coords, area['dist'], z_tol)
+    quota = area['count'] - len(result)
+    k = 0
+    while pool and quota > 0:
+        seed = (base + len(result)) & sc.M32
+        idx = sc.rand_seeded(seed, len(pool), level_seed)
+        pick = pool[idx]
+        pool[idx] = pool[-1]
+        pool.pop()
+        result.append(pick)
+        quota -= 1
+        _fpb_purge(pool, coords[pick], coords, area['dist'], z_tol)
+        if trace is not None:
+            trace.append('  %s 抽#%d seed=%d N=%d idx=%d → %s'
+                         % (area['zone'], k, seed, len(pool) + 1, idx, pick))
+        k += 1
+    return result, base
+
+
+def _predict_fpb_mt03(level_seed, trace=False):
+    if not 0 < level_seed <= sc.M32:
+        raise ValueError('seed 必须在 [1, 2^32-1]')
+    data = _fpb_data()
+    tr = [] if trace else None
+    areas = []
+    for coord in FPB_MT03_AREAS:
+        area = dict(data['areas'][coord], salt=data.get('salt', 'Objective Actors'))
+        names, base = _fpb_draw(area, coord, level_seed, data['z_tol'], tr)
+        areas.append({
+            'coord': coord, 'zone': area['zone'], 'title': area['title'], 'base': base,
+            'targets': [{'name': n, 'coordinates': list(area['coords'][n])}
+                        for n in sorted(names, key=lambda s: int(s.rsplit('-', 1)[-1]))],
+        })
+    return {'moving_targets': areas,
+            'notes': ['区域4（出口闸门）记录不全，未闭环，不输出'],
+            'trace': tr}
 
 
 # 仅预测到房间时，附房间中心参考点；具体 actor 使用上面的精确坐标。
@@ -1350,6 +1517,230 @@ def _predict_srr_mt01(level_seed, trace=False):
 
 
 # ---------------------------------------------------------------------------
+# SRR_MT02（SuburbRiotResidential）：OrderedClueFrequency 调频图案三轮
+# ---------------------------------------------------------------------------
+# 模型定稿见 release/coop/SRR_MT02/ANALYSIS.md（test.txt 9/9 纯 seed 全闭环）。
+# 链路（REA 反编译）：
+#   选中集  sub_1402B05C0：显式表 → sub_1402B46B0 名字典序排序 → SectionIndex 分桶
+#           → bSplit 时 sub_1402C30C0 组洗牌（每组自增计数器）→ quota(DesiredCount)
+#           → 组内 RandSeeded(v246+已选数, |池|) swap 抽取 + sub_1402B3C30 距离过滤
+#           （水平<Distance 剔除、swap 删除、从尾到头、跨组预过滤）
+#           v246 = crc32_fname("Objective Actors") + GetSeed(coord) + 组数
+#   绑定    sub_14361C230：显式表序∩选中集 → intro-sort（k<0.5 换末尾）→
+#           SectionIndex 分桶（插入序）→ 组洗牌（GetSeed+g）→ quota(显示屏数=3)
+#           记录 off=v69+v68：台 cs+243551+off、图案 cs+223551+off（cs=GetSeed+组数）
+#           剩余台配陷阱图案 cs+253526+j
+SRR2_PATTERN_OFFSET = 223551   # 显示图案
+SRR2_TUNER_OFFSET = 243551     # 显示台
+SRR2_TRAP_OFFSET = 253526      # 陷阱图案
+SRR2_PICK_SALT = 'Objective Actors'
+SRR2_ACTOR_PREFIX = 'FrequencyMatchBlacklit_'
+
+
+def _srr2_sec(name):
+    return 1 if name in SRR_MT02_SECTION1 else 0
+
+
+def _srr2_quota(sizes, want):
+    """sub_1402C30C0 的 quota 分配：+1 循环 → 比例 → 余量给首个放得下的组。"""
+    ng = len(sizes)
+    quota = [0] * ng
+    total = sum(sizes)
+    remain, i, extra = want, 0, 0
+    while True:
+        if i < ng:
+            quota[i] += 1
+        extra = remain - 1
+        can_continue = remain >= 2
+        more_groups = (i + 1) < ng
+        i += 1
+        remain -= 1
+        if not (more_groups and can_continue):
+            break
+    if extra > 0:
+        for j in range(ng):
+            if extra <= 0:
+                break
+            ratio = (sizes[j] / total) * want
+            if ratio > 1.0:
+                bump = (int(2 * (ratio - 1.0) + 0.5)) >> 1
+                if extra < bump:
+                    bump = extra
+                quota[j] += bump
+                extra -= bump
+    if extra != 0:
+        for j in range(ng):
+            if sizes[j] >= quota[j] + extra:
+                quota[j] += extra
+                break
+    return quota
+
+
+def _srr2_pop_swap(pool, idx):
+    v = pool[idx]
+    pool[idx] = pool[-1]
+    pool.pop()
+    return v
+
+
+def _srr2_filter_swap(pool, picked, threshold):
+    """sub_1402B3C30：从尾到头遍历，水平距离 < threshold 者 swap 剔除。"""
+    if threshold <= 0:
+        return
+    px, py = SRR_MT02_TUNERS[picked][1][:2]
+    for i in range(len(pool) - 1, -1, -1):
+        if i >= len(pool):
+            continue
+        qx, qy = SRR_MT02_TUNERS[pool[i]][1][:2]
+        if (qx - px) ** 2 + (qy - py) ** 2 < threshold * threshold:
+            _srr2_pop_swap(pool, i)
+
+
+def _srr2_select_set(key, level_seed, trace=False):
+    """sub_1402B05C0 选中集：名字序分桶 → 组洗牌 → 抽取+距离过滤。"""
+    salt = level_seed % 1000
+    conf = SRR_MT02_COORDS[key]
+    init = (sc.crc32_fname(SRR2_PICK_SALT)
+            + sc.seed_chain(['PersistentLevel', conf['coord']])) & sc.M32
+    pool = sorted(conf['pool'])
+    buckets = {0: [], 1: []}
+    first_seen = []
+    for name in pool:
+        sec = _srr2_sec(name)
+        if sec not in first_seen:
+            first_seen.append(sec)
+        buckets[sec].append(name)
+    pre = [list(buckets[sec]) for sec in first_seen if buckets[sec]]
+    counter = init
+    out = []
+    if conf['split']:
+        rem = list(pre)
+        for _ in range(len(pre)):
+            out.append(_srr2_pop_swap(rem, sc.rand_seeded(counter, len(rem), salt)))
+            counter = (counter + 1) & sc.M32
+    else:
+        out = [list(pool)]
+    quotas = _srr2_quota([len(g) for g in out], conf['desired'])
+    base = counter & sc.M32
+    threshold = conf['distance']
+    selected, count = [], 0
+    for gi, group in enumerate(out):
+        gp = list(group)
+        for s in selected:
+            _srr2_filter_swap(gp, s, threshold)
+        for _ in range(quotas[gi]):
+            if not gp:
+                break
+            pick = _srr2_pop_swap(gp, sc.rand_seeded((base + count) & sc.M32,
+                                                     len(gp), salt))
+            selected.append(pick)
+            count += 1
+            _srr2_filter_swap(gp, pick, threshold)
+    if trace:
+        print('  [%s] 选中集=%s' % (key, ' '.join(selected)))
+    return selected
+
+
+def _srr2_intro_sort(items, level_seed):
+    """sub_14361C230 n<=8 选择排序变体：找最后一个 k<0.5 的换到末尾。"""
+    salt = level_seed % 1000
+    arr = list(items)
+    for end in range(len(arr) - 1, 0, -1):
+        best = 0
+        for j in range(1, end + 1):
+            key = sc.rand_fraction(sc.seed_chain(['PersistentLevel', arr[j]]), salt)
+            if key < 0.5:
+                best = j
+        arr[best], arr[end] = arr[end], arr[best]
+    return arr
+
+
+def _srr2_records(key, level_seed, sorted_sel, trace=False):
+    """sub_14361C230 记录循环 + 陷阱循环。sorted_sel 为全名列表。"""
+    salt = level_seed % 1000
+    conf = SRR_MT02_COORDS[key]
+    buckets = {0: [], 1: []}
+    first_seen = []
+    for name in sorted_sel:
+        sec = _srr2_sec(name.replace(SRR2_ACTOR_PREFIX, ''))
+        if sec not in first_seen:
+            first_seen.append(sec)
+        buckets[sec].append(name)
+    groups = [buckets[sec] for sec in first_seen if buckets[sec]]
+    gs = sc.seed_chain(['PersistentLevel', conf['coord']])
+    cs = (gs + len(groups)) & sc.M32
+    rem = list(groups)
+    out = []
+    for i in range(len(groups)):
+        out.append(_srr2_pop_swap(rem, sc.rand_seeded((gs + i) & sc.M32, len(rem), salt)))
+    quotas = _srr2_quota([len(g) for g in out], 3)
+    pool = list(conf['patterns'])
+    rows, leftover, record = [], [], 0
+    for gi, group in enumerate(out):
+        members = list(group)
+        inner = 0
+        while inner < quotas[gi] and record < 3:
+            off = inner + record
+            tuner = _srr2_pop_swap(members, sc.rand_seeded(
+                (cs + SRR2_TUNER_OFFSET + off) & sc.M32, len(members), salt))
+            pattern = _srr2_pop_swap(pool, sc.rand_seeded(
+                (cs + SRR2_PATTERN_OFFSET + off) & sc.M32, len(pool), salt))
+            rows.append((tuner, pattern, record))
+            record += 1
+            inner += 1
+        leftover.extend(members)
+    for j, tuner in enumerate(leftover):
+        pattern = _srr2_pop_swap(pool, sc.rand_seeded(
+            (cs + SRR2_TRAP_OFFSET + j) & sc.M32, len(pool), salt))
+        rows.append((tuner, pattern, -1))
+    if trace:
+        for tuner, pattern, order in rows:
+            print('    %s = %s %s' % (tuner.replace(SRR2_ACTOR_PREFIX, ''),
+                                      pattern,
+                                      '显示%d' % (order + 1) if order >= 0 else '陷阱'))
+    return rows, cs
+
+
+def _predict_srr_mt02(level_seed, trace=False):
+    rounds = []
+    for index, key in enumerate(('Rich', 'School', 'SasExit'), 1):
+        selected = _srr2_select_set(key, level_seed, trace=trace)
+        # 绑定输入序 = 显式表序 ∩ 选中集（vtable+2048 getter 按表序重组，9/9 实测定稿）
+        table_order = [name for name in SRR_MT02_COORDS[key]['pool']
+                       if name in set(selected)]
+        sorted_sel = _srr2_intro_sort([SRR2_ACTOR_PREFIX + name
+                                       for name in table_order], level_seed)
+        rows, cs = _srr2_records(key, level_seed, sorted_sel, trace=trace)
+        tuners = []
+        display = []
+        for full, pattern, order in rows:
+            name = full.replace(SRR2_ACTOR_PREFIX, '')
+            room, coords = SRR_MT02_TUNERS[name]
+            tuners.append({
+                'id': name,
+                'actor': full,
+                'room': room,
+                'coordinates': [round(float(c), 1) for c in coords],
+                'pattern': pattern,
+                'pattern_zh': SRR_MT02_PATTERN_ZH[pattern],
+                'order': order,
+            })
+            if order >= 0:
+                display.append(pattern)
+        tuners.sort(key=lambda item: (item['order'] < 0, item['order']))
+        rounds.append({
+            'round': index,
+            'key': key,
+            'coordinator': SRR_MT02_COORDS[key]['coord'],
+            'cs': cs,
+            'display': display,
+            'display_zh': [SRR_MT02_PATTERN_ZH[p] for p in display],
+            'tuners': tuners,
+        })
+    return {'tuner_rounds': rounds}
+
+
+# ---------------------------------------------------------------------------
 # SR_Trial（SuburbRiot_T08_B02）第 2 阶段：4 间密码房 + 4 位密码
 # ---------------------------------------------------------------------------
 # 只推第 2 阶段「找密码」（MultiroomPuzzle）：4 间房各 1 张数字贴花，按位次拼密码。
@@ -1478,13 +1869,305 @@ def _predict_sr_trial(level_seed, trace=False):
             'password': ''.join(str(s['digit']) for s in slots)}
 
 
+# ---------------------------------------------------------------------------
+# PF_Trial（PrisonFarm · PF_LD_T12_B04 阀门迷宫 + PF_LD_T12_B05 密码房）
+# ---------------------------------------------------------------------------
+# 两个阶段各自闭环（release/coop/PF_Trial/PF_Trial.md 及其 §12，样本 test.txt）：
+#   拧阀门  sub_1437DE200（URBValveSystemMazeCoordinator::Randomize）：
+#     cs = GetSeed(PF_B04_ObjCoord_ValveSystemMaze)
+#     Section A–D 启用（E 的 Values2P=false ⇒ 1P/2P 局禁用，正是“4 个区域”；3P+ 启用）
+#     槽 0=A 走固定位（ValveSystemLots FixedOrder=0 → ValveSystem_BP17_2）；
+#     其余槽 lot = 池[RandSeeded(cs+234659+槽位,|池|)]（RemoveAtSwap），
+#               阀 = lot[RandSeeded(cs+4324+槽位,|候选|)]
+#     input=2（ForceInputIndex）；output=[0,1,3][RandSeeded(cs+387+槽位,3)]
+#     拧格数 = (output−input) mod 4（701701: A1-B1-C1-D2 ✓）
+#   密码房  sub_14374E420 / sub_1436FE410 / sub_143620E70（与 SR_Trial 同链）：
+#     每区抽 1 间 idx = RandSeeded(剩余+28042,|池|)（保序删除）
+#     位次 k = 单比特洗牌逆序；数字 = 共享池 0..9 第 k 位
+#       digit = pool[RandSeeded(compSeed(room)+k+7168,|pool|)]（保序删除）
+#     逐房数字已 4/4 闭环；4 位密码拼接序（区域分组 2+2）未闭环，只出逐房数字。
+PF_VALVE_SECTIONS = ['A', 'B', 'C', 'D', 'E']  # 1P/2P 只启用 A–D
+PF_LOTS = {
+    'F': {'loc': 'Basement', 'valves': ['ValveSystem_BP17_2']},
+    'L1': {'loc': 'Basement',
+           'valves': ['ValveSystem_BP9', 'ValveSystem_BP11',
+                      'ValveSystem_BP7', 'ValveSystem_BP6']},
+    'L2': {'loc': 'Basement',
+           'valves': ['ValveSystem_BP4', 'ValveSystem_BP3',
+                      'ValveSystem_BP8']},
+    'L3': {'loc': 'Laundry 1F',
+           'valves': ['ValveSystem_BP24', 'ValveSystem_BP22']},
+    'L4': {'loc': 'BlockA 1F',
+           'valves': ['ValveSystem_BP2', 'ValveSystem_BP_2',
+                      'ValveSystem_BP12', 'ValveSystem_BP10']},
+}
+PF_LOT_POOL = ['L1', 'L4', 'L2', 'L3']   # 固定位删除后的有效池（701701 唯一反解）
+PF_VALVE_COORD = 'PF_B04_ObjCoord_ValveSystemMaze'
+PF_FORCE_INPUT = 2      # ValveSystemMaze_Coord_BP CDO：ForceInputIndex=2
+PF_LOT_DRAW = 234659    # 0x394A3 抽 lot
+PF_VALVE_DRAW = 4324    # 0x10E4 lot 内抽阀门
+PF_DIR_DRAW = 387       # 0x183 方向（[0,1,2,3]去 input 后 3 选 1）
+PF_VALVE_COORDS = {
+    'ValveSystem_BP2': (-3263.0, -1405.0, 0.0),
+    'ValveSystem_BP3': (-1066.0, 4119.0, -550.0),
+    'ValveSystem_BP4': (-95.0, 3497.0, -550.0),
+    'ValveSystem_BP6': (39.62335, 1998.0, -699.9374),
+    'ValveSystem_BP7': (1053.0, 1447.0, -699.9374),
+    'ValveSystem_BP8': (-1735.0, 3378.0, -550.0),
+    'ValveSystem_BP9': (706.0, 755.0, -549.7999),
+    'ValveSystem_BP10': (-3825.0, 1850.3577, 0.0),
+    'ValveSystem_BP11': (382.0, 635.0, -699.9999),
+    'ValveSystem_BP12': (-4245.0, 1030.0, 0.0),
+    'ValveSystem_BP22': (-2698.0, 729.0, 0.125099),
+    'ValveSystem_BP24': (-1222.0, 942.0, 0.125099),
+    'ValveSystem_BP_2': (-4625.0, 40.0, 0.0),
+    'ValveSystem_BP17_2': (-98.38454, 1698.0004, -550.0),
+}
+# 密码房：PF_B05_ObjCoord_MultiroomPuzzle 的 Sections（JSON 序），每区抽 1 间
+PF_CELL_SECTIONS = [
+    ['RBRoom_BlockA_Cell_103', 'RBRoom_BlockA_Cell_102',
+     'RBRoom_BlockA_Cell_104', 'RBRoom_BlockA_Cell_105'],
+    ['RBRoom_BlockA_Cell_106', 'RBRoom_BlockA_Cell_107'],
+    ['RBRoom_BlockB_Cell_101', 'RBRoom_BlockB_Cell_102', 'RBRoom_BlockB_Cell_103',
+     'RBRoom_BlockB_Cell_104', 'RBRoom_BlockB_Cell_105', 'RBRoom_BlockB_Cell_109',
+     'RBRoom_BlockB_Cell_110'],
+    ['RBRoom_BlockB_Cell_107', 'RBRoom_BlockB_Cell_108'],
+]
+PF_PICK_OFFSET = 28042   # sub_14374E420 抽房（同 SR）
+PF_DIGIT_OFFSET = 7168   # sub_143620E70 写数字（同 SR）
+
+# 实测样本（release/coop/PF_Trial/test.txt，Easy 1P）：
+#   阀门 A1-B1-C1-D2（A 固定 BP17_2；B=BP11 C=BP8 D=BP22）
+#   密码房 A103=0 A106=8 B105=2 B108=3（记录括号 = 位次 k）
+PF_SAMPLES = {
+    701701: {
+        'valves': {'A': ('ValveSystem_BP17_2', 1), 'B': ('ValveSystem_BP11', 1),
+                   'C': ('ValveSystem_BP8', 1), 'D': ('ValveSystem_BP22', 2)},
+        'cells': {'A103': 0, 'A106': 8, 'B105': 2, 'B108': 3},
+    },
+}
+
+
+def _pf_cell_label(room):
+    return room.replace('RBRoom_BlockA_Cell_', 'A').replace('RBRoom_BlockB_Cell_', 'B')
+
+
+def _predict_pf_trial(level_seed, players=1, trace=False):
+    """PF_Trial：拧阀门（点位+拧格数）+ 密码房逐位数字。"""
+    if not 0 < level_seed <= sc.M32:
+        raise ValueError('seed 必须在 [1, 2^32-1]')
+    salt = level_seed
+    # ---------- (1) 拧阀门（sub_1437DE200）----------
+    cs = sc.seed_chain(['PersistentLevel', PF_VALVE_COORD])
+    active = PF_VALVE_SECTIONS[:4] + (['E'] if players >= 3 else [])
+    pool = list(PF_LOT_POOL)
+    slot_lot = {0: 'F'}                     # FixedOrder=0 固定位 -> 槽 0（A）
+    for s in range(1, len(active)):
+        idx = sc.rand_seeded(cs + PF_LOT_DRAW + s, len(pool), salt)
+        lot = pool[idx]
+        pool[idx] = pool[-1]                # RemoveAtSwap
+        pool.pop()
+        slot_lot[s] = lot
+    valves = []
+    for s, sec in enumerate(active):
+        lot = PF_LOTS[slot_lot[s]]
+        cands = lot['valves']
+        vi = sc.rand_seeded(cs + PF_VALVE_DRAW + s, len(cands), salt)
+        actor = cands[vi]
+        output = [0, 1, 3][sc.rand_seeded(cs + PF_DIR_DRAW + s, 3, salt)]
+        turns = (output - PF_FORCE_INPUT) % 4
+        valves.append({
+            'section': sec, 'lot': slot_lot[s], 'location': lot['loc'],
+            'actor': actor, 'candidate_index': vi,
+            'input': PF_FORCE_INPUT, 'output': output, 'turns': turns,
+            'answer': '%s%d' % (sec, turns),
+            'coordinates': PF_VALVE_COORDS[actor], 'coordinate_type': 'actor',
+        })
+        if trace:
+            print('    PF 阀门 %s slot=%d lot=%s idx=%d -> %s in=%d out=%d -> %s'
+                  % (sec, s, slot_lot[s], vi, actor,
+                     PF_FORCE_INPUT, output, valves[-1]['answer']))
+    # ---------- (2) 密码房（sub_14374E420 / sub_143620E70）----------
+    pools = {i: list(p) for i, p in enumerate(PF_CELL_SECTIONS)}
+    picked, remaining = [], 4
+    for sid in range(len(PF_CELL_SECTIONS)):
+        if remaining <= 0:
+            break
+        p = pools[sid]
+        idx = sc.rand_seeded(remaining + PF_PICK_OFFSET, len(p), salt)
+        room = p.pop(idx)                   # 保序删除
+        picked.append(room)
+        if trace:
+            print('    PF 抽房 section=%d 剩余=%d idx=%d/%d -> %s'
+                  % (sid, remaining, idx, len(p) + 1, _pf_cell_label(room)))
+        remaining -= 1
+    # 位次 k = 单比特洗牌逆序（同 SR_Trial）
+    frac = {r: sc.rand_fraction(sc.room_component_seed(r), salt) for r in picked}
+    arr = list(picked)
+    end = len(arr) - 1
+    while end > 0:
+        best = 0
+        for j in range(1, end + 1):
+            if frac[arr[j]] < 0.5:
+                best = j
+        if best != end:
+            arr[best], arr[end] = arr[end], arr[best]
+        end -= 1
+    order = arr[::-1]
+    pool10 = list(range(10))
+    slots = []
+    for k, room in enumerate(order):
+        comp = sc.room_component_seed(room)
+        idx = sc.rand_seeded((comp + k + PF_DIGIT_OFFSET) & sc.M32,
+                             len(pool10), salt)
+        digit = pool10.pop(idx)             # 保序删除
+        slots.append({'id': room, 'room': room, 'label': _pf_cell_label(room),
+                      'area': 'BlockA' if '_BlockA_' in room else 'BlockB',
+                      'digit': digit, 'position': k + 1})
+        if trace:
+            print('    PF k=%d %-6s comp=%-10d pool=%2d idx=%d -> %d'
+                  % (k, _pf_cell_label(room), comp, len(pool10) + 1, idx, digit))
+    notes = ['密码房逐位数字已闭环；4 位密码的拼接序（按区域 2+2）未闭环，'
+             '只输出逐房数字。']
+    if players >= 3:
+        notes.append('3P+ 局启用 E 区为模型外推（2P 覆写语义），未实测。')
+    return {'valves': valves, 'slots': slots, 'notes': notes}
+
+
+# ---------------------------------------------------------------------------
+# CHJ_MT03 图案立牌（REA/IDA 反编译链，4/4 实测样本）
+#   sub_143585720：ci=RandSeeded(GS+k+41,|池|) 图案 / ai=RandSeeded(GS+k+341,|A|)
+#   席位，均尾元素换删；A = 亮起的 5 席按名升序。教学走 sub_140A1EED0 强制位
+#   （GS_tut+41）。详见 release/coop/CHJ_MT03/CHJ_MT03_R6.md。
+# ---------------------------------------------------------------------------
+CHJ_MT03_COORD = 'CHJ_MT03_RemainingBribes'
+CHJ_MT03_TUT_COORD = 'CHJ_MT03_FirstBribe'
+CHJ_MT03_CLUES = ['Bunny', 'Club', 'Crown', 'Diamond', 'Fire', 'Spade']
+CHJ_MT03_CLUES_TUT = ['Moon', 'Eye', 'Heart']
+CHJ_MT03_ZH = {'Bunny': '兔子', 'Club': '梅花', 'Crown': '王冠', 'Diamond': '方块',
+               'Fire': '火焰', 'Spade': '黑桃', 'Moon': '月亮', 'Eye': '眼睛',
+               'Heart': '红心'}
+CHJ_MT03_TUTORIAL = ('BP_4', 'TextSignStandBase-01_16',
+                     'RBRoom_Courtyard_Groundfloor', (-1868.19, 4927.84, 349.12))
+CHJ_MT03_POINTS = [
+    ('BP_1', 'TextSignStandBase-4', 'RBRoom_West_Blueprints',
+     (-4551.65, 7728.53, 749.81)),
+    ('BP_2', 'TextSignStandBase-5', 'RBRoom_BackEntrance_Records',
+     (-2675.49, 7305.67, 749.81)),
+    ('BP_3', 'TextSignStandBase-2', 'RBRoom_West_ConstructionGore',
+     (-3101.95, 2921.42, 749.15)),
+    ('BP_5', 'TextSignStandBase-9', 'RBRoom_East_Museum',
+     (-408.98, 5833.95, 748.99)),
+    ('BP_6', 'TextSignStandBase-7', 'RBRoom_East_Courtroom_2',
+     (991.19, 3833.25, 799.57)),
+    ('BP_7', 'TextSignStandBase-3', 'RBRoom_West_PrivateOffice',
+     (-4001.40, 4193.41, 749.15)),
+    ('BP_8', 'TextSignStandBase-6', 'RBRoom_East_JudgesOffice',
+     (968.68, 8079.62, 749.81)),
+    ('BP_9', 'TextSignStandBase-8', 'RBRoom_East_Courtroom_1',
+     (-694.54, 2423.04, 769.25)),
+]
+CHJ_MT03_BY_ZONE = {row[0]: row for row in CHJ_MT03_POINTS}
+CHJ_MT03_BY_STAND = {row[1]: row[0] for row in CHJ_MT03_POINTS}
+# 实测样本（opp_seed/test.txt；327327 的 -8=方块 系 -5=方块 笔误，R6 §2.2 修正）
+CHJ_MT03_SAMPLES = {
+    556556: {'tutorial': 'Heart',
+             'mapping': {'BP_7': 'Club', 'BP_2': 'Spade', 'BP_9': 'Fire',
+                         'BP_6': 'Crown', 'BP_8': 'Bunny'}},
+    892892: {'tutorial': None,
+             'mapping': {'BP_1': 'Club', 'BP_8': 'Fire', 'BP_5': 'Crown',
+                         'BP_9': 'Spade', 'BP_7': 'Diamond'}},
+    184184: {'tutorial': 'Eye',
+             'mapping': {'BP_1': 'Club', 'BP_5': 'Bunny', 'BP_3': 'Fire',
+                         'BP_9': 'Spade', 'BP_6': 'Diamond'}},
+    327327: {'tutorial': 'Heart',
+             'mapping': {'BP_1': 'Fire', 'BP_2': 'Diamond', 'BP_5': 'Crown',
+                         'BP_6': 'Spade', 'BP_8': 'Bunny'}},
+}
+
+
+def _chj_mt03_gs():
+    outer = sc.crc32_fname('PersistentLevel')
+    return (sc.seed_of_object(CHJ_MT03_COORD, outer),
+            sc.seed_of_object(CHJ_MT03_TUT_COORD, outer))
+
+
+def _chj_mt03_draw(pool, base, count, level_seed):
+    """sub_143585720 的抽取：idx=RandSeeded(base+k,|池|)，尾元素换删。"""
+    pool = list(pool)
+    out = []
+    for k in range(count):
+        if not pool:
+            break
+        idx = sc.rand_seeded((base + k) & sc.M32, len(pool), level_seed)
+        out.append(pool[idx])
+        pool[idx] = pool[-1]
+        pool.pop()
+    return out, pool
+
+
+def _predict_chj_mt03(level_seed, seats=None):
+    gs_main, gs_tut = _chj_mt03_gs()
+    tut = CHJ_MT03_CLUES_TUT[sc.rand_seeded((gs_tut + 41) & sc.M32, 3, level_seed)]
+    seq, rest = _chj_mt03_draw(CHJ_MT03_CLUES, gs_main + 41, 5, level_seed)
+    missing = rest[0] if rest else None
+
+    if seats is None:
+        sample = CHJ_MT03_SAMPLES.get(level_seed)
+        if sample:
+            seats = list(sample['mapping'])
+            source = '实测记录 opp_seed/test.txt'
+        else:
+            source = None
+    else:
+        source = '--seats'
+    norm = []
+    for s in seats or []:
+        z = s if s in CHJ_MT03_BY_ZONE else CHJ_MT03_BY_STAND.get(s)
+        if z is None:
+            raise ModelUnresolved('未知席位：%s（BP_x 或立牌名）' % s)
+        if z not in norm:
+            norm.append(z)
+
+    rows = []
+    tz, tstand, troom, txyz = CHJ_MT03_TUTORIAL
+    rows.append({'pattern': tut, 'pattern_zh': CHJ_MT03_ZH[tut], 'role': '教学',
+                 'zone': tz, 'stand': tstand, 'room': troom,
+                 'coordinates': [round(c, 2) for c in txyz]})
+    if norm:
+        pool = sorted(norm, key=lambda z: [r[0] for r in CHJ_MT03_POINTS].index(z))
+        picked, _ = _chj_mt03_draw(pool, gs_main + 341, 5, level_seed)
+        role = {}
+        for c in seq[:3]:
+            role[c] = '钱箱'
+        for c in seq[3:]:
+            role[c] = '干扰项'
+        for k, z in enumerate(picked):
+            _, stand, room, xyz = CHJ_MT03_BY_ZONE[z]
+            rows.append({'pattern': seq[k], 'pattern_zh': CHJ_MT03_ZH[seq[k]],
+                         'role': role.get(seq[k], ''), 'zone': z, 'stand': stand,
+                         'room': room, 'coordinates': [round(c, 2) for c in xyz]})
+    result = {'signboards': rows, 'missing': missing,
+              'missing_zh': CHJ_MT03_ZH[missing],
+              'clue_order': seq, 'seats_source': source}
+    if not norm:
+        result['notes'] = [
+            '8 选 5 未闭环：本局亮起哪 5 个立牌无法纯 seed 推出，'
+            '请用 --seats 给出（如 --seats BP_1,BP_2,BP_5,BP_6,BP_8）。']
+    return result
+
+
 def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
-            digits=4, trace=False, tuto=False):
+            digits=4, trace=False, tuto=False, seats=None):
     key = resolve(level_id)
     cfg = LEVELS[key]
     result = {'level': key, 'name': cfg['name'], 'map': cfg['map'],
               'seed': seed, 'salt': seed % 1000,
               'players': players, 'difficulty': difficulty}
+
+    if cfg.get('signboards'):
+        result.update(_predict_chj_mt03(seed, seats=seats))
+        return result
 
     if cfg.get('jewels'):
         result.update(_predict_res_mt02(seed, difficulty, trace=trace, tuto=tuto))
@@ -1502,8 +2185,16 @@ def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
         result.update(_predict_srr_mt01(seed, trace=trace))
         return result
 
+    if cfg.get('freqclue'):
+        result.update(_predict_srr_mt02(seed, trace=trace))
+        return result
+
     if cfg.get('srtrial'):
         result.update(_predict_sr_trial(seed, trace=trace))
+        return result
+
+    if cfg.get('pftrial'):
+        result.update(_predict_pf_trial(seed, players=players, trace=trace))
         return result
 
     if cfg.get('gameshow'):
@@ -1552,6 +2243,10 @@ def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
 
     if cfg.get('firepump'):
         result.update(_predict_tfs_mt03(seed, trace=trace))
+        return result
+
+    if cfg.get('movingtargets'):
+        result.update(_predict_fpb_mt03(seed, trace=trace))
         return result
 
     if cfg.get('switchboard'):
@@ -1717,10 +2412,32 @@ def view(result):
         out['answer'] = ' '.join('%d=%s' % (i['reel_index'], i['symbol_name_zh'])
                                  for i in items)
 
+    elif 'valves' in result and 'slots' in result:          # PF_Trial 两阶段
+        for item in result['valves']:
+            points.append(_point(item['actor'], item['answer'], item['actor'],
+                                 _actor_coords(item),
+                                 detail='拧%d格' % item['turns']))
+        for slot in result['slots']:
+            point = _point(slot['room'], slot['label'], slot['id'])
+            point['answer'] = slot['digit']
+            points.append(point)
+        out['answer'] = ('阀门 %s；密码房 %s' % (
+            '-'.join(v['answer'] for v in result['valves']),
+            ' '.join('%s=%d' % (x['label'], x['digit'])
+                     for x in result['slots'])))
+
     elif 'valves' in result:                                # TFS_MT03
         for item in sorted(result['valves'], key=lambda x: x['section']):
             points.append(_point(item['room'], item['section'], item['actor'],
                                  _actor_coords(item)))
+
+    elif 'moving_targets' in result:                        # FPB_MT03
+        for area in result['moving_targets']:
+            for item in area['targets']:
+                points.append(_point(item['name'], area['zone'], item['name'],
+                                     item['coordinates']))
+        if result.get('notes'):
+            out['note'] = result['notes'][0]
 
     elif 'houses' in result:                                # SRR_MT01
         # 只要「哪个房间的密码盘」+ 4 位密码：激活的 3 栋在前，另外 2 栋随后（标备用）
@@ -1741,6 +2458,28 @@ def view(result):
                              ('tag', 'code', 'pad', 'pad_room', 'coordinates')
                              if house.get(key)} for house in spare]
 
+    elif 'tuner_rounds' in result:                          # SRR_MT02
+        # 每台调频器一个点位：显示台按上屏顺序在前，陷阱台随后
+        summary = []
+        answers = []
+        for rd in result['tuner_rounds']:
+            rows = []
+            for tuner in rd['tuners']:
+                role = ('显示%d' % (tuner['order'] + 1)
+                        if tuner['order'] >= 0 else '陷阱')
+                points.append(_point(
+                    tuner['room'],
+                    '第%d轮 %s %s' % (rd['round'], role, tuner['pattern_zh']),
+                    tuner['id'], tuner.get('coordinates'),
+                    pattern=tuner['pattern'], round=rd['round']))
+                if tuner['order'] >= 0:
+                    rows.append('%s=%s' % (tuner['pattern_zh'], tuner['id']))
+            summary.append('%d:%s' % (rd['round'], '-'.join(rd['display_zh'])))
+            answers.append([rd['round'], rows])
+        out['answer'] = '  '.join(summary)
+        out['rounds'] = [{'round': num, 'answers': rows}
+                         for num, rows in answers]
+
     elif 'slots' in result:                                 # SR_Trial 第 2 阶段
         # 只输出：4 间密码房点位（房间 + 数字）+ 最终密码
         for slot in result['slots']:
@@ -1748,6 +2487,25 @@ def view(result):
             point['answer'] = slot['digit']
             points.append(point)
         out['answer'] = result['password']
+
+    elif 'signboards' in result:                            # CHJ_MT03
+        # 每个图案一个点位：图案（角色）+ 立牌 + 房间 + 坐标
+        for item in result['signboards']:
+            label = item['pattern_zh']
+            if item.get('role'):
+                label += '（%s）' % item['role']
+            points.append(_point(item['room'], label, item['stand'],
+                                 item['coordinates'], pattern=item['pattern'],
+                                 role=item.get('role'), zone=item.get('zone'),
+                                 detail=item['stand']))
+        if result.get('seats_source'):
+            out['answer'] = ' '.join('%s=%s' % (s['pattern_zh'], s['zone'])
+                                     for s in result['signboards']
+                                     if s.get('zone'))
+            out['note'] = '缺 %s；8 选 5 席位集来源：%s' % (
+                result['missing_zh'], result['seats_source'])
+        else:
+            out['note'] = (result.get('notes') or ['缺 %s' % result['missing_zh']])[0]
 
     else:                                                   # CHJ_MT01 等
         for room in result.get('rooms') or []:
@@ -2023,6 +2781,58 @@ def selftest(verbose=True):
                   % (seed, res['password'], sample['password'],
                      'OK' if got == sample['rooms'] else 'MISMATCH: %s' % got,
                      'OK' if ok else 'MISMATCH'))
+    # PF_Trial：拧阀门（点位+拧格数）+ 密码房逐位数字
+    for seed, sample in PF_SAMPLES.items():
+        res = predict('PF_Trial', seed)
+        got_v = {v['section']: (v['actor'], v['turns']) for v in res['valves']}
+        got_c = {x['label']: x['digit'] for x in res['slots']}
+        total += 1
+        ok = got_v == sample['valves'] and got_c == sample['cells']
+        bad += 0 if ok else 1
+        if verbose:
+            print('  PFT %-7d 阀门=%s 密码房=%s %s'
+                  % (seed, got_v, got_c, 'OK' if ok else 'MISMATCH'))
+    # SRR_MT02：三轮调频器↔图案绑定（纯 seed，含选中集）
+    for seed, expect in SAMPLES_SRR_MT02:
+        result = predict('SRR_MT02', seed)
+        for rd in result['tuner_rounds']:
+            got = {t['id']: t['pattern'] for t in rd['tuners']}
+            want = expect[rd['key']]
+            total += 1
+            ok = got == want
+            bad += 0 if ok else 1
+            if verbose:
+                print('  SRR2 %-7d %-8s 预测=%s 实测=%s %s'
+                      % (seed, rd['key'], got, want, 'OK' if ok else 'MISMATCH'))
+    # FPB_MT03：前 3 区域移动靶集合（两 seed 6/6；区域4 未闭环不计）
+    for seed, expect in FPB_MT03_SAMPLES.items():
+        got = {a['coord']: {t['name'] for t in a['targets']}
+               for a in predict('FPB_MT03', seed)['moving_targets']}
+        for coord in FPB_MT03_AREAS:
+            total += 1
+            ok = got[coord] == expect[coord]
+            bad += 0 if ok else 1
+            if verbose:
+                show = lambda s: ','.join(sorted(
+                    (n.split('Gate-')[-1] for n in s), key=int))
+                print('  FPB %-7d %-22s 预测=%-16s 实测=%-16s %s'
+                      % (seed, coord, show(got[coord]), show(expect[coord]),
+                         'OK' if ok else 'MISMATCH'))
+    # CHJ_MT03：图案→立牌点位（4 样本含 R6 修正后的 327327）
+    for seed, expect in CHJ_MT03_SAMPLES.items():
+        res = predict('CHJ_MT03', seed)
+        got = {s['zone']: s['pattern'] for s in res['signboards']
+               if s['zone'] != 'BP_4'}
+        tut = res['signboards'][0]['pattern']
+        total += 2
+        ok_map = got == expect['mapping']
+        ok_tut = expect['tutorial'] is None or tut == expect['tutorial']
+        bad += 0 if ok_map else 1
+        bad += 0 if ok_tut else 1
+        if verbose:
+            print('  CHJ3 %-7d 点位 %s / 教学=%s %s'
+                  % (seed, 'OK' if ok_map else 'MISMATCH:%s' % got, tut,
+                     'OK' if ok_tut else 'MISMATCH'))
     print('自检：%d/%d 通过' % (total - bad, total))
     return bad == 0
 
@@ -2050,6 +2860,8 @@ def main(argv=None):
                     help='JSON 里附带 debug 字段（完整内部推理结构）')
     ap.add_argument('--tuto', action='store_true',
                     help='RES_MT02：附带教学段 51 个人偶的类别图')
+    ap.add_argument('--seats', metavar='LIST',
+                    help='CHJ_MT03：本局亮起的 5 个席位（BP_x 或立牌名，逗号分隔）')
     ap.add_argument('--selftest', action='store_true', help='用已知样本自检')
     args = ap.parse_args(argv)
 
@@ -2066,7 +2878,9 @@ def main(argv=None):
                   or cfg.get('firepump') or cfg.get('mhs')
                   or cfg.get('mannequin') or cfg.get('dts')
                   or cfg.get('keylockedrooms') or cfg.get('jewels')
-                  or cfg.get('puzzle') or cfg.get('srtrial'))
+                  or cfg.get('puzzle') or cfg.get('srtrial')
+                  or cfg.get('freqclue') or cfg.get('movingtargets')
+                  or cfg.get('signboards'))
             status = 'PART' if cfg.get('partial') else ('OK' if ok else 'TODO')
             print('%-10s [%-4s] %-24s %s'
                   % (key, status, cfg['name'], cfg['map']))
@@ -2080,8 +2894,11 @@ def main(argv=None):
         return 2
 
     try:
+        seats = ([x.strip() for x in args.seats.split(',') if x.strip()]
+                 if args.seats else None)
         result = predict(args.level, args.seed, args.players, args.difficulty,
-                         args.max_fake, args.digits, args.trace, args.tuto)
+                         args.max_fake, args.digits, args.trace, args.tuto,
+                         seats=seats)
     except KeyError:
         print('未知关卡：%s（用 --list 查看）' % args.level, file=sys.stderr)
         return 2
