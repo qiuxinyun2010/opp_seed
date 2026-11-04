@@ -527,3 +527,10 @@ FPC_TriggerableTicketDispenser_01_B_BP_22
 FPC_TriggerableTicketDispenser_01_B_BP_46
 FPC_TriggerableTicketDispenser_01_B_BP_54
 FPC_TriggerableTicketDispenser_01_B_BP_18
+
+Trial ID: FPB_MT03, Program difficulty: Easy, Stage: FunParkBarn, Mission: FPB_MT03, Seed: 317317, EffectiveNumberOfPlayers: 1
+区域2 
+FunParkBarn_DropTarget_SecondGate-11
+FunParkBarn_DropTarget_SecondGate-5
+FunParkBarn_DropTarget_SecondGate-13
+FunParkBarn_DropTarget_SecondGate-4
