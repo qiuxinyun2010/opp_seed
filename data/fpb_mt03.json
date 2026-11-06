@@ -1,7 +1,7 @@
 {
  "z_tol": 105.0,
  "salt": "Objective Actors",
- "note": "exclude = sub_1402B4CA0 跨协调器距离排除（DistanceBetweenDifferentObjectives，全局默认 R∈(693,791]）：两 seed 联合唯一解的经验集合，与 seed 无关；区域4 记录不全未闭环。详见 release/coop/FPB_MT03/FPB_MT03.md §5.5",
+ "note": "exclude = sub_1402B4CA0 跨协调器距离排除（DistanceBetweenDifferentObjectives，全局默认）：两 seed（249249/520520）联合唯一解的经验定标集合；第三样本 317317 已证伪其普适性（SG-4 在该局被选中）——排除集 seed 依赖、源于运行期组件位置（三样本检验否定根坐标/轨道代理全部静态几何假设），其它 seed 的区域2 预测仅供参考。区域4 记录不全未闭环。详见 release/coop/FPB_MT03/FPB_MT03.md §5.5",
  "areas": {
   "MT03_FirstDoor_Target": {
    "zone": "区域1",
