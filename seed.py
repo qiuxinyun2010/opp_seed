@@ -16,7 +16,7 @@
     python seed.py TSR_MT01 695695                      # 字母数字位置 / 接线密码
     python seed.py FPI_MT01 335335                      # 放映机坐标 / 录像盘 / 图案
     python seed.py TFS_MT03 14014                       # 六阀门位置与坐标
-    python seed.py FPB_MT03 249249                      # 三个区域各 4 个移动靶点位
+    python seed.py FPB_MT03 249249                      # 区域1/3 各 4 个移动靶点位
     python seed.py SMC_MT02 453453                      # 4 个人偶下半身所在房间（按颜色）
     python seed.py SMC_MT02 453453 --trace              # 附带组洗牌与距离过滤过程
     python seed.py PSA_MT01 219219                      # 最短路径：每把钥匙 + 录像盘的房间与坐标
@@ -234,8 +234,7 @@ LEVELS = {
         'kind': 'SignBoards',
         'coordinator': 'CHJ_MT03_RemainingBribes',
         'signboards': True,
-        'partial': True,   # 8 选 5 未闭环：无实测席位集时需 --seats 才能落到立牌
-        'doc': 'release/coop/CHJ_MT03/CHJ_MT03_R6.md',
+        'doc': 'release/coop/CHJ_MT03/CHJ_MT03.md',
     },
 }
 
@@ -633,21 +632,14 @@ def _predict_tfs_mt03(level_seed, trace=False):
     }
 
 
-# FPB_MT03（游乐场谷仓 · 击倒移动靶开闸门）：四个 RBSimpleObjectiveCoordinator
-# （MT03_FirstDoor/SecondDoor/ThirdDoor/EscapeGate_Target）各带显式 ObjectiveActors 表，
-# 走 sub_1402AE7F0 → sub_1402AF490 → sub_1402B05C0 通用抽取引擎（盐名 "Objective Actors"，
-# base = crc32_fname(盐) + GetSeed(协调器)，与 CHJ_MT02 前置同链）。复刻要点
-# （反编译与两 seed 6/6 闭环过程见 release/coop/FPB_MT03/FPB_MT03.md）：
-#   ① 池按名字典序升序 → 分类趟（尾→头，helper+217 必选 swap 删除）
-#   ② sub_1402B4CA0 再一趟（尾→头 swap 删除「与其它协调器目标距离 <
-#      DistanceBetweenDifferentObjectives」的候选——引擎用 RBObjectiveActorComponent
-#      运行期位置，静态不可复原，按两 seed 联合唯一解的经验集合复刻：
-#      区域2 排除 SecondGate-10/-18/-4，与 seed 无关）
-#   ③ 逐抽 idx = RandSeeded(base + 已选数, 池剩余) RemoveAtSwap，每抽后按
-#      DistanceBetweenSameObjectives=1000（区域4 为 800）剔除近邻（|ΔZ| ≤ z_tol=105）。
-# 区域1-3 两 seed（249249/520520）逐靶全中；区域4 记录不全未闭环，不输出。
-FPB_MT03_AREAS = ('MT03_FirstDoor_Target', 'MT03_SecondDoor_Target',
-                  'MT03_ThirdDoor_Target')
+# FPB_MT03（游乐场谷仓 · 移动靶）：sub_1402AE7F0 → sub_1402AF490 → sub_1402B05C0。
+# 池按名字典序升序 → 分类趟（必选 swap 删除）→ 逐抽
+# idx = RandSeeded(crc32_fname("Objective Actors") + GetSeed(协调器) + 已选数, 池剩余)
+# 每抽后按 DistanceBetweenSameObjectives=1000 剔除近邻（|ΔZ| <= z_tol=105）。
+# 只输出区域1/3：两 seed（249249/520520）各 4/4 逐靶闭环，且不含经验排除集。
+# 区域2/4 未闭环（sub_1402B4CA0 用运行期位置、区域4 记录不全），不输出。
+# 轨道端点/相位点位来自 release/coop/FPB_MT03 反编译成果，见 FPB_MT03_SEED.md。
+FPB_MT03_AREAS = ('MT03_FirstDoor_Target', 'MT03_ThirdDoor_Target')
 FPB_MT03_SAMPLES = {
     249249: {
         'MT03_FirstDoor_Target': {'FunParkBarn_DropTarget_FirstGate-25',
@@ -683,6 +675,76 @@ FPB_MT03_SAMPLES = {
 def _fpb_data():
     with open(os.path.join(_HERE, 'data', 'fpb_mt03.json'), encoding='utf-8') as fp:
         return json.load(fp)
+
+
+# 短名 -> (轨道端点A, 轨道端点B, 同步类型, 细分档N)；R=RandomTarget / C=CDO默认 / N=Noise
+# 来源：paks/MAP/Maps/FunParkBarn/FPB_MT03_B00.json 的 TranslationMovable_BP_n。
+FPB_MT03_TRACKS = {
+    'FirstGate-01': ((9940.7,12395.4,216.3), (9873,12420.1,216.3), 'C', 10),
+    'FirstGate-11': ((9376.3,14327.8,333.5), (9376.3,14327.8,202.3), 'R', 4),
+    'FirstGate-12': ((9198.9,14917.3,346.7), (9362.1,14917.4,346.7), 'R', 4),
+    'FirstGate-16': ((11755.8,12196.5,410.2), (11755.8,12402.9,410.2), 'R', 5),
+    'FirstGate-17': ((11158.6,11145.1,317.7), (10974.8,11145.2,317.7), 'R', 4),
+    'FirstGate-19': ((10264.2,14612.3,419.8), (10439.9,14612.5,419.8), 'R', 5),
+    'FirstGate-2': ((9514.6,13070.6,203), (9514.7,13240.1,203), 'R', 5),
+    'FirstGate-20': ((9889.6,13542.3,377.9), (9889.5,13691.1,377.1), 'R', 4),
+    'FirstGate-21': ((9889.7,13039.3,377.1), (9889.7,13194.2,377.1), 'R', 4),
+    'FirstGate-23': ((11411.9,13117.1,377.9), (11191.1,13117.2,377.9), 'C', 10),
+    'FirstGate-24': ((11177.2,11632.7,376.9), (11330.5,11785.8,376.9), 'C', 10),
+    'FirstGate-25': ((11757.8,12727.7,343), (11757.7,12899,343), 'R', 4),
+    'FirstGate-3': ((10749.6,14036.8,375.8), (10749.7,14273.4,375.8), 'C', 10),
+    'FirstGate-4': ((9514.8,13523.5,203), (9515,13693.5,203), 'R', 5),
+    'FirstGate-5': ((10751,13598.5,375.9), (10751.1,13835.2,375.9), 'C', 10),
+    'FirstGate-6': ((11784.5,14355.8,353.1), (11784.6,14355.8,229.7), 'R', 3),
+    'FirstGate-7': ((11502.8,11958,376.9), (11651.2,12106.2,376.9), 'C', 10),
+    'FirstGate-8': ((9371.1,11423.3,439.3), (9371.2,11423.4,259.8), 'R', 4),
+    'FirstGate-9': ((10946.8,13116.8,377.9), (10735,13116.9,377.9), 'C', 10),
+    'ThirdGate-10': ((5139.8,12286.1,386.5), (5323.5,12292,390.2), 'R', 4),
+    'ThirdGate-12': ((6720.6,13873.3,377.3), (6501.6,13892.5,377.3), 'C', 10),
+    'ThirdGate-14': ((5312.4,12927.8,284.4), (5315.1,12789.5,284.4), 'R', 4),
+    'ThirdGate-26': ((4143.3,11622.9,364.2), (4143.3,11431.2,364.2), 'R', 4),
+    'ThirdGate-27_11': ((6017.7,13051.4,229.8), (5879.7,13060.7,229.8), 'R', 4),
+    'ThirdGate-28': ((5401.6,11627.7,378.6), (5388.7,11480.1,378.6), 'R', 4),
+    'ThirdGate-29': ((5077,11754,378.6), (5063.9,11904.6,378.6), 'R', 4),
+    'ThirdGate-3': ((4275.5,14336.2,390.8), (4275.5,14336.2,225.7), 'R', 4),
+    'ThirdGate-30': ((4305,14759.5,246.8), (4496.8,14759.5,246.8), 'R', 4),
+    'ThirdGate-31': ((6257.8,13917.8,377.2), (6041.9,13936.8,377.2), 'C', 10),
+    'ThirdGate-4': ((5104.1,14339.1,411), (5104.1,14339.1,229.6), 'R', 4),
+    'ThirdGate-6': ((6171.8,12856,364.1), (6185,12675.2,364.1), 'R', 4),
+    'ThirdGate-7': ((6730.1,11481,296.1), (6733.4,11641.7,296.1), 'R', 4),
+    'ThirdGate-8': ((6607.8,10933.7,241.9), (6463.8,10933.7,241.9), 'R', 4),
+    'ThirdGate-9': ((5494.4,10641.6,346.4), (5646.4,10641.6,346.4), 'R', 4),
+}
+
+
+def _fpb_track(name):
+    row = FPB_MT03_TRACKS.get(name.replace('FunParkBarn_DropTarget_', ''))
+    return ([list(row[0]), list(row[1])], row[2], row[3]) if row else (None, None, None)
+
+
+def _fpb_phase_pos(name, level_seed, k=0):
+    """RandomTarget 相位点位：sub_1435FEB20 / sub_1435FF2E0 / sub_1435FED70。
+
+    comp+0x134 构造默认值 -1；p = 2*RandSeeded(-1+k, N/2+1, seed) [+1 当 k 偶]，
+    pos = A + (B-A)*p/(N+1)。k 为运行期周期序号，这里默认取 k=0。
+    """
+    track, typ, N = _fpb_track(name)
+    if not track:
+        return None
+    A, B = track
+    if typ != 'R':
+        return list(A)
+    v2 = float(N + 1)
+    s = (0xFFFFFFFF + k) & sc.M32
+    if not s:
+        return None                                  # 引擎退化 rand()，不可预测
+    if k & 1:
+        p = 2 * sc.rand_seeded(s, (int(v2 - 0.5) >> 1) + 1, level_seed)
+    else:
+        v3 = int(-0.5 - v2) >> 1
+        p = 0 if v3 > -2 else 2 * sc.rand_seeded(s, ~v3 & 0xFFFF, level_seed) + 1
+    t = p / float(N + 1)
+    return [A[i] + (B[i] - A[i]) * t for i in range(3)]
 
 
 def _fpb_purge(pool, ref, coords, dxy, dz):
@@ -735,6 +797,11 @@ def _fpb_draw(area, coord, level_seed, z_tol, trace):
     return result, base
 
 
+def _fpb_key(name):
+    x = name.rsplit('-', 1)[-1].split('_')[0]
+    return (int(x) if x.isdigit() else 0, name)
+
+
 def _predict_fpb_mt03(level_seed, trace=False):
     if not 0 < level_seed <= sc.M32:
         raise ValueError('seed 必须在 [1, 2^32-1]')
@@ -744,14 +811,18 @@ def _predict_fpb_mt03(level_seed, trace=False):
     for coord in FPB_MT03_AREAS:
         area = dict(data['areas'][coord], salt=data.get('salt', 'Objective Actors'))
         names, base = _fpb_draw(area, coord, level_seed, data['z_tol'], tr)
-        areas.append({
-            'coord': coord, 'zone': area['zone'], 'title': area['title'], 'base': base,
-            'targets': [{'name': n, 'coordinates': list(area['coords'][n])}
-                        for n in sorted(names, key=lambda s: int(s.rsplit('-', 1)[-1]))],
-        })
-    return {'moving_targets': areas,
-            'notes': ['区域4（出口闸门）记录不全，未闭环，不输出'],
-            'trace': tr}
+        targets = []
+        for n in sorted(names, key=_fpb_key):
+            track, _, _ = _fpb_track(n)
+            targets.append({
+                'name': n, 'short': n.rsplit('-', 1)[-1],
+                'coordinates': list(area['coords'][n]),
+                'track': track,                       # 轨道两端（静态资产）
+                'phase': _fpb_phase_pos(n, level_seed),   # k=0 相位点位（seed 驱动）
+            })
+        areas.append({'coord': coord, 'zone': area['zone'], 'base': base,
+                      'targets': targets})
+    return {'moving_targets': areas, 'trace': tr}
 
 
 # 仅预测到房间时，附房间中心参考点；具体 actor 使用上面的精确坐标。
@@ -2038,7 +2109,7 @@ def _predict_pf_trial(level_seed, players=1, trace=False):
 # CHJ_MT03 图案立牌（REA/IDA 反编译链，4/4 实测样本）
 #   sub_143585720：ci=RandSeeded(GS+k+41,|池|) 图案 / ai=RandSeeded(GS+k+341,|A|)
 #   席位，均尾元素换删；A = 亮起的 5 席按名升序。教学走 sub_140A1EED0 强制位
-#   （GS_tut+41）。详见 release/coop/CHJ_MT03/CHJ_MT03_R6.md。
+#   （GS_tut+41）。详见 release/coop/CHJ_MT03/CHJ_MT03.md。
 # ---------------------------------------------------------------------------
 CHJ_MT03_COORD = 'CHJ_MT03_RemainingBribes'
 CHJ_MT03_TUT_COORD = 'CHJ_MT03_FirstBribe'
@@ -2069,7 +2140,10 @@ CHJ_MT03_POINTS = [
 ]
 CHJ_MT03_BY_ZONE = {row[0]: row for row in CHJ_MT03_POINTS}
 CHJ_MT03_BY_STAND = {row[1]: row[0] for row in CHJ_MT03_POINTS}
-# 实测样本（opp_seed/test.txt；327327 的 -8=方块 系 -5=方块 笔误，R6 §2.2 修正）
+# 8 选 5：idx=RandSeeded(crc32_fname('Objective Actors')+GetSeed+70251+k, |池|)，
+# 尾元素换删（4 样本席位集 4/4，其中 184184/327327 为样本外验证；详见 CHJ_MT03.md §3.2）
+CHJ_MT03_SEAT_OFF = 70251
+# 实测样本（opp_seed/test.txt；327327 的 -8=方块 系 -5=方块 笔误，CHJ_MT03.md §4 勘误）
 CHJ_MT03_SAMPLES = {
     556556: {'tutorial': 'Heart',
              'mapping': {'BP_7': 'Club', 'BP_2': 'Spade', 'BP_9': 'Fire',
@@ -2106,6 +2180,16 @@ def _chj_mt03_draw(pool, base, count, level_seed):
     return out, pool
 
 
+def _chj_mt03_seats(level_seed):
+    """8 选 5：seed 直接推出本局亮起的 5 个席位（抽取序）。"""
+    gs_main, _ = _chj_mt03_gs()
+    base = (sc.crc32_fname('Objective Actors') + gs_main
+            + CHJ_MT03_SEAT_OFF) & sc.M32
+    picked, _ = _chj_mt03_draw([r[0] for r in CHJ_MT03_POINTS], base, 5,
+                              level_seed)
+    return picked
+
+
 def _predict_chj_mt03(level_seed, seats=None):
     gs_main, gs_tut = _chj_mt03_gs()
     tut = CHJ_MT03_CLUES_TUT[sc.rand_seeded((gs_tut + 41) & sc.M32, 3, level_seed)]
@@ -2113,12 +2197,8 @@ def _predict_chj_mt03(level_seed, seats=None):
     missing = rest[0] if rest else None
 
     if seats is None:
-        sample = CHJ_MT03_SAMPLES.get(level_seed)
-        if sample:
-            seats = list(sample['mapping'])
-            source = '实测记录 opp_seed/test.txt'
-        else:
-            source = None
+        seats = _chj_mt03_seats(level_seed)
+        source = 'seed 推算'
     else:
         source = '--seats'
     norm = []
@@ -2134,27 +2214,27 @@ def _predict_chj_mt03(level_seed, seats=None):
     rows.append({'pattern': tut, 'pattern_zh': CHJ_MT03_ZH[tut], 'role': '教学',
                  'zone': tz, 'stand': tstand, 'room': troom,
                  'coordinates': [round(c, 2) for c in txyz]})
+    role = {}
+    for c in seq[:3]:
+        role[c] = '钱箱'
+    for c in seq[3:]:
+        role[c] = '干扰项'
     if norm:
         pool = sorted(norm, key=lambda z: [r[0] for r in CHJ_MT03_POINTS].index(z))
         picked, _ = _chj_mt03_draw(pool, gs_main + 341, 5, level_seed)
-        role = {}
-        for c in seq[:3]:
-            role[c] = '钱箱'
-        for c in seq[3:]:
-            role[c] = '干扰项'
         for k, z in enumerate(picked):
             _, stand, room, xyz = CHJ_MT03_BY_ZONE[z]
             rows.append({'pattern': seq[k], 'pattern_zh': CHJ_MT03_ZH[seq[k]],
                          'role': role.get(seq[k], ''), 'zone': z, 'stand': stand,
                          'room': room, 'coordinates': [round(c, 2) for c in xyz]})
-    result = {'signboards': rows, 'missing': missing,
-              'missing_zh': CHJ_MT03_ZH[missing],
-              'clue_order': seq, 'seats_source': source}
-    if not norm:
-        result['notes'] = [
-            '8 选 5 未闭环：本局亮起哪 5 个立牌无法纯 seed 推出，'
-            '请用 --seats 给出（如 --seats BP_1,BP_2,BP_5,BP_6,BP_8）。']
-    return result
+    else:
+        for c in seq:
+            rows.append({'pattern': c, 'pattern_zh': CHJ_MT03_ZH[c],
+                         'role': role.get(c, ''), 'zone': None, 'stand': None,
+                         'room': '（席位待定）', 'coordinates': None})
+    return {'signboards': rows, 'missing': missing,
+            'missing_zh': CHJ_MT03_ZH[missing],
+            'clue_order': seq, 'seats_source': source}
 
 
 def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
@@ -2431,13 +2511,13 @@ def view(result):
             points.append(_point(item['room'], item['section'], item['actor'],
                                  _actor_coords(item)))
 
-    elif 'moving_targets' in result:                        # FPB_MT03
+    elif 'moving_targets' in result:                        # FPB_MT03：仅区域1/3
         for area in result['moving_targets']:
             for item in area['targets']:
-                points.append(_point(item['name'], area['zone'], item['name'],
-                                     item['coordinates']))
-        if result.get('notes'):
-            out['note'] = result['notes'][0]
+                points.append(_point(
+                    item['name'], area['zone'], item['name'], item['coordinates'],
+                    zone=area['zone'], short=item['short'],
+                    track=item['track'], phase=item['phase']))
 
     elif 'houses' in result:                                # SRR_MT01
         # 只要「哪个房间的密码盘」+ 4 位密码：激活的 3 栋在前，另外 2 栋随后（标备用）
@@ -2505,6 +2585,13 @@ def view(result):
             out['note'] = '缺 %s；8 选 5 席位集来源：%s' % (
                 result['missing_zh'], result['seats_source'])
         else:
+            brief = '/'.join(s['pattern_zh'] for s in result['signboards']
+                             if s.get('role') == '钱箱')
+            decoy = '/'.join(s['pattern_zh'] for s in result['signboards']
+                             if s.get('role') == '干扰项')
+            out['answer'] = '%s（教学）  钱箱=%s  干扰项=%s  缺=%s' % (
+                result['signboards'][0]['pattern_zh'], brief, decoy,
+                result['missing_zh'])
             out['note'] = (result.get('notes') or ['缺 %s' % result['missing_zh']])[0]
 
     else:                                                   # CHJ_MT01 等
@@ -2526,6 +2613,17 @@ def view(result):
 def render(result):
     """CLI 文本输出。predict() 的原始结果或 view() 的视图都能传。"""
     v = view(result) if 'salt' in result else result
+    if v.get('level') == 'FPB_MT03':                  # 只输出区域1/3 的点位
+        lines = ['FPB_MT03  seed=%d' % v['seed']]
+        cur = None
+        for p in v.get('points') or []:
+            if p.get('zone') != cur:
+                cur = p['zone']
+                lines.append(cur)
+            c = p['coordinates']
+            lines.append('  %-5s (%g, %g, %g)' %
+                         (p.get('short') or p.get('label') or '', *c))
+        return '\n'.join(lines)
     lines = ['%s  %s  (%s)  seed=%d  %dP'
              % (v['level'], v['name'], v['map'], v['seed'],
                 v.get('players', 1))]
@@ -2804,7 +2902,7 @@ def selftest(verbose=True):
             if verbose:
                 print('  SRR2 %-7d %-8s 预测=%s 实测=%s %s'
                       % (seed, rd['key'], got, want, 'OK' if ok else 'MISMATCH'))
-    # FPB_MT03：前 3 区域移动靶集合（两 seed 6/6；区域4 未闭环不计）
+    # FPB_MT03：区域1/3 移动靶集合（两 seed 4/4；区域2/4 未闭环不计）
     for seed, expect in FPB_MT03_SAMPLES.items():
         got = {a['coord']: {t['name'] for t in a['targets']}
                for a in predict('FPB_MT03', seed)['moving_targets']}
@@ -2818,7 +2916,7 @@ def selftest(verbose=True):
                 print('  FPB %-7d %-22s 预测=%-16s 实测=%-16s %s'
                       % (seed, coord, show(got[coord]), show(expect[coord]),
                          'OK' if ok else 'MISMATCH'))
-    # CHJ_MT03：图案→立牌点位（4 样本含 R6 修正后的 327327）
+    # CHJ_MT03：图案→立牌点位（4 样本含勘误后的 327327）
     for seed, expect in CHJ_MT03_SAMPLES.items():
         res = predict('CHJ_MT03', seed)
         got = {s['zone']: s['pattern'] for s in res['signboards']

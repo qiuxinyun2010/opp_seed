@@ -367,11 +367,4 @@
     协调器级偏移（在协调器上直读）：+728 ObjectiveActors、+744 ObjectiveType、
     +680 ExclusiveMissionIds、+1346 bUseObjectiveActorsRandomization、+1352 setup 本体。
     属性偏移映射法：.rdata 描述符 +0x24=偏移（结构体属性 +0x28=类指针），按 0x38 步长走表。
-14. **★ sub_1402B4CA0 = 跨协调器目标距离排除**（不是「可达性预过滤」）：分类趟后对池再跑
-    一趟尾→头，对每个候选取组件位置调 sub_141D1E3B0 找半径 R 内最近的其它协调器已放置
-    目标，命中即移出池。FPB_MT03 区域2 由此闭环：标准 base + 经验排除集
-    {SecondGate-10,-18,-4}（R∈(693,791]，典型 750；引擎用组件**运行期**位置，静态根坐标
-    无法完全复原，按两 seed 联合唯一解定标）。RES_MT02 的「过滤不可用/已占用人偶」、
-    FPC_MT02 Office 区残留均应按此机制重读。**排障方法**：先用精确引擎语义做全 2^32 base
-    扫描判定「差异在 base 还是池构成」，再「标准 base + 排除子集枚举」定位排除集
-    （详见 release/coop/FPB_MT03/FPB_MT03.md §5.5）。
+
