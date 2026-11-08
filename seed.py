@@ -14,9 +14,12 @@
     python seed.py MHS_MT01 707707                       # 3 个图案 + 房间 + 3 位密码
     python seed.py MHS_MT01 707707 --trace               # 附带抽取池与房间去重
     python seed.py TSR_MT01 695695                      # 字母数字位置 / 接线密码
+    python seed.py TSR_MT02 726726                      # 本局可用的刻录机点位（按抽取顺序）
+    python seed.py TSR_MT02 726726 --trace              # 附带每轮候选池与抽取序号
     python seed.py FPI_MT01 335335                      # 放映机坐标 / 录像盘 / 图案
     python seed.py TFS_MT03 14014                       # 六阀门位置与坐标
     python seed.py FPB_MT03 249249                      # 区域1/3 各 4 个移动靶点位
+    python seed.py FPC_MT02 710710                      # Canals 区 5 个出票机点位
     python seed.py SMC_MT02 453453                      # 4 个人偶下半身所在房间（按颜色）
     python seed.py SMC_MT02 453453 --trace              # 附带组洗牌与距离过滤过程
     python seed.py PSA_MT01 219219                      # 最短路径：每把钥匙 + 录像盘的房间与坐标
@@ -37,6 +40,7 @@
     mannequin.py  SMC_MT02 的人偶配对模型（分组/洗牌/距离过滤/抽取）
     seeddata.py   静态数据载入层（data/*.json → 同名常量）
     data/*.json   关卡候选池 / 名称映射 / 坐标 / 实测样本，可单独更新不改代码
+    level/*.md    逐关取证与算法文档（如 level/TSR_MT02.md）
 """
 import argparse
 import json
@@ -56,7 +60,7 @@ from seeddata import (
     ROOM_CENTERS,
     RES_MT02_COORDINATORS, RES_MT02_POOL,
     SAMPLES_CHJ, SAMPLES_CHJ_MT02, SAMPLES_RES, SAMPLES_SMC, SAMPLES_GS,
-    SAMPLES_TSR, SAMPLES_FPI_MT01, SAMPLES_TFS, SAMPLES_MHS,
+    SAMPLES_TSR, SAMPLES_TSR_MT02, SAMPLES_FPI_MT01, SAMPLES_TFS, SAMPLES_MHS,
     SAMPLES_MHS_PICK, TFS_SAMPLE_ROOMS, SAMPLES_PSA, SAMPLES_SRR,
     SAMPLES_SRR_MT02,
     SRR_HOUSES, SRR_HOUSE_ORDER, SRR_ROOM_COMPONENTS, SRR_ROOM_CENTERS,
@@ -65,6 +69,7 @@ from seeddata import (
     CHJ_MT02_SYMBOL_NAMES, CHJ_MT02_SYMBOL_COORDS, CHJ_MT02_SYMBOL_ROOMS,
     MHS_SYMBOL_NAMES, MHS_ZONES, MHS_ZONE_BY_KEY,
     MHS_SYMBOLS, TSR_BUCKETS, TSR_BUCKET_NAMES, TSR_MANDATORY_ROOM,
+    TSR_MT02_CONVERTERS, TSR_MT02_LOTS, TSR_MT02_FIXED, TSR_MT02_COORDS,
     TSR_SPLIT_ROOMS, TSR_CLUE_COORDS, FPI_FIXED_PROJECTOR, FPI_GROUPS,
     FPI_SYMBOLS, FPI_SYMBOL_NAMES_ZH, FPI_PROJECTOR_COORDS,
     TFS_SECTION_ORDER, TFS_SECTIONS, TFS_VALVE_COORDS,
@@ -123,6 +128,16 @@ LEVELS = {
         'partial': True,     # 区域4（出口闸门）记录不全，未闭环
         'doc': 'release/coop/FPB_MT03/FPB_MT03.md',
     },
+    'FPC_MT02': {
+        'name': '游乐场运河 · 赎回自由（Canals 区出票机）',
+        'english': 'Redeem Your Freedom',
+        'map': 'FunParkCanal',
+        'kind': 'TicketBooth',
+        'ticketbooth': True,
+        'partial': True,     # 只闭环第 1 区域 Canals；Office 区未闭环，不输出
+        'coordinator': 'MT02_SimpleTicketBooth_CoordBP_Canals',
+        'doc': 'release/home/FPC_MT02.md',
+    },
     'RES_MT01': {
         'name': '水疗度假村 · 推理谋杀案',
         'english': 'Murder Mystery (identify the killer, weapon, crime scene)',
@@ -173,6 +188,15 @@ LEVELS = {
         'kind': 'SwitchBoard',
         'switchboard': True,
         'doc': 'release/coop/TSR_MT01/TSR_MT01.md',
+    },
+    'TSR_MT02': {
+        'name': '电视台屋顶 · 接管电视广播（可用刻录机点位）',
+        'english': 'Take over the TV Broadcast',
+        'map': 'TelevisionStudioRooftop',
+        'kind': 'RBRandomManager/RandomizationLot',
+        'coordinator': 'RBRandomManager_1',
+        'converters': True,
+        'doc': 'level/TSR_MT02.md',
     },
     'DTS_MT01': {
         'name': '闹市区 · 调频线索与目标人体模型',
@@ -246,9 +270,14 @@ ALIASES = {
     'RES': 'RES_MT01', 'SPA': 'RES_MT01', 'MURDER': 'RES_MT01',
     'CLUE': 'RES_MT01',
     'TSR': 'TSR_MT01', 'SWITCHBOARD': 'TSR_MT01',
+    'TSR2': 'TSR_MT02', 'TSR-MT02': 'TSR_MT02',
+    'CONVERTER': 'TSR_MT02', 'CONVERTERS': 'TSR_MT02',
+    'CASSETTE': 'TSR_MT02', 'BROADCAST': 'TSR_MT02',
     'FPI1': 'FPI_MT01', 'DIAPORAMA': 'FPI_MT01',
     'FPB': 'FPB_MT03', 'FPB3': 'FPB_MT03', 'BARN': 'FPB_MT03',
     'MOVINGTARGET': 'FPB_MT03', 'MOVINGTARGETS': 'FPB_MT03',
+    'FPC': 'FPC_MT02', 'FPC2': 'FPC_MT02', 'CANAL': 'FPC_MT02',
+    'CANALS': 'FPC_MT02', 'TICKET': 'FPC_MT02', 'TICKETS': 'FPC_MT02',
     'TFS': 'TFS_MT03', 'VALVES': 'TFS_MT03',
     'MHS': 'MHS_MT01', 'MOBSTER': 'MHS_MT01', 'SYNDICATE': 'MHS_MT01',
     'PROJECTION': 'MHS_MT01',
@@ -280,6 +309,7 @@ ALIASES = {
 #
 #   data/mhs_mt01.json        MHS_MT01 图案家族 + 投影符号候选表（0x1436E95F0 的输入）
 #   data/tsr_mt01.json        TSR_MT01 候选桶 / 桶名 / 强制房间 / 码位坐标
+#   data/tsr_mt02.json        TSR_MT02 19 台刻录机坐标 / 两批 RandomLots / 实测样本
 #   data/fpi_mt01.json        FPI_MT01 三组候选 / 图案表 / 放映机坐标
 #   data/tfs_mt03.json        TFS_MT03 Sections 原始顺序 / 阀门候选 / 坐标
 #   data/chj_mt02.json        CHJ_MT02 协调器组 / 符号 actor / 房间
@@ -534,6 +564,155 @@ def _predict_tsr_mt01(level_seed, trace=False):
     }
 
 
+# ---------------------------------------------------------------------------
+# TSR_MT02（电视台屋顶 · 接管电视广播）：19 台有限次数刻录机 → 本局可用的点位
+# ---------------------------------------------------------------------------
+# 正向链路（取证与三条实测回归见 level/TSR_MT02.md）：
+#   vtable off_1459A8690 slot 201 = sub_1426325E0「Randomize」
+#     → 遍历 RBRandomManager.RandomLots@600（元素 960 B，Num@608）
+#     → sub_14019F790(lot, manager, force) = 单批次随机化核心
+#       0x14019FBB6  v44 = *(lot+920) + 345 → sub_1401A0F00(v44, Min, Max) 算 K
+#       0x14019FF06  sub_1401A0F00(*(lot+920) + k + 148, 0, |cand|-1) 抽第 k 台
+#       0x1401A068C  2 - RandBool(i + *(lot+920) + 51946)（BaseState=0 时的兜底）
+#       sub_1404FF400 按人数取 Values1P/2P/3P、按难度 override 取 Min/Max
+#       sub_1402D29E0 = RandSeeded(seed, N, level_seed % 1000)
+#   候选池每轮按原索引重建，只排除「已选中」与 3D 距离 < MinDistanceBetweenActors；
+#   池顺序是关卡 actor 加载序（字典序），不是 JSON 里 RandomActors 的数组序。
+# 之前按样本反解 32 位 base 的路线全部作废：base 不是 GetSeed+crc32，
+# 就是关卡数据里的 RandomizerId 加上述调用点立即数。
+TSR_MT02_K_SEED_OFFSET = 345
+TSR_MT02_DRAW_SEED_OFFSET = 148
+TSR_MT02_FALLBACK_SEED_OFFSET = 51946
+
+
+def _tsr_mt02_state_value(name):
+    return {'NotApplicable': 0, 'StateA': 1, 'StateB': 2, 'Ignored': 3}.get(name, 0)
+
+
+def _tsr_mt02_count(lot, field, players, difficulty):
+    """sub_1404FF400：FIntByDifficulty → 当前人数/难度下的激活数量界。
+
+    本关 Values1P/2P/3P 的 override 全为空、四个难度档也只有 Normal 被
+    override，因此任何 (人数, 难度) 都取 DefaultValues.NormalLocalValue
+    （Lot0 = 3/9，Lot1 = 1/1）。overrides 字段留给别的关卡复用。
+    """
+    ov = lot.get('overrides') or {}
+    per_player = (ov.get('players') or {}).get(str(players)) or {}
+    if field in per_player:
+        return per_player[field]
+    per_diff = (ov.get('difficulty') or {}).get(difficulty) or {}
+    if field in per_diff:
+        return per_diff[field]
+    return lot[field]
+
+
+def _tsr_mt02_dist2(a, b):
+    return sum((a[i] - b[i]) ** 2 for i in range(3))
+
+
+def _predict_tsr_mt02(level_seed, players=1, difficulty='easy', trace=False):
+    if not 0 < level_seed <= sc.M32:
+        raise ValueError('seed 必须在 [1, 2^32-1]')
+    salt = level_seed % 1000
+    tr = [] if trace else None
+    rows = []
+    for conv in TSR_MT02_CONVERTERS:
+        rows.append({
+            'actor': conv['actor'],
+            'short': conv['short'],
+            'coordinates': [conv['x'], conv['y'], conv['z']],
+            'active': False,
+            'state': 'StateB',
+            'lot': None,
+            'order': None,
+            'fixed': False,
+        })
+    by_actor = {row['actor']: row for row in rows}
+    lots_info = []
+    for lot in TSR_MT02_LOTS:
+        names = lot['actors']
+        R = lot['randomizer_id']
+        lo = _tsr_mt02_count(lot, 'min_activation', players, difficulty)
+        hi = _tsr_mt02_count(lot, 'max_activation', players, difficulty)
+        K = lo + sc.rand_seeded(R + TSR_MT02_K_SEED_OFFSET,
+                                hi - lo + 1, level_seed)
+        d2 = lot['min_distance'] ** 2
+        chosen = []
+        draws = []
+        for k in range(K):
+            cand = []
+            for i, name in enumerate(names):
+                if i in chosen:
+                    continue
+                pos = TSR_MT02_COORDS[name]
+                if any(_tsr_mt02_dist2(pos, TSR_MT02_COORDS[names[j]]) < d2
+                       for j in chosen):
+                    continue
+                # MinDistanceFromSAS 两批都是 0，SAS 点集不参与过滤
+                cand.append(i)
+            if not cand:
+                break
+            idx = sc.rand_seeded(R + k + TSR_MT02_DRAW_SEED_OFFSET,
+                                 len(cand), level_seed)
+            p = cand[idx]
+            chosen.append(p)
+            row = by_actor[names[p]]
+            row.update({'active': True, 'state': lot['desired_state'],
+                        'lot': lot['name'], 'order': k + 1,
+                        'fixed': bool(lot.get('fixed'))})
+            draws.append({'k': k, 'candidates': len(cand), 'idx': idx,
+                          'actor': names[p]})
+            if tr is not None:
+                tr.append('%s k=%d K=%d |cand|=%d seed=%d idx=%d -> %s'
+                          % (lot['name'], k, K, len(cand),
+                             R + k + TSR_MT02_DRAW_SEED_OFFSET, idx,
+                             row['short']))
+        # 未选中的机器写 BaseState；只有 BaseState=NotApplicable(0) 时才走
+        # 2 - RandBool(i + R + 51946) 兜底，本关两批都是 StateB，不触发。
+        if _tsr_mt02_state_value(lot['base_state']) == 0:
+            for i, name in enumerate(names):
+                row = by_actor[name]
+                if row['active']:
+                    continue
+                state = 2 - sc.rand_bool(
+                    i + R + TSR_MT02_FALLBACK_SEED_OFFSET, level_seed)
+                row['state'] = 'StateA' if state == 1 else 'StateB'
+                row['active'] = state == 1
+                row['lot'] = lot['name']
+        else:
+            for name in names:
+                row = by_actor[name]
+                if not row['active']:
+                    row['state'] = lot['base_state']
+                    row['lot'] = lot['name']
+        lots_info.append({
+            'name': lot['name'], 'randomizer_id': R,
+            'min_activation': lo, 'max_activation': hi, 'K': K,
+            'selected': len(chosen), 'min_distance': lot['min_distance'],
+            'salt': salt, 'actors': [names[i] for i in chosen],
+            'draws': draws,
+        })
+    if tr is not None:
+        for info in reversed(lots_info):
+            tr.insert(0, '%s: R=%d Min/Max=%d/%d K=%d 实选=%d'
+                      % (info['name'], info['randomizer_id'],
+                         info['min_activation'], info['max_activation'],
+                         info['K'], info['selected']))
+    active_order = [a for info in lots_info for a in info['actors']]
+    # 19 台全表只用于上面的正向计算；对外只返回本局可用的点位（按抽取顺序）。
+    converters = [by_actor[a] for a in active_order]
+    return {
+        'converters': converters,      # 只含 StateA，顺序 = 抽取顺序（Lot0 → Lot1）
+        'active_order': active_order,  # 同上，纯 actor 名列表
+        'lots': lots_info,
+        'notes': [
+            'BP_2 由 Lot1（Min=Max=1）固定刷新，与 seed 无关。',
+            '只返回本局可用的刻录机；19 台静态全表在 data/tsr_mt02.json。',
+        ],
+        'trace': tr,
+    }
+
+
 def _predict_fpi_mt01(level_seed, trace=False):
     if not 0 < level_seed <= sc.M32:
         raise ValueError('seed 必须在 [1, 2^32-1]')
@@ -783,7 +962,8 @@ def _fpb_draw(area, coord, level_seed, z_tol, trace):
     k = 0
     while pool and quota > 0:
         seed = (base + len(result)) & sc.M32
-        idx = sc.rand_seeded(seed, len(pool), level_seed)
+        n = len(pool)
+        idx = sc.rand_seeded(seed, n, level_seed)
         pick = pool[idx]
         pool[idx] = pool[-1]
         pool.pop()
@@ -792,7 +972,7 @@ def _fpb_draw(area, coord, level_seed, z_tol, trace):
         _fpb_purge(pool, coords[pick], coords, area['dist'], z_tol)
         if trace is not None:
             trace.append('  %s 抽#%d seed=%d N=%d idx=%d → %s'
-                         % (area['zone'], k, seed, len(pool) + 1, idx, pick))
+                         % (area['zone'], k, seed, n, idx, pick))
         k += 1
     return result, base
 
@@ -823,6 +1003,45 @@ def _predict_fpb_mt03(level_seed, trace=False):
         areas.append({'coord': coord, 'zone': area['zone'], 'base': base,
                       'targets': targets})
     return {'moving_targets': areas, 'trace': tr}
+
+
+# FPC_MT02（游乐场运河 · 赎回自由）：两个售票亭协调器各自随机启用 5 个出票机。
+# 只整合已闭环的第 1 区域 Canals（41 个 A 型候选 + 固定教学机）。
+# 反编译链路与验证见 release/home/FPC_MT02.md：
+#   sub_1402AF2D0（bUseSpawnerActorsRandomization，setup@协调器+4096，
+#     盐名宽串 @0x1466F52CE = "Item Spawner"）→ sub_140A61C30（按
+#     ItemSpawnerClass 收集世界 actor）→ sub_1402B05C0（名字典序 →
+#     base=crc32_fname(盐)+GetSeed(协调器) → idx=RandSeeded(base+已选数,|池|)
+#     → RemoveAtSwap → sub_1402B3C30 按 1500 剔除近邻）。
+# 与 FPB_MT03 的 _fpb_draw 是同一个引擎，直接复用；z_tol=-1 表示不限制 ΔZ。
+# ⚠️ Office 区（28 个 B 型候选）两条实测 seed 都未闭环，不输出。
+FPC_MT02_SAMPLES = {
+    710710: {'MT03_FPC_TriggerableTicketDispenser_01_BP_Intro',
+             'MT02_FPC_TriggerableTicketDispenser_01_BP_CanalA_2',
+             'FPC_TriggerableTicketDispenser_01_A_BP_58',
+             'FPC_TriggerableTicketDispenser_01_A_BP_42',
+             'MT02_FPC_TriggerableTicketDispenser_01_BP_CanalA_13'},
+}
+
+
+def _fpc_data():
+    with open(os.path.join(_HERE, 'data', 'fpc_mt02.json'), encoding='utf-8') as fp:
+        return json.load(fp)
+
+
+def _predict_fpc_mt02(level_seed, trace=False):
+    if not 0 < level_seed <= sc.M32:
+        raise ValueError('seed 必须在 [1, 2^32-1]')
+    data = _fpc_data()
+    tr = [] if trace else None
+    names, base = _fpb_draw(data, data['coord'], level_seed, -1.0, tr)
+    return {
+        'ticket_points': [{'name': n, 'coordinates': list(data['coords'][n])}
+                          for n in names],
+        'base': base,
+        'notes': ['仅第 1 区域 Canals 的 5 个出票机；Office 区未闭环，不输出'],
+        'trace': tr,
+    }
 
 
 # 仅预测到房间时，附房间中心参考点；具体 actor 使用上面的精确坐标。
@@ -2329,8 +2548,17 @@ def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
         result.update(_predict_fpb_mt03(seed, trace=trace))
         return result
 
+    if cfg.get('ticketbooth'):
+        result.update(_predict_fpc_mt02(seed, trace=trace))
+        return result
+
     if cfg.get('switchboard'):
         result.update(_predict_tsr_mt01(seed, trace=trace))
+        return result
+
+    if cfg.get('converters'):
+        result.update(_predict_tsr_mt02(seed, players=players,
+                                        difficulty=difficulty, trace=trace))
         return result
 
     if cfg.get('mhs'):
@@ -2400,6 +2628,7 @@ def view(result):
     out = {'level': result['level'], 'name': result['name'],
            'map': result['map'], 'seed': result['seed'],
            'players': result.get('players', 1),
+           'difficulty': result.get('difficulty', 'easy'),
            'answer': None, 'points': []}
     points = out['points']
 
@@ -2407,6 +2636,23 @@ def view(result):
         for item in result['jewels']:
             points.append(_point(item['room'], item['gem_cn'], item['spawner'],
                                  _actor_coords(item)))
+
+    elif 'converters' in result:                            # TSR_MT02
+        # predict 已只给可用点位；这里按抽取顺序原样铺成 point
+        shorts = []
+        for row in result['converters']:
+            label = '刻录机（固定）' if row['fixed'] else '刻录机'
+            points.append(_point(row['short'], label, row['actor'],
+                                 row['coordinates'], active=True,
+                                 state=row['state'], fixed=row['fixed'],
+                                 order=row['order'], lot=row['lot']))
+            shorts.append(row['short'])
+        out['answer'] = '可用刻录机：%s' % ' '.join(shorts)
+        out['active'] = shorts
+        out['lots'] = [{'name': i['name'], 'K': i['K'],
+                        'selected': i['selected'],
+                        'min_distance': i['min_distance']}
+                       for i in result['lots']]
 
     elif 'path' in result:                                  # PSA_MT01
         for step in result['path']:
@@ -2519,6 +2765,13 @@ def view(result):
                     zone=area['zone'], short=item['short'],
                     track=item['track'], phase=item['phase']))
 
+    elif 'ticket_points' in result:                         # FPC_MT02
+        for item in result['ticket_points']:
+            points.append(_point(item['name'], '出票机', item['name'],
+                                 item['coordinates']))
+        if result.get('notes'):
+            out['note'] = result['notes'][0]
+
     elif 'houses' in result:                                # SRR_MT01
         # 只要「哪个房间的密码盘」+ 4 位密码：激活的 3 栋在前，另外 2 栋随后（标备用）
         active = [h for h in result['houses'] if h['selected']]
@@ -2623,6 +2876,26 @@ def render(result):
             c = p['coordinates']
             lines.append('  %-5s (%g, %g, %g)' %
                          (p.get('short') or p.get('label') or '', *c))
+        return '\n'.join(lines)
+    if v.get('level') == 'TSR_MT02':              # 只输出本局可用的刻录机点位
+        lines = ['TSR_MT02  seed=%d  %dP  %s  salt=%d'
+                 % (v['seed'], v.get('players', 1), v.get('difficulty', 'easy'),
+                    v['seed'] % 1000)]
+        if v.get('answer'):
+            lines.append('  %s' % v['answer'])
+        for lot in v.get('lots') or []:
+            lines.append('  [%s] K=%d 实选=%d 距离阈值=%g'
+                         % (lot['name'], lot['K'], lot['selected'],
+                            lot['min_distance']))
+        lines.append('  %-16s %-26s %-6s %s'
+                     % ('刻录机(*=固定)', '坐标 (x, y, z)', '批次', '顺序'))
+        for p in v.get('points') or []:
+            c = p['coordinates']
+            name = p['room'] + ('*' if p.get('fixed') else '')
+            lines.append('  %-16s (%8g, %8g, %6g)   %-6s %s'
+                         % (name, c[0], c[1], c[2],
+                            p.get('lot') or '-',
+                            ('第%d抽' % p['order']) if p.get('order') else '-'))
         return '\n'.join(lines)
     lines = ['%s  %s  (%s)  seed=%d  %dP'
              % (v['level'], v['name'], v['map'], v['seed'],
@@ -2916,7 +3189,17 @@ def selftest(verbose=True):
                 print('  FPB %-7d %-22s 预测=%-16s 实测=%-16s %s'
                       % (seed, coord, show(got[coord]), show(expect[coord]),
                          'OK' if ok else 'MISMATCH'))
-    # CHJ_MT03：图案→立牌点位（4 样本含勘误后的 327327）
+    # FPC_MT02：Canals 区 5 个出票机（710710 5/5；Office 区未闭环不计）
+    for seed, expect in FPC_MT02_SAMPLES.items():
+        got = {p['name'] for p in predict('FPC_MT02', seed)['ticket_points']}
+        total += 1
+        ok = got == expect
+        bad += 0 if ok else 1
+        if verbose:
+            show = lambda s: ','.join(sorted(n.rsplit('_', 1)[-1] for n in s))
+            print('  FPC %-7d 预测=%-22s 实测=%-22s %s'
+                  % (seed, show(got), show(expect), 'OK' if ok else 'MISMATCH'))
+    # CHJ_MT03：图案→立牌点位（4 样本含 R6 修正后的 327327）
     for seed, expect in CHJ_MT03_SAMPLES.items():
         res = predict('CHJ_MT03', seed)
         got = {s['zone']: s['pattern'] for s in res['signboards']
@@ -2931,6 +3214,27 @@ def selftest(verbose=True):
             print('  CHJ3 %-7d 点位 %s / 教学=%s %s'
                   % (seed, 'OK' if ok_map else 'MISMATCH:%s' % got, tut,
                      'OK' if ok_tut else 'MISMATCH'))
+    # TSR_MT02：predict 只返回可用点位；实测只记了一部分机器，所以同时核对
+    # 「正向完整集」与「observed ⊆ 正向完整集」。
+    for seed, players, difficulty, observed, expected in SAMPLES_TSR_MT02:
+        res = predict('TSR_MT02', seed, players, difficulty)
+        got = {c['actor'] for c in res['converters'] if c['active']}
+        fixed = TSR_MT02_FIXED in got
+        shown = view(res)['points']
+        # predict 与 view 都不得夹带不可用点位
+        ok_clean = (len(res['converters']) == len(got)
+                    and all(c['active'] for c in res['converters'])
+                    and len(shown) == len(got)
+                    and all(p.get('active') for p in shown))
+        ok_full = got == expected and ok_clean
+        ok_obs = observed.issubset(got)
+        total += 3
+        bad += (0 if ok_full else 1) + (0 if ok_obs else 1) + (0 if fixed else 1)
+        if verbose:
+            print('  TSR2 %-7d 可用集+视图 %s / 记录覆盖 %s / BP_2 固定 %s'
+                  % (seed, 'OK' if ok_full else 'MISMATCH:%d台' % len(got),
+                     'OK' if ok_obs else 'MISMATCH',
+                     'OK' if fixed else 'MISMATCH'))
     print('自检：%d/%d 通过' % (total - bad, total))
     return bad == 0
 
@@ -2978,7 +3282,8 @@ def main(argv=None):
                   or cfg.get('keylockedrooms') or cfg.get('jewels')
                   or cfg.get('puzzle') or cfg.get('srtrial')
                   or cfg.get('freqclue') or cfg.get('movingtargets')
-                  or cfg.get('signboards'))
+                  or cfg.get('ticketbooth') or cfg.get('signboards')
+                  or cfg.get('converters'))
             status = 'PART' if cfg.get('partial') else ('OK' if ok else 'TODO')
             print('%-10s [%-4s] %-24s %s'
                   % (key, status, cfg['name'], cfg['map']))

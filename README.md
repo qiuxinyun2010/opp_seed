@@ -12,10 +12,12 @@ opp_seed/
   cluegame.py      RES_MT01 的谋杀案模型（房间 / 凶器 / 凶手 三个数）
   mannequin.py     SMC_MT02 的人偶配对模型（4 个人偶下半身的房间 / 区域 / 坐标）
   seeddata.py      静态数据载入层：data/*.json → 与原来同名的常量
+  level/            逐关的取证/算法文档（CHJ_MT02.md / FPB_MT03.md / TSR_MT02.md …）
   data/
     chj_mt02.json     CHJ_MT02 协调器组 / 符号 actor / 房间 / 符号中文名
     mhs_mt01.json     MHS_MT01 区与图案家族 / 每房间去重开关 / 投影符号候选表（坐标 + 所在房间）
     tsr_mt01.json     TSR_MT01 候选桶 / 桶名 / 强制房间 / 码位坐标
+    tsr_mt02.json     TSR_MT02 19 台刻录机坐标 / 两批 RandomLots / 实测样本
     fpi_mt01.json     FPI_MT01 三组候选 / 图案表 / 放映机坐标 / 固定放映机
     psa_mt01.json     PSA_MT01 图案池 / 起始钥匙 / 钥匙房坐标 / 钥匙生成点 / 录像盘
     tfs_mt03.json     TFS_MT03 Sections 原始顺序 / 阀门候选 / 坐标
@@ -41,12 +43,14 @@ opp_seed/
 cd <本仓库目录>       # 即 opp_seed/
 
 python seed.py --list
-python seed.py --selftest                  # 全部已接入样本：95/95
+python seed.py --selftest                  # 全部已接入样本：160/160
 
 python seed.py DTS_MT01 252252             # 3 个调频器 / 3 条线索 / 最终模型位置
 python seed.py FPI_MT01 335335             # 放映机坐标 / 录像盘 / 图案
 python seed.py TFS_MT03 14014              # 六个阀门的位置与坐标（单样本路径模型）
 python seed.py TSR_MT01 695695             # 字母数字码位及坐标 / 接线密码
+python seed.py TSR_MT02 726726             # 本局可用的刻录机点位（按抽取顺序）
+python seed.py TSR_MT02 726726 --trace     # 每轮候选池 / seed / idx（取证见 level/TSR_MT02.md）
 python seed.py FPI_MT02 189189             # 教学关 + 2 个正式回合
 python seed.py FPI_MT02 189189 --players 3 # 讲台 4 个 → 每回合 4 个房间
 python seed.py FPI_MT02 189189 --difficulty normal

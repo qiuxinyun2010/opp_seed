@@ -1,0 +1,194 @@
+{
+ "_说明": "TFW_MT01（玩具工厂仓库 · Shutdown the Factory）。关卡提示原文：\"Follow the cables from the console to find and complete each electrical panel. Then activate the console to close the section.\"4 条生产线（RBObjectiveCoordinatorGroup_ProdA/B/C/D）各有 2 台控制台（InteractivePanel_Filler_ObjCoord_BP_C，Left / Right，都在装货码头），每台控制台的 PrimaryActorsRandomizationSetup.DesiredCount=1，即从自己的 2–3 个候选电闸面板里随机启用 1 个；全图 19 个候选面板（SwitchesMatch_ProdLine_C，每个带 8 个 FlipSwitch 与 GeneratorMasterSwitch，并挂 RBObjectiveActor / RBRandomizableHelper），一局共 8 个生效。候选名里带 _Left / _Right 标明归哪台控制台。做完一条线的两台控制台后，按 Simple_ObjCoord_BP_ProdLineX2 指定的 Orp_Movable_Button_BP_ProdLineX（每条线 1 个）关闭该分区；最后在装货码头按 StageEnd_Button_BP_2 停机。Wire-01_BP_C ×39 是控制台到电闸的电缆，CeilingCageBulb-02_C ×40 是计数灯，FlipSwitchComponent_BP_C ×152 / SwitchesMatchPanelComponent_BP_C ×19 是面板的子组件（世界坐标导出为 0,0,0），均不作为点位。分区 A–D 是 4 个任务 section；E（装货码头控制台）不是任务区，只为整张图上色并保证房间全覆盖，属于 ZONES.md §2 声明的特例。",
+ "level": "TFW_MT01",
+ "map": "ToyFactoryWarehouse",
+ "title": "TFW_MT01 · 玩具工厂仓库 关闭工厂（电源开关）",
+ "subtitle": "Shutdown the Factory · 沿控制台的电缆找到电闸面板，4 条线 × 2 台控制台，一局 8 个面板生效",
+ "legend_hint": "橙=电源开关（19 个候选 / 一局 8 个）；紫色空心=控制台；玫红=关闭分区按钮；绿色空心=最终停机按钮。",
+ "sources": [
+  "TFW_LD_MT01_B00.json"
+ ],
+ "point_types": [
+  {
+   "key": "sw",
+   "match": "type",
+   "pattern": "^SwitchesMatch_ProdLine_C$",
+   "label": "电源开关",
+   "short": "SW",
+   "color": "#c2410c"
+  },
+  {
+   "key": "console",
+   "match": "type",
+   "pattern": "^InteractivePanel_Filler_ObjCoord_BP_C$",
+   "label": "控制台",
+   "short": "Console",
+   "color": "#7c3aed",
+   "style": "clue"
+  },
+  {
+   "key": "line_button",
+   "match": "type",
+   "pattern": "^Orp_Movable_Button_BP_C$",
+   "label": "关闭分区按钮",
+   "short": "Close",
+   "color": "#be123c"
+  },
+  {
+   "key": "end_button",
+   "match": "type",
+   "pattern": "^StageEnd_Button_BP_C$",
+   "label": "最终停机按钮",
+   "short": "End",
+   "color": "#0f766e",
+   "style": "clue"
+  }
+ ],
+ "room_names": {
+  "RBRoom_ProdLineA_Breakroom": {
+   "en": "Breakroom A",
+   "zh": "A 区休息室"
+  },
+  "RBRoom_ProdLineA_CallCenter": {
+   "en": "Call Center A",
+   "zh": "A 区电话间"
+  },
+  "RBRoom_ProdLineA_CorridorMaterial02": {
+   "en": "Materials Corridor A",
+   "zh": "A 区物料走廊"
+  },
+  "RBRoom_ProdLineA_MaterialsStorage_1": {
+   "en": "Materials Storage A1",
+   "zh": "A 区物料库 1"
+  },
+  "RBRoom_ProdLineA_MaterialsStorage_2": {
+   "en": "Materials Storage A2",
+   "zh": "A 区物料库 2"
+  },
+  "RBRoom_ProdLineA_Master": {
+   "en": "Production Line A",
+   "zh": "生产线 A"
+  },
+  "RBRoom_ProdLineB_2ndFloorBathroom1": {
+   "en": "Bathroom B (2F)",
+   "zh": "B 区二层浴室"
+  },
+  "RBRoom_ProdLineB_Archives": {
+   "en": "Archives B",
+   "zh": "B 区档案室"
+  },
+  "RBRoom_ProdLineB_ManToilet": {
+   "en": "Men's Toilet B",
+   "zh": "B 区男厕"
+  },
+  "RBRoom_ProdLineB_WomenToilet": {
+   "en": "Women's Toilet B",
+   "zh": "B 区女厕"
+  },
+  "RBRoom_ProdLineB_2ndFloorCorridor_Slave01": {
+   "en": "Corridor B (2F)",
+   "zh": "B 区二层走廊"
+  },
+  "RBRoom_ProdLineC_Janitor": {
+   "en": "Janitor C",
+   "zh": "C 区清洁间"
+  },
+  "RBRoom_ProdLineC_Infirmary": {
+   "en": "Infirmary C",
+   "zh": "C 区医务室"
+  },
+  "RBRoom_ProdLineC_Conference": {
+   "en": "Conference C",
+   "zh": "C 区会议室"
+  },
+  "RBRoom_ProdLineC_Warehouse": {
+   "en": "Warehouse C",
+   "zh": "C 区仓库"
+  },
+  "RBRoom_ProdLineC_Right_Master": {
+   "en": "Production Line C",
+   "zh": "生产线 C"
+  },
+  "RBRoom_ProdLineD_Office": {
+   "en": "Office D",
+   "zh": "D 区办公室"
+  },
+  "RBRoom_ProdLineD_LowerBathroom": {
+   "en": "Lower Bathroom D",
+   "zh": "D 区下层浴室"
+  },
+  "RBRoom_ProdLineD_Hallway_Slave01": {
+   "en": "Hallway D",
+   "zh": "D 区走廊"
+  },
+  "RBRoom_ProdLineD_Surveillance": {
+   "en": "Surveillance D",
+   "zh": "D 区监控室"
+  },
+  "RBRoom_ProdLineD_Master": {
+   "en": "Production Line D",
+   "zh": "生产线 D"
+  },
+  "RBRoom_Ext_LoadingDocks_Master_0": {
+   "en": "Loading Docks (Consoles)",
+   "zh": "装货码头 · 控制台"
+  },
+  "RBRoom_Ext_LoadingDocks_Slave01": {
+   "en": "Loading Docks (Exit)",
+   "zh": "装货码头 · 出口"
+  }
+ },
+ "zones": [
+  {
+   "id": "A",
+   "name": "生产线 A",
+   "name_en": "Production line A",
+   "color": "#7c3aed",
+   "note": "5 个电源开关候选：A-Left 3（Breakroom、CallCenter、MaterialsStorage_2）/ A-Right 2（CorridorMaterial02、MaterialsStorage_1）。关闭分区按钮在 ProdLineA_Master。",
+   "rooms": [
+    "RBRoom_ProdLineA*"
+   ]
+  },
+  {
+   "id": "B",
+   "name": "生产线 B",
+   "name_en": "Production line B",
+   "color": "#b45309",
+   "note": "5 个电源开关候选：B-Left 3（2ndFloorBathroom1、Archives、ManToilet）/ B-Right 2（WomenToilet、ManToilet）。关闭分区按钮在 2ndFloorCorridor_Slave01。",
+   "rooms": [
+    "RBRoom_ProdLineB*"
+   ]
+  },
+  {
+   "id": "C",
+   "name": "生产线 C",
+   "name_en": "Production line C",
+   "color": "#0f766e",
+   "note": "5 个电源开关候选：C-Left 2（Janitor、Infirmary）/ C-Right 3（Conference、Warehouse、Janitor）。关闭分区按钮在 ProdLineC_Right_Master。",
+   "rooms": [
+    "RBRoom_ProdLineC*"
+   ]
+  },
+  {
+   "id": "D",
+   "name": "生产线 D",
+   "name_en": "Production line D",
+   "color": "#1d4ed8",
+   "note": "4 个电源开关候选：D-Left 2（Office、LowerBathroom）/ D-Right 2（Hallway_Slave01、Surveillance）。关闭分区按钮在 ProdLineD_Master。",
+   "rooms": [
+    "RBRoom_ProdLineD*"
+   ]
+  },
+  {
+   "id": "E",
+   "name": "装货码头（控制台）",
+   "name_en": "Loading docks / consoles",
+   "color": "#64748b",
+   "note": "非任务区：8 台控制台（每条生产线 Left / Right 各 1）都在 Ext_LoadingDocks_Master_0，最终停机按钮在 Ext_LoadingDocks_Slave01。最后一个通配兜底，保证 78 间房全覆盖。",
+   "rooms": [
+    "RBRoom_Ext_*",
+    "RBRoom_*"
+   ]
+  }
+ ]
+}

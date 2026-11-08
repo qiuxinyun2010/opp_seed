@@ -534,3 +534,57 @@ FunParkBarn_DropTarget_SecondGate-11
 FunParkBarn_DropTarget_SecondGate-5
 FunParkBarn_DropTarget_SecondGate-13
 FunParkBarn_DropTarget_SecondGate-4
+
+Trial ID: PSB_MT03, Program difficulty: Easy, Stage: PoliceStationBasement, Mission: PSB_MT03, Seed: 598598, EffectiveNumberOfPlayers: 1
+
+Trial ID: ORI_MT01, Program difficulty: Easy, Stage: OrphanageInstitution, Mission: ORI_MT01, Seed: 238238, EffectiveNumberOfPlayers: 3
+
+Trial ID: TFW_MT01, Program difficulty: Normal, Stage: ToyFactoryWarehouse, Mission: TFW_MT01, Seed: 477477, EffectiveNumberOfPlayers: 3
+
+Trial ID: TF_Trial, Program difficulty: Hard, Stage: ToyFactory, Mission: ToyFactory, Seed: 175175, EffectiveNumberOfPlayers: 1
+
+Trial ID: TSR_MT02, Program difficulty: Easy, Stage: TelevisionStudioRooftop, Mission: TSR_MT02, Seed: 726726, EffectiveNumberOfPlayers: 1
+LimitedUseCassetteConverter_BP_2
+LimitedUseCassetteConverter_BP6_20=1
+LimitedUseCassetteConverter_BP7_23=1
+LimitedUseCassetteConverter_BP9_29=1
+LimitedUseCassetteConverter_BP18_14=1
+LimitedUseCassetteConverter_BP15_5=1
+
+Trial ID: TSR_MT02, Program difficulty: Easy, Stage: TelevisionStudioRooftop, Mission: TSR_MT02, Seed: 177177, EffectiveNumberOfPlayers: 1
+LimitedUseCassetteConverter_BP13_45
+LimitedUseCassetteConverter_BP9_29
+LimitedUseCassetteConverter_BP10_36
+LimitedUseCassetteConverter_BP11_39
+LimitedUseCassetteConverter_BP17_11
+
+Trial ID: TSR_MT02, Program difficulty: Easy, Stage: TelevisionStudioRooftop, Mission: TSR_MT02, Seed: 7007, EffectiveNumberOfPlayers: 1
+LimitedUseCassetteConverter_BP_2
+LimitedUseCassetteConverter_BP15_5
+LimitedUseCassetteConverter_BP18_14
+LimitedUseCassetteConverter_BP13_45
+LimitedUseCassetteConverter_BP6_20
+LimitedUseCassetteConverter_BP7_23
+LimitedUseCassetteConverter_BP9_29
+
+Trial ID: CHJ_MT03, Program difficulty: Easy, Stage: CourthouseJudicial, Mission: CHJ_MT03, Seed: 150150, EffectiveNumberOfPlayers: 1
+TextSignStandBase-6=方块
+TextSignStandBase-9=梅花
+TextSignStandBase-8=兔子
+TextSignStandBase-7=王冠 
+TextSignStandBase-3=火焰
+
+Trial ID: TFS_MT03, Program difficulty: Easy, Stage: ToyFactoryShipping, Mission: TFS_MT03, Seed: 527527, EffectiveNumberOfPlayers: 1
+MT03_TF_Gas_ValvePanel_BP_Section_A1_03
+MT03_TF_Gas_ValvePanel_BP_Section_A2_05
+MT03_TF_Gas_ValvePanel_BP_Section_A3_1
+MT03_TF_Gas_ValvePanel_BP_Section_B1_08
+MT03_TF_Gas_ValvePanel_BP_Section_B3_5
+MT03_TF_Gas_ValvePanel_BP_Section_B2_07
+Trial ID: TFS_MT03, Program difficulty: Easy, Stage: ToyFactoryShipping, Mission: TFS_MT03, Seed: 41041, EffectiveNumberOfPlayers: 1
+MT03_TF_Gas_ValvePanel_BP_Section_A2_05
+MT03_TF_Gas_ValvePanel_BP_Section_A3_2
+MT03_TF_Gas_ValvePanel_BP_Section_A1_05
+MT03_TF_Gas_ValvePanel_BP_Section_B1_03
+MT03_TF_Gas_ValvePanel_BP_Section_B2_04
+MT03_TF_Gas_ValvePanel_BP_Section_B3_4

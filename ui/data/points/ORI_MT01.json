@@ -1,69 +1,218 @@
 {
- "_说明": "ORI_MT01（孤儿院附楼 · Gather the Children of God）。任务点位 = 小孩人偶 ORI_MannequinKid_OBJ_BP_C 共 12 个，正好 4 个区域 × 3 个：①Intro（1F 后楼梯底，挂在 ORI_ViolentKids_GroundStomp01_Prefab_Intro_A/B/C 上，位置固定，三具几乎重叠）；②girl room 宿舍区；③boy room 宿舍区；④婴儿房宿舍区。GatherAndDeliver_Mannequin_ObjCoord_BP 的 FixedMaxCount=3，本局只要往卡车（ORI_MannequinDropZoneTruck_OBJ_BP，在 Exterior_BackDoor_2）交 3 个。人偶都挂在 Prefab 上，坐标要靠 maplib 收 PrefabComponent 才算得出来。",
+ "_说明": "ORI_MT01（孤儿院附楼 · Gather the Children of God）重绘。任务协调器 GatherAndDeliver_Mannequin_ObjCoord_BP_C：FixedMaxCount=3（本局往卡车交 3 具）、LargePickupActorsRandomizationSetup.DesiredCount=4（一局刷 4 具，bLimitOneObjectivePerRoom=true）。12 具候选 ORI_MannequinKid_OBJ_BP_C 按 4 个 section 分布（各 3 具），section 来自 ViolentKids_Button_BP_C 的 SectionIndex：0=婴儿房、1=女童、2=男童、3=Intro；每个按钮的 LinkedChild 指向本区一具人偶，故按钮也列成线索点。3 具 Intro 人偶挂在 ORI_ViolentKids_GroundStomp01_Prefab_Intro_A/B/C 上，坐标相距不到 1m；人偶都挂在 Prefab 上，世界坐标靠 maplib 收 PrefabComponent 变换链算出。交付卡车 ORI_MannequinDropZoneTruck_OBJ_BP_C 与撤离 ExitStage_ObjCoord_BP_C 都在 RBRoom_Exterior_BackDoor_2。分区 A–D 是 4 个任务 section；E（教室/学习区）与 F（外场交付）不是任务区，只为整张图上色并保证房间全覆盖，属于 ZONES.md §2 声明的特例。",
  "level": "ORI_MT01",
  "map": "OrphanageInstitution",
  "title": "ORI_MT01 · 孤儿院附楼 收集小孩人偶",
- "subtitle": "4 个区域各 3 具小孩人偶：Intro（1F，固定位置）、女童宿舍、男童宿舍、婴儿房；本局往卡车交 3 具。",
+ "subtitle": "Gather the Children of God · 4 个 section 各 3 具候选，一局刷 4 具、交 3 具到卡车",
+ "legend_hint": "玫红=小孩人偶候选；紫色空心=机关按钮；琥珀=交付卡车；绿色空心=撤离点。",
  "sources": [
   "ORI_MT01_B00.json"
  ],
  "point_types": [
   {
    "key": "kid",
-   "pattern": "^ORI_MannequinKid_OBJ_BP_C$",
    "match": "type",
+   "pattern": "^ORI_MannequinKid_OBJ_BP_C$",
    "label": "小孩人偶",
-   "short": "Kid"
+   "short": "Kid",
+   "color": "#be123c"
+  },
+  {
+   "key": "btn",
+   "match": "type",
+   "pattern": "^ViolentKids_Button_BP_C$",
+   "label": "机关按钮",
+   "short": "Btn",
+   "color": "#7c3aed",
+   "style": "clue"
+  },
+  {
+   "key": "drop_truck",
+   "match": "type",
+   "pattern": "^ORI_MannequinDropZoneTruck_OBJ_BP_C$",
+   "label": "交付卡车",
+   "short": "Truck",
+   "color": "#b45309"
+  },
+  {
+   "key": "exit",
+   "match": "type",
+   "pattern": "^ExitStage_ObjCoord_BP_C$",
+   "label": "撤离点",
+   "short": "Exit",
+   "color": "#0f766e",
+   "style": "clue"
   }
  ],
+ "room_names": {
+  "RBRoom_Halls_BackStairs_Bottom": {
+   "en": "Back Stairs (Bottom)",
+   "zh": "后楼梯底"
+  },
+  "RBRoom_HallsEntrance": {
+   "en": "Halls Entrance",
+   "zh": "大厅入口"
+  },
+  "RBRoom_HallsOffice01": {
+   "en": "Halls Office 01",
+   "zh": "大厅办公室 01"
+  },
+  "RBRoom_HallsReceptionOffice": {
+   "en": "Reception Office",
+   "zh": "前台办公室"
+  },
+  "RBRoom_Lobby_Master": {
+   "en": "Lobby",
+   "zh": "大堂"
+  },
+  "RBRoom_RadioRoom": {
+   "en": "Radio Room",
+   "zh": "广播室"
+  },
+  "RBRoom_DormGirls_LeftDorm": {
+   "en": "Girls Left Dorm",
+   "zh": "女童左寝"
+  },
+  "RBRoom_DormGirls_RightDorm": {
+   "en": "Girls Right Dorm",
+   "zh": "女童右寝"
+  },
+  "RBRoom_DormGirls_Bathroom": {
+   "en": "Girls Bathroom",
+   "zh": "女童浴室"
+  },
+  "RBRoom_DormGirls_Locker": {
+   "en": "Girls Locker",
+   "zh": "女童更衣室"
+  },
+  "RBRoom_DormGirls_Rooftop": {
+   "en": "Girls Rooftop",
+   "zh": "女童屋顶"
+  },
+  "RBRoom_DormGirls_RightCorridor": {
+   "en": "Girls Right Corridor",
+   "zh": "女童右走廊"
+  },
+  "RBRoom_DormBoys_LeftDorms_Master_6": {
+   "en": "Boys Left Dorm",
+   "zh": "男童左寝"
+  },
+  "RBRoom_DormBoys_LeftDorms_Slave01": {
+   "en": "Boys Left Dorm 02",
+   "zh": "男童左寝 02"
+  },
+  "RBRoom_DormBoys_RightDorms": {
+   "en": "Boys Right Dorm",
+   "zh": "男童右寝"
+  },
+  "RBRoom_DormBoys_Bathroom": {
+   "en": "Boys Bathroom",
+   "zh": "男童浴室"
+  },
+  "RBRoom_DormBoys_LockerRoom": {
+   "en": "Boys Locker Room",
+   "zh": "男童更衣室"
+  },
+  "RBRoom_DormBoys_MainCorridor_Slave01": {
+   "en": "Boys Main Corridor",
+   "zh": "男童主走廊"
+  },
+  "RBRoom_DormInfants_LeftDorm_Slave01": {
+   "en": "Infants Left Dorm 01",
+   "zh": "婴儿房左寝 01"
+  },
+  "RBRoom_DormInfants_LeftDorm_Slave02": {
+   "en": "Infants Left Dorm 02",
+   "zh": "婴儿房左寝 02"
+  },
+  "RBRoom_DormInfants_RightDorm": {
+   "en": "Infants Right Dorm",
+   "zh": "婴儿房右寝"
+  },
+  "RBRoom_DormInfants_Bathroom": {
+   "en": "Infants Bathroom",
+   "zh": "婴儿房浴室"
+  },
+  "RBRoom_DormInfants_Playground": {
+   "en": "Infants Playground",
+   "zh": "婴儿房活动场"
+  },
+  "RBRoom_DormInfants_PlaygroundBalcony": {
+   "en": "Playground Balcony",
+   "zh": "活动场阳台"
+  },
+  "RBRoom_Exterior_BackDoor_2": {
+   "en": "Back Door (Truck)",
+   "zh": "后门外场 · 卡车"
+  }
+ },
  "zones": [
   {
    "id": "A",
-   "name": "Intro (fixed)",
-   "name_zh": "A 区 · Intro 固定点（1F 后楼梯底）",
+   "name": "Intro · 一层大厅",
+   "name_en": "Intro / Halls",
    "color": "#7c3aed",
-   "note": "三具固定在 ORI_ViolentKids_GroundStomp01_Prefab_Intro_A/B/C 上，相距不到 1m，图上会叠成一个点；坐标固定，每局都一样。",
+   "note": "SectionIndex=3。3 具人偶固定在后楼梯底 Halls_BackStairs_Bottom（相距不到 1m，图上叠成一个点）；3 个按钮在 HallsReceptionOffice / HallsOffice01 / HallsEntrance。本区还染一层大厅、前台、Lobby 与广播室，属 Intro 起始片。",
    "rooms": [
-    "RBRoom_Halls_BackStairs_Bottom"
+    "RBRoom_Halls*",
+    "RBRoom_Reception*",
+    "RBRoom_Lobby*",
+    "RBRoom_RadioRoom"
    ]
   },
   {
    "id": "B",
-   "name": "Girls dorm",
-   "name_zh": "B 区 · 女童宿舍（girl room）",
+   "name": "女童宿舍（Section 1）",
+   "name_en": "Girls Dorm",
    "color": "#be123c",
-   "note": "女童宿舍整片：右侧宿舍、浴室、更衣室。人偶在 RightDorm / Bathroom / Locker 各一具。",
+   "note": "SectionIndex=1，女童宿舍 12 间 + 男童连接走廊 + 泳池更衣。3 具人偶在 RightDorm / Bathroom / Locker；按钮 A/B/C 在 LeftDorm / Rooftop / RightCorridor。",
    "rooms": [
-    "RBRoom_DormGirls_*"
+    "RBRoom_DormGirls_*",
+    "RBRoom_InfantDorm_GirlsConnector",
+    "RBRoom_PoolLocker"
    ]
   },
   {
    "id": "C",
-   "name": "Boys dorm",
-   "name_zh": "C 区 · 男童宿舍（boy room）",
-   "color": "#1d4ed8",
-   "note": "男童宿舍整片：左右宿舍、浴室、更衣/走廊。人偶在 LeftDorms_Master_6 / RightDorms / Bathroom 各一具。",
+   "name": "男童宿舍（Section 2）",
+   "name_en": "Boys Dorm",
+   "color": "#2563eb",
+   "note": "SectionIndex=2，男童宿舍 11 间。3 具人偶在 LeftDorms_Master_6 / RightDorms / Bathroom；按钮 A/B/C 在 LeftDorms_Slave01 / LockerRoom / MainCorridor_Slave01。",
    "rooms": [
     "RBRoom_DormBoys_*"
    ]
   },
   {
    "id": "D",
-   "name": "Infants dorm",
-   "name_zh": "D 区 · 婴儿房（infants）",
+   "name": "婴儿房（Section 0）",
+   "name_en": "Infants Dorm",
    "color": "#0f766e",
-   "note": "婴儿房整片：左右宿舍、活动场与阳台、走廊、浴室。人偶在 LeftDorm_Slave01 / LeftDorm_Slave02 / PlaygroundBalcony 各一具。",
+   "note": "SectionIndex=0，婴儿房 9 间。3 具人偶在 LeftDorm_Slave01 / LeftDorm_Slave02 / PlaygroundBalcony；按钮 A/B/C 在 RightDorm / Bathroom / Playground。",
    "rooms": [
-    "RBRoom_DormInfants_*",
-    "RBRoom_InfantDorm_*"
+    "RBRoom_DormInfants_*"
    ]
   },
   {
    "id": "E",
-   "name": "Rest of the institution",
-   "name_zh": "E · 其它区域（没有人偶）",
+   "name": "教室与学习区（非任务区）",
+   "name_en": "Classrooms & Study",
    "color": "#64748b",
+   "note": "Classroom01-04、Study 走廊 / Film / OpenMiddle、SmallStudy01、SideAlley。没有人偶候选，仅为整张图上色。",
    "rooms": [
+    "RBRoom_Classroom*",
+    "RBRoom_Study*",
+    "RBRoom_SmallStudy*",
+    "RBRoom_SideAlley"
+   ]
+  },
+  {
+   "id": "F",
+   "name": "外场交付（非任务区）",
+   "name_en": "Exterior & Drop-off",
+   "color": "#ca8a04",
+   "note": "Exterior_BackDoor_2 南面外场：交付卡车与撤离点都在这里。最后一个通配兜底，保证 74 间房全覆盖。",
+   "rooms": [
+    "RBRoom_Exterior_BackDoor_2",
     "RBRoom_*"
    ]
   }

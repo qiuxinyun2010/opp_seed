@@ -1,0 +1,156 @@
+{
+  "_source": "pak/OPP/Content/Maps_json/TelevisionStudioRooftop/TSR_LD_MT02_B00.json（RBRandomManager_1）+ ui/data/cache/TelevisionStudioRooftop.points.TSR_MT02.json（19 台坐标）",
+  "_note": "TSR_MT02 刻录机点位。converters 的顺序是关卡 actor 加载顺序（全名字典序 BP10..BP19, BP2..BP9, BP_2），也就是运行时 RandomizedActors@944 的池顺序；lots[0].asset_order 才是关卡 JSON 里 RandomActors 的数组序，算法不用它。这里是 19 台静态输入；predict()/view()/render() 只返回本局可用的点位。算法与取证见 level/TSR_MT02.md。",
+  "converters": [
+    {"actor": "LimitedUseCassetteConverter_BP10_36", "short": "BP10_36", "x": 883.0, "y": -2511.0, "z": 584.0},
+    {"actor": "LimitedUseCassetteConverter_BP11_39", "short": "BP11_39", "x": 1755.4, "y": -390.4, "z": 550.0},
+    {"actor": "LimitedUseCassetteConverter_BP12_42", "short": "BP12_42", "x": -1586.5, "y": 2881.1, "z": 450.0},
+    {"actor": "LimitedUseCassetteConverter_BP13_45", "short": "BP13_45", "x": -656.0, "y": 1915.0, "z": 450.0},
+    {"actor": "LimitedUseCassetteConverter_BP14",     "short": "BP14",    "x": 3178.3, "y": 2044.0, "z": 550.0},
+    {"actor": "LimitedUseCassetteConverter_BP15_5",  "short": "BP15_5",  "x": 523.0,  "y": -1607.0,"z": 6.0},
+    {"actor": "LimitedUseCassetteConverter_BP16_8",  "short": "BP16_8",  "x": -166.0, "y": -2422.0,"z": 20.0},
+    {"actor": "LimitedUseCassetteConverter_BP17_11", "short": "BP17_11", "x": -1663.0,"y": -677.0, "z": 350.0},
+    {"actor": "LimitedUseCassetteConverter_BP18_14", "short": "BP18_14", "x": -1297.0,"y": -2458.0,"z": 21.0},
+    {"actor": "LimitedUseCassetteConverter_BP19_17", "short": "BP19_17", "x": -747.0, "y": -2588.0,"z": 316.0},
+    {"actor": "LimitedUseCassetteConverter_BP2_5",   "short": "BP2_5",   "x": -851.9, "y": 1998.0, "z": 799.7},
+    {"actor": "LimitedUseCassetteConverter_BP3_8",   "short": "BP3_8",   "x": -1123.0,"y": 2510.5, "z": 800.0},
+    {"actor": "LimitedUseCassetteConverter_BP4_14",  "short": "BP4_14",  "x": -1984.0,"y": 2362.0, "z": 800.0},
+    {"actor": "LimitedUseCassetteConverter_BP5_17",  "short": "BP5_17",  "x": -1835.0,"y": 1635.0, "z": 801.0},
+    {"actor": "LimitedUseCassetteConverter_BP6_20",  "short": "BP6_20",  "x": 2467.0, "y": 3324.0, "z": 550.0},
+    {"actor": "LimitedUseCassetteConverter_BP7_23",  "short": "BP7_23",  "x": 3183.0, "y": 587.0,  "z": 550.0},
+    {"actor": "LimitedUseCassetteConverter_BP8_26",  "short": "BP8_26",  "x": 2543.2, "y": -926.0, "z": 550.0},
+    {"actor": "LimitedUseCassetteConverter_BP9_29",  "short": "BP9_29",  "x": 3422.7, "y": -2303.0,"z": 550.0},
+    {"actor": "LimitedUseCassetteConverter_BP_2",    "short": "BP_2",    "x": 1998.4, "y": 2445.3, "z": 900.0}
+  ],
+  "fixed": "LimitedUseCassetteConverter_BP_2",
+  "lots": [
+    {
+      "name": "Lot0",
+      "randomizer_id": 50822,
+      "min_activation": 3,
+      "max_activation": 9,
+      "min_distance": 2000.0,
+      "min_distance_from_sas": 0.0,
+      "base_state": "StateB",
+      "desired_state": "StateA",
+      "b_dont_change_ignored_actors": false,
+      "overrides": {},
+      "actors": [
+        "LimitedUseCassetteConverter_BP10_36",
+        "LimitedUseCassetteConverter_BP11_39",
+        "LimitedUseCassetteConverter_BP12_42",
+        "LimitedUseCassetteConverter_BP13_45",
+        "LimitedUseCassetteConverter_BP14",
+        "LimitedUseCassetteConverter_BP15_5",
+        "LimitedUseCassetteConverter_BP16_8",
+        "LimitedUseCassetteConverter_BP17_11",
+        "LimitedUseCassetteConverter_BP18_14",
+        "LimitedUseCassetteConverter_BP19_17",
+        "LimitedUseCassetteConverter_BP2_5",
+        "LimitedUseCassetteConverter_BP3_8",
+        "LimitedUseCassetteConverter_BP4_14",
+        "LimitedUseCassetteConverter_BP5_17",
+        "LimitedUseCassetteConverter_BP6_20",
+        "LimitedUseCassetteConverter_BP7_23",
+        "LimitedUseCassetteConverter_BP8_26",
+        "LimitedUseCassetteConverter_BP9_29"
+      ],
+      "asset_order": [
+        "LimitedUseCassetteConverter_BP2_5",
+        "LimitedUseCassetteConverter_BP3_8",
+        "LimitedUseCassetteConverter_BP4_14",
+        "LimitedUseCassetteConverter_BP5_17",
+        "LimitedUseCassetteConverter_BP6_20",
+        "LimitedUseCassetteConverter_BP7_23",
+        "LimitedUseCassetteConverter_BP8_26",
+        "LimitedUseCassetteConverter_BP9_29",
+        "LimitedUseCassetteConverter_BP10_36",
+        "LimitedUseCassetteConverter_BP11_39",
+        "LimitedUseCassetteConverter_BP12_42",
+        "LimitedUseCassetteConverter_BP13_45",
+        "LimitedUseCassetteConverter_BP15_5",
+        "LimitedUseCassetteConverter_BP16_8",
+        "LimitedUseCassetteConverter_BP17_11",
+        "LimitedUseCassetteConverter_BP18_14",
+        "LimitedUseCassetteConverter_BP19_17",
+        "LimitedUseCassetteConverter_BP14"
+      ]
+    },
+    {
+      "name": "Lot1",
+      "randomizer_id": 12888,
+      "min_activation": 1,
+      "max_activation": 1,
+      "min_distance": 0.0,
+      "min_distance_from_sas": 0.0,
+      "base_state": "StateB",
+      "desired_state": "StateA",
+      "b_dont_change_ignored_actors": false,
+      "overrides": {},
+      "fixed": true,
+      "actors": ["LimitedUseCassetteConverter_BP_2"],
+      "asset_order": ["LimitedUseCassetteConverter_BP_2"]
+    }
+  ],
+  "samples": [
+    {
+      "seed": 726726, "players": 1, "difficulty": "easy",
+      "observed": [
+        "LimitedUseCassetteConverter_BP_2",
+        "LimitedUseCassetteConverter_BP6_20",
+        "LimitedUseCassetteConverter_BP7_23",
+        "LimitedUseCassetteConverter_BP9_29",
+        "LimitedUseCassetteConverter_BP18_14",
+        "LimitedUseCassetteConverter_BP15_5"
+      ],
+      "expected_active": [
+        "LimitedUseCassetteConverter_BP9_29",
+        "LimitedUseCassetteConverter_BP2_5",
+        "LimitedUseCassetteConverter_BP18_14",
+        "LimitedUseCassetteConverter_BP7_23",
+        "LimitedUseCassetteConverter_BP6_20",
+        "LimitedUseCassetteConverter_BP15_5",
+        "LimitedUseCassetteConverter_BP_2"
+      ]
+    },
+    {
+      "seed": 177177, "players": 1, "difficulty": "easy",
+      "observed": [
+        "LimitedUseCassetteConverter_BP13_45",
+        "LimitedUseCassetteConverter_BP9_29",
+        "LimitedUseCassetteConverter_BP10_36",
+        "LimitedUseCassetteConverter_BP11_39",
+        "LimitedUseCassetteConverter_BP17_11"
+      ],
+      "expected_active": [
+        "LimitedUseCassetteConverter_BP17_11",
+        "LimitedUseCassetteConverter_BP10_36",
+        "LimitedUseCassetteConverter_BP13_45",
+        "LimitedUseCassetteConverter_BP6_20",
+        "LimitedUseCassetteConverter_BP11_39",
+        "LimitedUseCassetteConverter_BP9_29",
+        "LimitedUseCassetteConverter_BP_2"
+      ]
+    },
+    {
+      "seed": 7007, "players": 1, "difficulty": "easy",
+      "observed": [
+        "LimitedUseCassetteConverter_BP_2",
+        "LimitedUseCassetteConverter_BP15_5",
+        "LimitedUseCassetteConverter_BP18_14",
+        "LimitedUseCassetteConverter_BP13_45",
+        "LimitedUseCassetteConverter_BP6_20",
+        "LimitedUseCassetteConverter_BP7_23"
+      ],
+      "expected_active": [
+        "LimitedUseCassetteConverter_BP13_45",
+        "LimitedUseCassetteConverter_BP7_23",
+        "LimitedUseCassetteConverter_BP9_29",
+        "LimitedUseCassetteConverter_BP15_5",
+        "LimitedUseCassetteConverter_BP18_14",
+        "LimitedUseCassetteConverter_BP6_20",
+        "LimitedUseCassetteConverter_BP_2"
+      ]
+    }
+  ]
+}

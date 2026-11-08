@@ -18,8 +18,9 @@
 | 关卡 | 分区数 | 为什么是这个数 |
 |---|---|---|
 | TFS_MT02 | 2 | 要推 2 台车，Green / Pink 各 1 台 |
+| TFW_MT01 | 4 | 4 条生产线各 2 台控制台，每台控制台随机启用 1 个电源开关面板（一局共 8 个） |
 | PSB_MT01 | 3 | 要找 3 把图案钥匙，每个区域 1 把（已做，点位 = 41 具尸体候选） |
-| ORI_MT01 | 4 | 要搬 4 个人偶，4 个人偶在 4 个区域 |
+| ORI_MT01 | 4 | 一局刷 4 具小孩人偶，4 个 section 各 1 具（每区 3 具候选），往卡车交 3 具 |
 | PSO_MT01 | 4 | 4 个区各 1 把钥匙 |
 | DRS_MT03 | 4（候选 11） | 一局 4 轮钱箱任务：第 1 轮固定 + 第 2–4 轮随机 |
 
@@ -38,6 +39,7 @@
 | 关卡 | 地图 | 点位 | 分区 | 分区逻辑 | 备注 |
 |---|---|---|---|---|---|
 | TFS_MT02 | ToyFactoryShipping | 74 | 2 | 2 台推车 → Green（西）/ Pink（东） | 每区 1 车、2 道钥匙门 |
+| TFW_MT01 | ToyFactoryWarehouse | 32 | 5 | **4 条生产线 A–D**：19 个电源开关面板候选（`SwitchesMatch_ProdLine_C`，每局 8 个生效）+ 8 台控制台 + 4 个关闭分区按钮 + 1 个最终停机按钮 | 每台控制台 Left / Right 各有 2–3 个候选，候选名带 `_Left`/`_Right`；控制台全在装货码头，E 区为非任务区（已在 `_说明` 声明）。任务提示：沿控制台电缆找电闸面板，回来激活控制台关闭分区 |
 | TFW_MT03 | ToyFactoryWarehouse | 34 | 4 | 4 条生产线 → A/B/C/D | 每区 1 图案锁 + 1 酸桶 |
 | ORS_MT01 | OrphanageServices | 41 | 2 | 2 个出票区 → 服务区 / 教堂区 | 每区 2 桶 |
 | FPC_MT02 | FunParkCanal | 71 | 2 | 2 个售票亭 → Canals / Offices | 每区 5 张票 |
@@ -47,7 +49,7 @@
 | PSB_MT01 | PoliceStationBasement | 41 | 3 | 3 个扇区各 1 把图案钥匙，点位 = 41 具尸体候选（A15/B10/C16） | 钥匙藏在尸体里；体育馆 3 台电视给图案，Gym 不分区 |
 | POLICESTATION_T02 | PoliceStation | 65 | 4 | 4 道钥匙门 → 门 1…门 4 | 顺序开门 |
 | RES_MT02 | ResortSpa | 318 | 4 | 4 个 section，每区 6–7 个人偶 | — |
-| ORI_MT01 | OrphanageInstitution | 12 | 5 | 4 个人偶区 + Intro 固定区 | ⚠ 多 1 个 Intro，待确认是否合并 |
+| ORI_MT01 | OrphanageInstitution | 26 | 6 | **按 4 个任务 section 划分**：Intro（`SectionIndex=3`）/ 女童宿舍（1）/ 男童宿舍（2）/ 婴儿房（0），各 3 具人偶候选 + 3 个机关按钮（`LinkedChild` 指向人偶）；另 2 个非任务区仅用于上色：教室与学习区 E、外场交付 F（卡车 + 撤离点） | 已在 `_说明` 声明 E/F 非任务区这个特例。Intro 是 4 个 section 之一，不是多余的区；点位另含 12 个 `ViolentKids_Button_BP_C`、1 辆交付卡车、1 个撤离点；一局刷 4 具、交 3 具（`FixedMaxCount=3`） |
 | MHS_MT01 | MobsterHideoutSyndicate | 45 | 5 | 3 个投影符号区 + 金库主目标 + 后坞交付 | ⚠ 后 2 个是任务链节点，不是随机任务区 |
 | FPI_MT01 | FunParkIllusion | 16 | 4 | 中庭固定放映机 + 第 0/1/2 组 | ⚠ 中庭是固定点 |
 | CHJ_MT03 | CourthouseJudicial | 9 | 4 | 7 个法官按翼/庭院分布 | ⚠ 按地理切，不是按"每区几把钥匙" |
@@ -94,7 +96,7 @@
 
 1. 先补 8 个空/无分区的关卡（C 组），它们现在连图例都没有；
 2. 再复核 B 组 5 关，按「任务区域」重划；
-3. 最后处理 A 组里 5 处 ⚠（ORI 的 Intro、MHS 的交付节点、FPI 的固定点、CHJ_MT03 的翼、SRR_MT01 的"其它"）——这些是"要不要把固定/流程节点也算一个区"的口径问题，定一次口径批量改。
+3. 最后处理 A 组里 4 处 ⚠（MHS 的交付节点、FPI 的固定点、CHJ_MT03 的翼、SRR_MT01 的"其它"）——这些是"要不要把固定/流程节点也算一个区"的口径问题，定一次口径批量改。`ORI_MT01` 已定：Intro 是 `SectionIndex=3` 的第 4 个任务区，不算多余区；教室/外场 2 个非任务区只在配置 `_说明` 里声明。
 
 ## 5. 怎么重新统计
 

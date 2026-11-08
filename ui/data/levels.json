@@ -107,6 +107,10 @@
     "map": "Resort",
     "name": "度假村 · 电源模块 / 特殊钥匙（鹿·狼·熊·猫头鹰）/ 密室"
   },
+  "TFW_MT01": {
+    "map": "ToyFactoryWarehouse",
+    "name": "玩具工厂仓库 · 关闭工厂（电源开关）"
+  },
   "TFW_MT03": {
     "map": "ToyFactoryWarehouse",
     "name": "玩具工厂仓库 · 注满卫生处理罐"

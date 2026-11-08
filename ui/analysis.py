@@ -52,6 +52,9 @@ TARGET_COLOR = '#f43f5e'
 FPI_PATTERN_COLORS = ['#e11d48', '#f59e0b', '#10b981', '#0ea5e9', '#8b5cf6',
                       '#14b8a6', '#ef4444', '#64748b', '#a16207']
 
+# SRR_MT02：三轮调频各自一色（第1轮 Rich / 第2轮 School / 第3轮 SAS 出口）
+SRR2_ROUND_COLORS = ['#e11d48', '#2563eb', '#16a34a']
+
 # TFS_MT03：阀门按 A / B 两大区着色（和地图分区颜色一致）
 TFS_AREA_COLORS = {'A': '#1d4ed8', 'B': '#b45309'}
 TFS_AREA_NAMES = {'A': 'A 区（A1/A2/A3）', 'B': 'B 区（B1/B2/B3）'}
@@ -251,6 +254,34 @@ def _smc_mt02(data):
     return points, _legend(legend)
 
 
+def _srr_mt02(data):
+    """三轮调频：只画「要上屏」的调频台，圆点里写顺序号 1/2/3，颜色按轮次区分。
+
+    每轮的顺序就是上屏顺序（月亮→兔子→梅花 这种），照着编号依次去这三个房间调频即可。
+    陷阱台（order < 0）不画 —— 用户只需要调对顺序的点位。
+    """
+    points, legend = [], []
+    for rd in data.get('tuner_rounds') or []:
+        index = int(rd.get('round') or 1)
+        color = SRR2_ROUND_COLORS[(index - 1) % len(SRR2_ROUND_COLORS)]
+        seq = []
+        for tuner in rd.get('tuners') or []:
+            order = tuner.get('order')
+            if order is None or order < 0:
+                continue
+            coords = _coords(tuner)
+            if not coords:
+                continue
+            name = tuner.get('pattern_zh') or tuner.get('pattern') or ''
+            points.append(_pt(coords, tuner.get('room'), name, str(order + 1),
+                              color, 'tuner', 1.35, section=str(index), exact=True))
+            seq.append(name)
+        if seq:
+            legend.append(('第%d轮 %s' % (index, ' → '.join(seq)), color))
+    points.sort(key=lambda m: (int(m['section']), int(m['badge'] or 0)))
+    return points, _legend(legend)
+
+
 def _fpi_mt02(data):
     """真人秀：每阶段每房间一个点，颜色=目标图案，圆点里写答案，label 写「第N阶段 图案」。
 
@@ -335,6 +366,7 @@ ADAPTERS = {
     'PSA_MT01': _psa_mt01,
     'DTS_MT01': _dts_mt01,
     'FPI_MT02': _fpi_mt02,
+    'SRR_MT02': _srr_mt02,
     'SMC_MT02': _smc_mt02,
     'SRR_MT01': _srr_mt01,
 }

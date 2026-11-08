@@ -47,6 +47,24 @@ if HERE not in sys.path:
 
 import gamelog                        # noqa: E402  日志 → 本局关卡/种子
 import markers                        # noqa: E402  答案里的坐标 → 地图标记
+import analysis                       # noqa: E402  关卡适配的点位（带颜色/编号）
+
+
+def collect_seed_markers(data):
+    """答案数据 → (标记, 是否隐藏普通点位)。
+
+    优先走 analysis 的关卡适配器（带颜色/编号，例如 SRR_MT02 按轮次上色），
+    适配器说 hide_points 时把普通任务点位让位；没有适配就退回 markers.collect。
+    """
+    if not data:
+        return [], False
+    try:
+        built = analysis.build(data)
+        if built.get('points'):
+            return built['points'], bool(built.get('hide_points'))
+    except Exception:                                  # 适配器出错不能拖垮地图
+        pass
+    return markers.collect(data), False
 import seedpanel                      # noqa: E402  右侧「本局答案」面板
 from uifont import fnt, set_scale     # noqa: E402  统一字体（整数像素）
 try:
@@ -596,17 +614,25 @@ def build_ops(db, state, view):
                 continue
             picked = sel == ('seed', i)
             goal = m.get('kind') == 'goal'
-            color = '#dc2626' if goal else SEED_CLUE
+            mcolor = m.get('color') or ''
+            color = mcolor or ('#dc2626' if goal else SEED_CLUE)
+            num = str(m.get('badge') or (i + 1))
             r = 12.0 if picked else 9.0
-            # 钉头：实心圆 + 白色描边；只有房间中心坐标（≈）用虚线空心
-            if m.get('exact', True):
-                ops.append(('circle', (sx, sy), r + 2.5, color, '#ffffff', 2.0, ('seed', i)))
-                ops.append(('circle', (sx, sy), r - 2.0, '#ffffff', color, 1.6, ('seed', i)))
-            else:
+            if mcolor:
+                # 关卡适配器给了颜色（例如 SRR_MT02 按轮次）：实心色块 + 白字编号
                 ops.append(('circle', (sx, sy), r + 2.5, '#ffffff', color, 2.0, ('seed', i)))
-                ops.append(('circle', (sx, sy), r - 2.0, None, color, 1.4, ('seed', i)))
-            ops.append(('text', (sx, sy), str(i + 1), 10,
-                        color if m.get('exact', True) else '#ffffff', 'mm', True, ('seed', i)))
+                ops.append(('circle', (sx, sy), r - 1.0, color, color, 1.2, ('seed', i)))
+                ops.append(('text', (sx, sy), num, 10, '#ffffff', 'mm', True, ('seed', i)))
+            else:
+                # 钉头：实心圆 + 白色描边；只有房间中心坐标（≈）用虚线空心
+                if m.get('exact', True):
+                    ops.append(('circle', (sx, sy), r + 2.5, color, '#ffffff', 2.0, ('seed', i)))
+                    ops.append(('circle', (sx, sy), r - 2.0, '#ffffff', color, 1.6, ('seed', i)))
+                else:
+                    ops.append(('circle', (sx, sy), r + 2.5, '#ffffff', color, 2.0, ('seed', i)))
+                    ops.append(('circle', (sx, sy), r - 2.0, None, color, 1.4, ('seed', i)))
+                ops.append(('text', (sx, sy), num, 10,
+                            color if m.get('exact', True) else '#ffffff', 'mm', True, ('seed', i)))
             ops.append(('text', (sx + r + 6, sy - r - 4), m.get('label') or '',
                         10, color, 'lm', True, ('seed', i)))
 
@@ -1041,7 +1067,9 @@ class App(object):
         data = (getattr(self.panel, 'answer', None) or {}).get('data')
         same_level = bool(self.db) and (info.get('trial') or '').upper() == \
             (self.db.get('level') or '').upper()
-        found = markers.collect(data) if (data and same_level) else []
+        found, hide_points = collect_seed_markers(data) if (data and same_level) else ([], False)
+        if found and hide_points:
+            self.state.show_points = False
         self.set_seed_markers(found)
         if found:
             self.lbl_copy.config(text='本局坐标标记 %d 个（%s），按 S 可隐藏'
@@ -1838,7 +1866,9 @@ def main(argv=None):
                 info = gamelog.latest(cfg.get('log_path'))
                 ans = seedinfo.answer(info, cfg.get('seed_lib'))
                 if ans.get('ok') and (info.get('trial') or '').upper() == db['level'].upper():
-                    state.seed_markers = markers.collect(ans.get('data'))
+                    state.seed_markers, hide = collect_seed_markers(ans.get('data'))
+                    if state.seed_markers and hide:
+                        state.show_points = False
             except Exception:
                 state.seed_markers = []
         back = PilBackend((w, h))

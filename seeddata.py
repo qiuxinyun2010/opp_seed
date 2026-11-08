@@ -105,6 +105,23 @@ _check_len(TSR_SPLIT_ROOMS, 'split_rooms', len(TSR_BUCKETS), 'tsr_mt01')
 TSR_CLUE_COORDS = _get(_tsr, 'clue_coordinates', 'tsr_mt01')
 
 # ---------------------------------------------------------------------------
+# TSR_MT02：电视台屋顶 · 接管电视广播（19 台有限次数刻录机）
+# ---------------------------------------------------------------------------
+# converters 的顺序 = 关卡 actor 加载顺序，也就是运行时 RandomizedActors@944 的池顺序。
+# lots[].actors 同序；asset_order 只保留关卡 JSON 里 RandomActors 的原数组序供对照。
+_tsr2 = load('tsr_mt02')
+TSR_MT02_CONVERTERS = _get(_tsr2, 'converters', 'tsr_mt02')
+TSR_MT02_LOTS = _get(_tsr2, 'lots', 'tsr_mt02')
+TSR_MT02_FIXED = _get(_tsr2, 'fixed', 'tsr_mt02')
+TSR_MT02_COORDS = {c['actor']: (c['x'], c['y'], c['z'])
+                   for c in TSR_MT02_CONVERTERS}
+for _lot in TSR_MT02_LOTS:
+    _missing = [a for a in _lot['actors'] if a not in TSR_MT02_COORDS]
+    if _missing:
+        raise SeedDataError('data/tsr_mt02.json 的 %s 有坐标表里没有的 actor：%s'
+                            % (_lot['name'], ','.join(_missing)))
+
+# ---------------------------------------------------------------------------
 # FPI_MT01：游乐场 · 匹配录像盘与放映机
 # ---------------------------------------------------------------------------
 _fpi = load('fpi_mt01')
@@ -176,6 +193,13 @@ SAMPLES_GS = [
     for seed, rounds in _get(_samples, 'fpi_mt02', 'samples')]
 SAMPLES_TSR = [(seed, list(codes))
                for seed, codes in _get(_samples, 'tsr_mt01', 'samples')]
+# TSR_MT02 的实测样本随关卡数据放在 data/tsr_mt02.json（含「只记了一部分机器」的
+# observed 和正向模型给出的完整 expected_active，自检两者都核对）。
+SAMPLES_TSR_MT02 = [
+    (sample['seed'], sample['players'], sample['difficulty'],
+     set(sample['observed']), set(sample['expected_active']))
+    for sample in _tsr2['samples']
+]
 SAMPLES_FPI_MT01 = [(seed, [tuple(item) for item in expect])
                     for seed, expect in _get(_samples, 'fpi_mt01', 'samples')]
 SAMPLES_TFS = [(seed, [tuple(item) for item in expect])
