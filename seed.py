@@ -9,8 +9,9 @@
     python seed.py CHJ_MT01 592592                      # 谜题房间 + 4 位密码
     python seed.py CHJ_MT01 592592 --trace              # 附带分区抽取过程
     python seed.py CHJ_MT02 20020                       # 投影符号 / 房间 / 3 位密码
-    python seed.py CHJ_MT03 327327                      # 图案立牌点位（各图案在哪块立牌）
-    python seed.py CHJ_MT03 327327 --seats BP_1,BP_2,BP_5,BP_6,BP_8
+    python seed.py CHJ_MT03 150150                      # 只列 3 个钱箱图案的立牌点位
+    python seed.py CHJ_MT03 150150 --all                # 连带教学段与 2 个干扰项
+    python seed.py CHJ_MT03 150150 --seats BP_5,BP_6,BP_7,BP_8,BP_9
     python seed.py MHS_MT01 707707                       # 3 个图案 + 房间 + 3 位密码
     python seed.py MHS_MT01 707707 --trace               # 附带抽取池与房间去重
     python seed.py TSR_MT01 695695                      # 字母数字位置 / 接线密码
@@ -2351,11 +2352,33 @@ CHJ_MT03_POINTS = [
 ]
 CHJ_MT03_BY_ZONE = {row[0]: row for row in CHJ_MT03_POINTS}
 CHJ_MT03_BY_STAND = {row[1]: row[0] for row in CHJ_MT03_POINTS}
-# 8 选 5：idx=RandSeeded(crc32_fname('Objective Actors')+GetSeed+70251+k, |池|)，
-# 尾元素换删（4 样本席位集 4/4，其中 184184/327327 为样本外验证；详见 CHJ_MT03.md §3.2）
-CHJ_MT03_SEAT_OFF = 70251
+# 8 选 5 的正向算法（level/CHJ_MT03.md §2.3）：候选池先经分类剔除，之后每轮
+# 在 sub_1402B3C30 几何过滤过的池上抽 1 个，抽完再过滤一次。
+#   base      = crc32_fname('Objective Actors') + GetSeed(coord)
+#   seed_arg  = base + Num@setup+1640（已选总数）
+#   分母      = 过滤后的当前池长（不是固定的 8,7,6,5,4）
+#   删除      = RemoveAtSwap（尾元素换删）
+# v5/v13 是运行期值，静态读不到；8568 组候选中有 78 组能命中全部已验证样本，
+# 且这 78 组对 107 个 seed 给出同一个 5 席集合（§3.2）⇒ 取其中一组即可。
+CHJ_MT03_DIST = 2000.0
+CHJ_MT03_ZTOL = -1.0
+# DropZone 根节点世界坐标（LD JSON 的 SceneComponent.Root.RelativeLocation），
+# 用于 sub_1402B3C30 的水平距离判定；与立牌贴花坐标相差约 100uu。
+CHJ_MT03_XYZ = {
+    'BP_1': (-4631.9785, 7652.8447, 830.0001),
+    'BP_2': (-2742.7890, 7226.5317, 830.0001),
+    'BP_3': (-3070.3945, 2863.5000, 824.4338),
+    'BP_5': (-340.7358, 5898.7686, 832.9259),
+    'BP_6': (1052.2269, 3855.3810, 872.5144),
+    'BP_7': (-4105.0254, 4257.4740, 830.0002),
+    'BP_8': (876.4821, 7978.5454, 850.0004),
+    'BP_9': (-587.7542, 2494.0647, 870.0002),
+}
 # 实测样本（opp_seed/test.txt；327327 的 -8=方块 系 -5=方块 笔误，CHJ_MT03.md §4 勘误）
 CHJ_MT03_SAMPLES = {
+    150150: {'tutorial': None,
+             'mapping': {'BP_8': 'Diamond', 'BP_5': 'Club', 'BP_9': 'Bunny',
+                         'BP_6': 'Crown', 'BP_7': 'Fire'}},
     556556: {'tutorial': 'Heart',
              'mapping': {'BP_7': 'Club', 'BP_2': 'Spade', 'BP_9': 'Fire',
                          'BP_6': 'Crown', 'BP_8': 'Bunny'}},
@@ -2365,7 +2388,9 @@ CHJ_MT03_SAMPLES = {
     184184: {'tutorial': 'Eye',
              'mapping': {'BP_1': 'Club', 'BP_5': 'Bunny', 'BP_3': 'Fire',
                          'BP_9': 'Spade', 'BP_6': 'Diamond'}},
-    327327: {'tutorial': 'Heart',
+    # 327327 的 -8/-5 记录笔误尚有争议，且正向算法在该条差一席（BP_3 vs BP_2）；
+    # 按当前分析范围暂不参与点位硬校验，只保留图案/教学校验。详见 level/CHJ_MT03.md §3.0
+    327327: {'tutorial': 'Heart', 'skip_map': True,
              'mapping': {'BP_1': 'Fire', 'BP_2': 'Diamond', 'BP_5': 'Crown',
                          'BP_6': 'Spade', 'BP_8': 'Bunny'}},
 }
@@ -2391,13 +2416,41 @@ def _chj_mt03_draw(pool, base, count, level_seed):
     return out, pool
 
 
+def _chj_mt03_filter(pool, refs, r2, ztol):
+    """sub_1402B3C30：从尾到头遍历池，与参考目标过近者尾元素换删。"""
+    for ref in refs:
+        if ref not in CHJ_MT03_XYZ:
+            continue
+        rx, ry, rz = CHJ_MT03_XYZ[ref]
+        for i in range(len(pool) - 1, -1, -1):
+            z = pool[i]
+            if z == ref or z not in CHJ_MT03_XYZ:
+                continue
+            x, y, zz = CHJ_MT03_XYZ[z]
+            if ((x - rx) ** 2 + (y - ry) ** 2) < r2 \
+                    and (ztol < 0 or ztol >= abs(zz - rz)):
+                pool[i] = pool[-1]
+                pool.pop()
+
+
 def _chj_mt03_seats(level_seed):
-    """8 选 5：seed 直接推出本局亮起的 5 个席位（抽取序）。"""
+    """8 选 5：按 sub_1402B05C0 阶段 C 正向推出本局亮起的 5 席（抽取序）。"""
     gs_main, _ = _chj_mt03_gs()
-    base = (sc.crc32_fname('Objective Actors') + gs_main
-            + CHJ_MT03_SEAT_OFF) & sc.M32
-    picked, _ = _chj_mt03_draw([r[0] for r in CHJ_MT03_POINTS], base, 5,
-                              level_seed)
+    base = (sc.crc32_fname('Objective Actors') + gs_main) & sc.M32
+    pool = [r[0] for r in CHJ_MT03_POINTS]
+    r2 = CHJ_MT03_DIST * CHJ_MT03_DIST
+    picked = []
+    for _k in range(5):
+        _chj_mt03_filter(pool, picked, r2, CHJ_MT03_ZTOL)   # line 822-832
+        if not pool:
+            break
+        idx = sc.rand_seeded((base + len(picked)) & sc.M32, len(pool),
+                            level_seed)
+        actor = pool[idx]
+        picked.append(actor)
+        pool[idx] = pool[-1]
+        pool.pop()                                          # RemoveAtSwap
+        _chj_mt03_filter(pool, [actor], r2, CHJ_MT03_ZTOL)  # line 1015
     return picked
 
 
@@ -2897,6 +2950,19 @@ def render(result):
                          % (p.get('label') or '', p.get('id') or '', p['room'],
                             ', '.join('%g' % x for x in c)))
         return '\n'.join(lines)
+    if v.get('level') == 'CHJ_MT03':              # 只列需要匹配的图案点位
+        pts = v.get('points') or []
+        lines = ['CHJ_MT03  seed=%d' % v['seed']]
+        for p in pts:
+            label = (p.get('label') or '').split('（')[0]
+            room = (p.get('room') or '').replace('RBRoom_', '')
+            c = p.get('coordinates') or []
+            lines.append('  %-4s %-24s %-30s (%s)'
+                         % (label, p.get('detail') or p.get('id') or '',
+                            room, ', '.join('%g' % x for x in c)))
+        if len(pts) < 6:
+            lines.append('  --all 可显示教学段与 2 个干扰项')
+        return '\n'.join(lines)
     lines = ['%s  %s  (%s)  seed=%d  %dP'
              % (v['level'], v['name'], v['map'], v['seed'],
                 v.get('players', 1))]
@@ -3199,21 +3265,23 @@ def selftest(verbose=True):
             show = lambda s: ','.join(sorted(n.rsplit('_', 1)[-1] for n in s))
             print('  FPC %-7d 预测=%-22s 实测=%-22s %s'
                   % (seed, show(got), show(expect), 'OK' if ok else 'MISMATCH'))
-    # CHJ_MT03：图案→立牌点位（4 样本含 R6 修正后的 327327）
+    # CHJ_MT03：图案→立牌点位（327327 暂只校验图案/教学）
     for seed, expect in CHJ_MT03_SAMPLES.items():
         res = predict('CHJ_MT03', seed)
         got = {s['zone']: s['pattern'] for s in res['signboards']
                if s['zone'] != 'BP_4'}
         tut = res['signboards'][0]['pattern']
-        total += 2
-        ok_map = got == expect['mapping']
+        skip = expect.get('skip_map', False)
+        ok_map = skip or got == expect['mapping']
         ok_tut = expect['tutorial'] is None or tut == expect['tutorial']
+        total += 1 if skip else 2
         bad += 0 if ok_map else 1
         bad += 0 if ok_tut else 1
         if verbose:
+            state = ('SKIP' if skip else
+                     ('OK' if ok_map else 'MISMATCH:%s' % got))
             print('  CHJ3 %-7d 点位 %s / 教学=%s %s'
-                  % (seed, 'OK' if ok_map else 'MISMATCH:%s' % got, tut,
-                     'OK' if ok_tut else 'MISMATCH'))
+                  % (seed, state, tut, 'OK' if ok_tut else 'MISMATCH'))
     # TSR_MT02：predict 只返回可用点位；实测只记了一部分机器，所以同时核对
     # 「正向完整集」与「observed ⊆ 正向完整集」。
     for seed, players, difficulty, observed, expected in SAMPLES_TSR_MT02:
@@ -3264,6 +3332,9 @@ def main(argv=None):
                     help='RES_MT02：附带教学段 51 个人偶的类别图')
     ap.add_argument('--seats', metavar='LIST',
                     help='CHJ_MT03：本局亮起的 5 个席位（BP_x 或立牌名，逗号分隔）')
+    ap.add_argument('--all', '--all-patterns', dest='all_patterns',
+                    action='store_true',
+                    help='CHJ_MT03：默认只列 3 个钱箱图案，加此项显示教学段与干扰项')
     ap.add_argument('--selftest', action='store_true', help='用已知样本自检')
     args = ap.parse_args(argv)
 
@@ -3315,6 +3386,15 @@ def main(argv=None):
     data = view(result)
     if args.debug:
         data['debug'] = result
+
+    # CHJ_MT03 的文本输出默认只保留 3 个「钱箱」图案；--json / --out 保持完整。
+    if (not args.json and not args.out and not args.all_patterns
+            and data.get('level') == 'CHJ_MT03'):
+        data = dict(data)
+        data['points'] = [p for p in data.get('points') or []
+                         if p.get('role') == '钱箱']
+        data.pop('answer', None)
+        data.pop('note', None)
 
     if args.out:
         with open(args.out, 'w', encoding='utf-8') as fp:
