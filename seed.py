@@ -17,7 +17,8 @@
     python seed.py TSR_MT02 726726                      # 本局可用的刻录机点位（按抽取顺序）
     python seed.py TSR_MT02 726726 --trace              # 附带每轮候选池与抽取序号
     python seed.py FPI_MT01 335335                      # 放映机坐标 / 录像盘 / 图案
-    python seed.py TFS_MT03 14014                       # 六阀门位置与坐标
+    python seed.py TFS_MT03 527527                      # 六个阀门的点位（正向模型）
+    python seed.py TFS_MT03 527527 --trace              # 逐区抽取过程（取证见 level/TFS_MT03.md）
     python seed.py FPB_MT03 249249                      # 区域1/3 各 4 个移动靶点位
     python seed.py FPC_MT02 710710                      # Canals 区 5 个出票机点位
     python seed.py SMC_MT02 453453                      # 4 个人偶下半身所在房间（按颜色）
@@ -107,8 +108,7 @@ LEVELS = {
         'map': 'ToyFactoryShipping',
         'kind': 'FirePump',
         'firepump': True,
-        'partial': True,
-        'doc': 'release/coop/TFS_MT03/TFS_MT03.md',
+        'doc': 'level/TFS_MT03.md',
     },
     'FPI_MT02': {
         'name': '游乐场 · 在真人秀中幸存',
@@ -340,10 +340,9 @@ FPI_COORDINATOR_CHAIN = ['PersistentLevel', 'MT01_GatherAndDeliver_Simple_BP']
 FPI_SINGLE_CODE_CHAIN = ['PersistentLevel', 'MT01_SingleCode_ObjCoord_BP']
 # 分组候选、图案表与放映机坐标见 data/fpi_mt01.json
 
-# TFS_MT03：原始 Sections[].Valves 顺序；第二次抽取基于 RemoveAtSwap 后的池。
-# 阀门候选表、Sections 原始顺序与坐标见 data/tfs_mt03.json。
-# 下面这条是「第二次抽取还是第一次抽取生效」的路径选择，只有一条实测样本支撑：
-TFS_MAIN_SECOND = {'A1', 'B2', 'B3'}  # 仅由 seed=14014 样本确定，见 partial 标记。
+# TFS_MT03：正向模型（sub_1434B3330），完整取证见 level/TFS_MT03.md。
+# 池序 = 关卡 JSON Sections[0].Valves 原序，坐标见 data/tfs_mt03.json；
+# 答案 = Valves[RandSeeded(GetSeed(协调器) + 61390 + N, N, seed)]。
 
 # PSA_MT01：7 节点钥匙树（节点 1 起始，4..7 是叶子），录像盘随机落在某个叶子房。
 # 0x143582F60  节点图案   RandSeeded(38322 + node)；先用 45834 起连续弃牌把 10 → 8。
@@ -768,47 +767,40 @@ def _predict_fpi_mt01(level_seed, trace=False):
     }
 
 
-def _tfs_candidate(section, index, path):
+def _tfs_candidate(section, index):
     suffix, room = TFS_SECTIONS[section][index]
     actor = 'MT03_TF_Gas_ValvePanel_BP_Section_' + section + '_' + suffix
-    return {'actor': actor, 'room': room, 'candidate_index': index, 'path': path,
+    return {'section': section, 'actor': actor, 'room': room,
             'coordinates': TFS_VALVE_COORDS[actor], 'coordinate_type': 'actor'}
 
 
 def _predict_tfs_mt03(level_seed, trace=False):
+    """正向模型：seed → 六个阀门点位（取证见 level/TFS_MT03.md）。
+
+    sub_1434B3330（RBFirePumpObjectiveCoordinator 主 vtable slot 249）：
+      cs   = GetSeed("MT03_FirePump_ObjCoord_BP_Section" + 区)
+      salt = level_seed % 1000
+      N    = 该区 Valves 条数（JSON 原序）
+      j    = RandSeeded(cs + 61390 + N, N, salt)   # +N = 当前候选池长度
+    另外三个盐在本关退化为常数：94922（选区池长 1 → 0）、
+    3156（补足区数的余池为空 → 不触发）、39135（PrepareState/IsStateA
+    之后有效池只剩强制阀门 → 0）。只输出 6 个点位，不输出中间量。
+    """
     if not 0 < level_seed <= sc.M32:
         raise ValueError('seed 必须在 [1, 2^32-1]')
     valves = []
     for section in TFS_SECTION_ORDER:
         coordinator = 'MT03_FirePump_ObjCoord_BP_Section' + section
-        coordinator_seed = sc.seed_chain(['PersistentLevel', coordinator])
+        cs = sc.seed_chain(['PersistentLevel', coordinator])
         count = len(TFS_SECTIONS[section])
-        first_index = sc.rand_seeded(coordinator_seed + 61390, count, level_seed)
-        remaining = list(range(count))
-        remaining[first_index] = remaining[-1]
-        remaining.pop()
-        second_pick = sc.rand_seeded(coordinator_seed + 39135,
-                                     len(remaining), level_seed)
-        second_index = remaining[second_pick]
-        use_second = section in TFS_MAIN_SECOND
-        selected_index = second_index if use_second else first_index
-        selected = _tfs_candidate(section, selected_index,
-                                  '39135' if use_second else '61390')
-        selected.update({'section': section, 'coordinator_seed': coordinator_seed,
-                         'preselect_index': first_index, 'main_index': second_index,
-                         'main_pool_index': second_pick})
-        valves.append(selected)
+        draw_seed = (cs + 61390 + count) & sc.M32
+        index = sc.rand_seeded(draw_seed, count, level_seed)
+        item = _tfs_candidate(section, index)
+        valves.append(item)
         if trace:
-            first = _tfs_candidate(section, first_index, '61390')
-            second = _tfs_candidate(section, second_index, '39135')
-            print('  TFS %s seed=%d 61390=%s 39135=%s selected=%s xyz=%s'
-                  % (section, coordinator_seed, first['actor'], second['actor'],
-                     selected['actor'], selected['coordinates']))
-    return {
-        'valves': valves,
-        'notes': ['TFS_MT03 的有效路径仅由 seed=14014 单样本确定；'
-                  '其他 seed 需用新实测复核 TFS_MAIN_SECOND。'],
-    }
+            print('  TFS %-3s cs=0x%08X N=%d seed=0x%08X idx=%d → %s'
+                  % (section, cs, count, draw_seed, index, item['actor']))
+    return {'valves': valves}
 
 
 # FPB_MT03（游乐场谷仓 · 移动靶）：sub_1402AE7F0 → sub_1402AF490 → sub_1402B05C0。
@@ -2897,6 +2889,14 @@ def render(result):
                             p.get('lot') or '-',
                             ('第%d抽' % p['order']) if p.get('order') else '-'))
         return '\n'.join(lines)
+    if v.get('level') == 'TFS_MT03':              # 只输出 6 个阀门点位
+        lines = ['TFS_MT03  seed=%d  salt=%d' % (v['seed'], v['seed'] % 1000)]
+        for p in v.get('points') or []:
+            c = p.get('coordinates') or []
+            lines.append('  %-3s %-50s %-46s (%s)'
+                         % (p.get('label') or '', p.get('id') or '', p['room'],
+                            ', '.join('%g' % x for x in c)))
+        return '\n'.join(lines)
     lines = ['%s  %s  (%s)  seed=%d  %dP'
              % (v['level'], v['name'], v['map'], v['seed'],
                 v.get('players', 1))]
@@ -3029,7 +3029,7 @@ def selftest(verbose=True):
         for item, (section, actor) in zip(got, expect):
             total += 1
             ok = (item['section'] == section and item['actor'] == actor and
-                  item['room'] == TFS_SAMPLE_ROOMS[section] and
+                  item['room'] == TFS_SAMPLE_ROOMS[actor] and
                   item['coordinates'] == TFS_VALVE_COORDS[actor])
             bad += 0 if ok else 1
             if verbose:

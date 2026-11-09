@@ -120,14 +120,7 @@ Trial ID: PSO_MT01, Program difficulty: Easy, Stage: PoliceStationOffices, Missi
 Key-C = PoliceStation_Office_QuestItemSpawner_BP_Child_105 
 room = RBRoom_DetectiveOffices05
 
-Trial ID: CHJ_MT03, Program difficulty: Easy, Stage: CourthouseJudicial, Mission: CHJ_MT03, Seed: 556556, EffectiveNumberOfPlayers: 1
-红心：初始固定点
-梅花：RBRoom_West_PrivateOffice
-黑桃：RBRoom_BackEntrance_Records
-火焰：RBRoom_East_Courtroom_1
-干扰项：
-王冠：RBRoom_East_Courtroom_2
-兔子：RBRoom_East_JudgesOffice
+
 
 Trial ID: TFW_MT03, Program difficulty: Easy, Stage: ToyFactoryWarehouse, Mission: TFW_MT03, Seed: 938938, EffectiveNumberOfPlayers: 1
 D=眼睛
@@ -369,14 +362,7 @@ Garage = 4
 红心=RBRoom_Rich_House4_Room3=FrequencyMatchSuburbs_Rich_17
 
 
-Trial ID: CHJ_MT03, Program difficulty: Easy, Stage: CourthouseJudicial, Mission: CHJ_MT03, Seed: 184184, EffectiveNumberOfPlayers: 1
-固定位=眼睛
-兔子；黑桃；梅花
-梅花=MannequinBP_SinglePose124；
-兔子=MannequinBP_SinglePose131；
-火焰=MannequinBP_SinglePose127；
-黑桃=MannequinBP_SinglePose130；
-方块=MannequinBP_SinglePose129
+
 
 Trial ID: CHJ_MT03, Program difficulty: Easy, Stage: CourthouseJudicial, Mission: CHJ_MT03, Seed: 892892, EffectiveNumberOfPlayers: 1
 梅花=TextSignStandBase-4

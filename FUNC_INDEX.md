@@ -43,7 +43,7 @@
 | 0x14018C680 | sub_14018C680 | Algo::Introsort（首/尾/谓词）；RES_MT02 对 {actor,float key} 记录按 +8 排序 | home/RE_METHOD、home/RES_MT02、coop/RES_MT02 | |
 | 0x1401A0F00 | sub_1401A0F00 | RandRangeInt/RandRange(id,min,max)→[lo,hi]；真实收尾 splitmix 双盐，321982955=0x133111EB | home/SR_TRIAL §11.12、coop/RES_MT02、O/seedcore.py | |
 | 0x1402873A0 | sub_1402873A0 | 巨型函数(0x9EB1)，内含大量 GetSeed | coop/PSB_MT01/evidence/ADDR | 唯一调用者 0x141D15460 |
-| 0x1402947F0 | sub_1402947F0 | SetState(候选,state,0) | home/TFS_MT03、coop/TFS_MT03 | |
+| 0x1402947F0 | sub_1402947F0 | **PrepareState(候选,state,0)**：helper state = 2−state（1=StateA / 2=StateB），并转发 UFunction PrepareState/SetState | level/TFS_MT03.md、coop/TFS_MT03_FORWARD.md | 与 sub_140B47990(IsStateA) 配对 |
 | 0x1402A53F0 | sub_1402A53F0 | 取 actor 组件 / 过滤取值辅助 | home/CHJ_MT02、home/MHS_MT01、coop/RES_MT02 | |
 | 0x1402AE7F0 | sub_1402AE7F0 | 通用 ObjectiveActors 随机化入口(0x206)：门控 coord+1346(0x542)&1；显式列表非空→sub_1402AF490，否则迭代器 | CHJ_MT03、DRS、FPI_MT01、PSB、SMC、SRR_MT02、dts_mt01.py 等 10+ | 盐名 "Objective Actors" |
 | 0x1402AF490 | sub_1402AF490 | 显式候选表分支(0x2D3)：FSoftObjectPath 数组→AActor*（40B/项，软引用解析+IsA+线性去重，**不排序**） | 同上 9+ | 池序=ObjectiveActors 序 |
@@ -58,7 +58,7 @@
 | 0x1402B46B0 | sub_1402B46B0 | introsort：按对象全名/actor 名大小写不敏感字典序 | home/SR_TRIAL §12.3、coop/DRS_MT01、dts_mt01.py、coop/SRR_MT02/ANALYSIS.md | 比较器 sub_140143A50。SRR_MT02：sub_1402B05C0 抽取前对候选池排序（选中集模型依赖） |
 | 0x1402B4C10 | sub_1402B4C10 | 名字哈希/crc32_fname 备选种子分支 | home/MHS_MT01 §3.1、home/SRR_MT02、home/SR_TRIAL §11.14 | coord+0x2e8==1 时 |
 | 0x1402B4CA0 | sub_1402B4CA0 | **跨协调器目标距离排除**(0x921，⚠️§5.14 修正，旧记「可达性预过滤」有误)：sub_1402B05C0 分类趟后另跑一趟尾→头；对每个候选取组件位置（RBObjectiveActorComponent +320→+480）调 sub_141D1E3B0 在 v79 列表中找半径 R=DistanceBetweenDifferentObjectives（setup+1208 开关/+1216 值；缺省走 sub_1433AACD0 全局默认）内最近的已放置目标，命中→swap 移出池并进排除表 | FPB_MT03（区域2 闭环定标）、RES_MT02（「过滤不可用/已占用人偶」即此机制）、CHJ_MT02 §9 | a3=setup+1002（bUseOtherCoordoActorsForDistance）：1→v79=sub_140695380 全局收集，0→v79=协调器 vtable+1768（sub_1406954E0）；a6=R；a7=200.0f 仅推车分支半径。多协调器同图关卡「模型对不上」优先查此机制 |
-| 0x1402BF7F0 | sub_1402BF7F0 | 每区随机数量 k（整数区间或比例区间两形态） | home/TFS_MT03、coop/TFS_MT03 | |
+| 0x1402BF7F0 | sub_1402BF7F0 | 每区随机数量 k（整数区间或比例区间两形态） | level/TFS_MT03.md、coop/TFS_MT03_FORWARD.md | |
 | 0x1402C30C0 | sub_1402C30C0 | 分组+组洗牌+按比例分配 quota(0x1644)：按 ObjectiveIndex/类型/房间组分桶（插入序），组弹出 idx=RandSeeded(*a5,|rem|) RemoveAtSwap 且 **每组 *a5+=1**（→ 基址+组数）；quota 三步：+1 循环→比例 extra=(int(2*(ratio-1)+0.5))>>1→余量给首个放得下的组。a3=显示屏数/DesiredCount | 10+（CHJ_MT02/03、DRS、FPI_MT01、MHS、PSB、PSO、SMC、SRR_MT02、SR_Trial、mannequin.py） | SRR_MT02 定稿：记录阶段 a3=3→[2,1]、抽取阶段 a3=6→[3,3]（3+3 来源）；Rich 单组 cs=GetSeed+1、School/SasExit 双组 cs=GetSeed+2 |
 | 0x1402C6910 | sub_1402C6910 | 排序比较器：actor 名字大小写折叠升序 | home/RE_METHOD、RES_MT02 系、O/seed.py | |
 | 0x1402CB480 | sub_1402CB480 | RandSeeded(GetSeed(a1)+90681,\|pool\|) 取 1 个 int | coop/PSB_MT01/ADDR | |
@@ -66,7 +66,7 @@
 | 0x1402D29E0 | sub_1402D29E0 | **RandSeeded**(seed,N)→[0,N)：splitmix 双盐混合取 (uint16)%N；盐=dword_146E2E5C4%1000 | **全部文档** | seed==0 退化 rand() |
 | 0x14035AFB0 | sub_14035AFB0 | 对象构造(0x1838)，结果存 qword_146E601F0 | home/FPI_MT02 | |
 | 0x140474200 | sub_140474200 | TArray::RemoveAt(idx,n,shrink)（生成点数组 swap-remove） | home/RE_METHOD、coop/PSA_MT01 | |
-| 0x140474270 | sub_140474270 | 候选数组 swap-remove | home/TFS_MT03、tfs_mt03.py | |
+| 0x140474270 | sub_140474270 | 候选数组 swap-remove | level/TFS_MT03.md、coop/TFS_MT03_FORWARD.md | |
 | 0x14048DA90 | sub_14048DA90 | 注册 UFUNCTION 表 | home/FPI_MT02、coop/FPI_MT02 | (class,&off_145C05950,4) |
 | 0x1404FF400 | sub_1404FF400 | **FIntByDifficulty**：判「有没有这一档」看 Override 标志而非值，缺档往下一档回落 | O/seedcore.py、O/README、RES_MT02 系、CHJ_MT03、PSB | |
 | 0x140503B80 | sub_140503B80 | **GetSeed**(obj)=\|crc32(FName)+seed(Outer)\| 递归 Outer 链取绝对值；快路径 UFunction→接口→名字兜底 | **全部文档** | 含 RBRandomSeedGeneratorInterface 覆写分支（sub_14268B040） |
@@ -208,7 +208,8 @@
 | 0x1437D48D0 | sub_1437D48D0 | "item spawner" 协调器 RandSeeded(GetSeed(this)+i)；亦属 0x140601E10 族 | coop/DRS_MT01/drs_data.py、coop/CHJ_MT03 | |
 | 0x1437E5100 | sub_1437E5100 | **RandomizeActorArray**(UFUNCTION)：抽 count 个不重复项，idx=RandSeeded(GetSeed(setup)+j+45151,\|池\|) 保序删除 | SRR_MT01、O/seedcore、O/seed.py | SRR「5 选 3」；DesiredCount=setup+48 |
 | 0x1437E6510 | sub_1437E6510 | 同 0x140601E10 族 | coop/CHJ_MT03 §6.2 | |
-| 0x143803600 | sub_143803600 | FirePump 分区/阀门随机化主函数 | TFS 系 | k=sub_1402BF7F0；61390 预选→39135 主选 |
+| 0x1434B3330 | sub_1434B3330 | **RBFirePumpObjectiveCoordinator 主 vtable slot 249**：TFS_MT03 分区/阀门随机化主函数（本关实际使用） | level/TFS_MT03.md、coop/TFS_MT03_FORWARD.md、O/seed.py | 61390 强制抽 `RandSeeded(cs+61390+pool.Num(), pool.Num())`；PrepareState→IsStateA 使 39135 退化为 0 |
+| 0x143803600 | sub_143803600 | RBWaterValveObjectiveCoordinator 的同类实现（兄弟类，本关未用） | coop/TFS_MT03_FORWARD.md | `i+cs+61390`；runtime 数据 +10424 |
 | 0x14381A7C0 | sub_14381A7C0 | 同族：RandSeeded(GetSeed(this)+78392+i) | coop/DRS_MT01/drs_data.py | |
 | 0x14383FF20 | sub_14383FF20 | ObjectiveIndexAlternatePairs 的 setter | home/PSO_MT01 | 注册项 0x145CD0538 |
 | 0x143882790 | GetClue | 线索读取 UFunction（蓝图） | coop/CHJ_MT03 §6.2 | 无直接 CALL（ProcessEvent 调用） |
@@ -323,7 +324,7 @@
 | sub_1433B49B0/1433B5BC0 族 | coop/RES_MT02 + home/RES_MT02 + O/seed.py + res_mt02*.py | 珠宝主轴/教学段 |
 | sub_1437E5100 | home/SRR_MT01 + O/seedcore + O/seed.py | SRR 5 选 3 |
 | sub_14378FBA0 族 | coop/TSR_MT01 + TSR_MT01.py | 接线密码 |
-| sub_143803600 | TFS_MT03 + tfs_mt03.py | 阀门 |
+| sub_1434B3330 | TFS_MT03 + level/TFS_MT03.md + O/seed.py | 阀门（正向模型） |
 | sub_143582xxx 族 | PSA_MT01 + psa_mt01.py + O/seed.py | 钥匙树 |
 | GetSeed/RandSeeded/crc32_fname/RandFraction/RandBool | **三目录全部** | 原语无分歧，可直接复用 seedcore 实现 |
 

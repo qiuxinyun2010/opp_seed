@@ -307,42 +307,40 @@
   ],
   "tfs_mt03": [
     [
-      14014,
+      527527,
       [
-        [
-          "B3",
-          "MT03_TF_Gas_ValvePanel_BP_Section_B3_2"
-        ],
-        [
-          "B2",
-          "MT03_TF_Gas_ValvePanel_BP_Section_B2_07"
-        ],
-        [
-          "B1",
-          "MT03_TF_Gas_ValvePanel_BP_Section_B1_04"
-        ],
-        [
-          "A3",
-          "MT03_TF_Gas_ValvePanel_BP_Section_A3_6"
-        ],
-        [
-          "A1",
-          "MT03_TF_Gas_ValvePanel_BP_Section_A1_04"
-        ],
-        [
-          "A2",
-          "MT03_TF_Gas_ValvePanel_BP_Section_A2_02"
-        ]
+        ["B3", "MT03_TF_Gas_ValvePanel_BP_Section_B3_5"],
+        ["B2", "MT03_TF_Gas_ValvePanel_BP_Section_B2_07"],
+        ["B1", "MT03_TF_Gas_ValvePanel_BP_Section_B1_08"],
+        ["A3", "MT03_TF_Gas_ValvePanel_BP_Section_A3_1"],
+        ["A1", "MT03_TF_Gas_ValvePanel_BP_Section_A1_03"],
+        ["A2", "MT03_TF_Gas_ValvePanel_BP_Section_A2_05"]
+      ]
+    ],
+    [
+      41041,
+      [
+        ["B3", "MT03_TF_Gas_ValvePanel_BP_Section_B3_4"],
+        ["B2", "MT03_TF_Gas_ValvePanel_BP_Section_B2_04"],
+        ["B1", "MT03_TF_Gas_ValvePanel_BP_Section_B1_03"],
+        ["A3", "MT03_TF_Gas_ValvePanel_BP_Section_A3_2"],
+        ["A1", "MT03_TF_Gas_ValvePanel_BP_Section_A1_05"],
+        ["A2", "MT03_TF_Gas_ValvePanel_BP_Section_A2_05"]
       ]
     ]
   ],
   "tfs_mt03_rooms": {
-    "A1": "RBRoom_East_Painting",
-    "A2": "RBRoom_West_Processing",
-    "A3": "RBRoom_ReceivingDocks_OfficeBuilding",
-    "B1": "RBRoom_East_Construction",
-    "B2": "RBRoom_East_Laundry",
-    "B3": "RBRoom_Ext_LoadingDocks_OfficeTrailer"
+    "MT03_TF_Gas_ValvePanel_BP_Section_B3_5": "RBRoom_Ext_LoadingDocks_Storage",
+    "MT03_TF_Gas_ValvePanel_BP_Section_B2_07": "RBRoom_East_Laundry",
+    "MT03_TF_Gas_ValvePanel_BP_Section_B1_08": "RBRoom_East_Storage",
+    "MT03_TF_Gas_ValvePanel_BP_Section_A3_1": "RBRoom_Ext_ReceivingDocks_Stairs_Slave_1",
+    "MT03_TF_Gas_ValvePanel_BP_Section_A1_03": "RBRoom_West_Storage",
+    "MT03_TF_Gas_ValvePanel_BP_Section_A2_05": "RBRoom_West_PuppetWorshop",
+    "MT03_TF_Gas_ValvePanel_BP_Section_B3_4": "RBRoom_Ext_LoadingDocks_Shack_4",
+    "MT03_TF_Gas_ValvePanel_BP_Section_B2_04": "RBRoom_East_Bathroom_Slave",
+    "MT03_TF_Gas_ValvePanel_BP_Section_B1_03": "RBRoom_East_Electrical",
+    "MT03_TF_Gas_ValvePanel_BP_Section_A3_2": "RBRoom_Ext_ReceivingDocks",
+    "MT03_TF_Gas_ValvePanel_BP_Section_A1_05": "RBRoom_East_Painting"
   },
   "psa_mt01": [
     [

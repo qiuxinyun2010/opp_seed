@@ -11,7 +11,7 @@ python seed.py TSR_MT02 726726
 python seed.py TSR_MT02 726726 --trace          # 每轮候选池 / seed / idx
 python seed.py TSR_MT02 726726 --json
 python seed.py TSR_MT02 726726 --players 3 --difficulty hard
-python seed.py --selftest                      # 含本关 3 条样本，160/160
+python seed.py --selftest                      # 含本关 3 条样本，166/166
 ```
 
 关卡数据：`pak/OPP/Content/Maps_json/TelevisionStudioRooftop/TSR_LD_MT02_B00.json`
@@ -208,7 +208,7 @@ if BaseState == NotApplicable(0):      // 本关不走
 `--selftest` 同时锁定「可用集 == 预期」「observed ⊆ 可用集」、
 「`predict()['converters']` 与 `view()['points']` 都不夹带不可用点位」
 以及 `BP_2` 必在可用集里；
-当前全库 160/160 通过。
+当前全库 166/166 通过。
 
 CLI / `--json` 只列本局可用点位（726726 共 7 台，按抽取顺序）：
 

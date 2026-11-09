@@ -12,7 +12,7 @@ opp_seed/
   cluegame.py      RES_MT01 的谋杀案模型（房间 / 凶器 / 凶手 三个数）
   mannequin.py     SMC_MT02 的人偶配对模型（4 个人偶下半身的房间 / 区域 / 坐标）
   seeddata.py      静态数据载入层：data/*.json → 与原来同名的常量
-  level/            逐关的取证/算法文档（CHJ_MT02.md / FPB_MT03.md / TSR_MT02.md …）
+  level/            逐关的取证/算法文档（TFS_MT03.md / CHJ_MT02.md / FPB_MT03.md / TSR_MT02.md …）
   data/
     chj_mt02.json     CHJ_MT02 协调器组 / 符号 actor / 房间 / 符号中文名
     mhs_mt01.json     MHS_MT01 区与图案家族 / 每房间去重开关 / 投影符号候选表（坐标 + 所在房间）
@@ -30,8 +30,7 @@ opp_seed/
 - **`data/*.json`**：候选池、名称映射、坐标、实测样本 —— 这些是「事实」，由
   `paks/MAP/...` 与实测推导而来，游戏更新后重新生成即可，不需要改代码。
   每个文件里都有 `_source` / `_note` 说明来源和已知限制。
-- **`seed.py` / `seedcore.py`**：随机原语调用、salt、名字链、关卡判定；以及只对某个
-  seed 成立、带「未验证」警告的模型开关（如 `TFS_MAIN_SECOND`）。这类东西和算法
+- **`seed.py` / `seedcore.py`**：随机原语调用、salt、名字链、关卡判定。这类东西和算法
   写在一起才看得懂，所以**不**外置。
 
 `seeddata.py` 载入时会把 JSON 数组还原成原来的类型（tuple、int 键），并做最基本的
@@ -43,11 +42,11 @@ opp_seed/
 cd <本仓库目录>       # 即 opp_seed/
 
 python seed.py --list
-python seed.py --selftest                  # 全部已接入样本：160/160
+python seed.py --selftest                  # 全部已接入样本：166/166
 
 python seed.py DTS_MT01 252252             # 3 个调频器 / 3 条线索 / 最终模型位置
 python seed.py FPI_MT01 335335             # 放映机坐标 / 录像盘 / 图案
-python seed.py TFS_MT03 14014              # 六个阀门的位置与坐标（单样本路径模型）
+python seed.py TFS_MT03 527527             # 六个阀门的点位（正向模型，取证见 level/TFS_MT03.md）
 python seed.py TSR_MT01 695695             # 字母数字码位及坐标 / 接线密码
 python seed.py TSR_MT02 726726             # 本局可用的刻录机点位（按抽取顺序）
 python seed.py TSR_MT02 726726 --trace     # 每轮候选池 / seed / idx（取证见 level/TSR_MT02.md）
@@ -259,7 +258,7 @@ seed = 176176   salt = 176   Easy   1P
 |---|---|---|
 | `CHJ_MT01` | 法院 · 让正义天平倾斜 | 房间 + 4 位密码 + 坐标 |
 | `FPI_MT01` | 游乐场 · 匹配录像盘与放映机 | 放映机坐标 + 录像盘 + 图案 |
-| `TFS_MT03` | 玩具工厂 · 开启六个阀门 | 六个阀门坐标；有效路径仅 1 条样本，标记 PART |
+| `TFS_MT03` | 玩具工厂 · 开启六个阀门 | 六个阀门点位；正向模型，2 份实测 12/12（取证见 `level/TFS_MT03.md`） |
 | `FPI_MT02` | 游乐场 · 在真人秀中幸存 | 房间 + 图案 + 答案 + 房间参考坐标 |
 | `RES_MT01` | 水疗度假村 · 推理谋杀案 | 房间 / 凶器 / 凶手 + 犯罪现场参考坐标 |
 | `CHJ_MT02` | 法院 · 判决被起诉者 | 已验证 seed 的投影密码与坐标，标记 PART |

@@ -33,7 +33,7 @@ idx      = RandSeeded(seed_arg, |池|, level_seed % 1000)  // 抽出后 RemoveAt
 | MHS_MT01 密码 | `GetSeed(符号) + GetSeed(协调器)` | +38541 | ✅ |
 | CHJ_MT03 图案 / 配对 | `GetSeed(协调器)`，无盐名 | 41 / 341 | ✅ 4/4 |
 | CHJ_MT03 席位 | `crc32("Objective Actors")` + `GetSeed(协调器)` | — | ❌ 未闭环 |
-| TFS_MT03 阀门 | `GetSeed(协调器)`，无盐名 | 61390 | ✅ |
+| TFS_MT03 阀门 | `GetSeed(协调器)`，无盐名 | 61390 **+ N**（当前池长） | ✅ 12/12 |
 | RES_MT02 房间 | `GetSeed(房间)`，无盐名 | 479582 | ✅ |
 
 旧写法里的「偏移」不是 base 的第三项：它要么是上表的 `L`（A 类，`.text` 里能搜到立即数），
@@ -249,12 +249,19 @@ base = crc32("Objective Actors") + GetSeed("CHJ_MT03_RemainingBribes")
 ## TFS_MT03（阀门选择）
 
 ```
-base = GetSeed("MT03_FirePump_ObjCoord_BP_Section" + 区)          // 没有盐名
+cs   = GetSeed("MT03_FirePump_ObjCoord_BP_Section" + 区)          // 没有盐名
      = |crc32("MT03_FirePump_ObjCoord_BP_Section" + 区) + |crc32("PersistentLevel") + 0||
-seed_arg = base + L,  L = 61390（.text 立即数，A 类）
+N    = 该区 Valves 条数（JSON 原序）
+j    = RandSeeded(cs + 61390 + N, N, level_seed)                  // 0x1434B3F7B
+答案 = Valves[j]
 ```
 
-**没有盐名！** 61390 是调用点位移，不是 base 的第三项。
+**没有盐名！** 61390 是 `sub_1434B3330` 的 `.text` 立即数；
+`+N` 是调用点读到的**当前候选池长度** `LODWORD(v191[1])`（不是抽取序号）；
+兄弟类 `sub_143803600` 用 `i + cs + 61390`，两者不要混用。
+另外三个盐 `94922 / 3156 / 39135` 在本关因 1 组×1 Section、k=1、
+`PrepareState → IsStateA` 使有效池只剩 1 个而全部退化为常数。
+正向推导与 12/12 实测见 `level/TFS_MT03.md`、`release/coop/TFS_MT03/TFS_MT03_FORWARD.md`。
 
 ---
 
@@ -291,7 +298,7 @@ seed_arg = base + L,  L = 479582（.text 立即数，A 类；用 RandFraction �
 | MHS_MT01 | `"Projection Actors"` | 无 | 0 | 各区域协调器 | ✅ |
 | CHJ_MT03 | `"Objective Actors"` | **无（70251 属 C 类拟合）** | — | `CHJ_MT03_RemainingBribes` | ❌ 席位未闭环 |
 | SRR_MT02 | `"Objective Actors"` | 无 | 223551 / 243551 / 253526 | 各区域协调器 | ✅ |
-| TFS_MT03 | **无** | 无 | 61390 | `MT03_FirePump_ObjCoord_BP_Section` + 区 | ✅ |
+| TFS_MT03 | **无** | 无 | 61390 + N（池长） | `MT03_FirePump_ObjCoord_BP_Section` + 区 | ✅ 12/12 |
 | RES_MT02 | **无** | 无 | 479582 | 各房间名 | ✅ |
 
 ## 关键结论

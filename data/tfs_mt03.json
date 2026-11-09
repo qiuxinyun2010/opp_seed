@@ -1,6 +1,6 @@
 {
   "_source": "paks/MAP/Maps/ToyFactoryShipping/TFS_LD_MT03_B00.json + plan.json",
-  "_note": "sections[].valves 保持关卡 JSON 里的原始顺序（第二次抽取基于 RemoveAtSwap 之后的池，顺序不能改）；section_order 也是原始 Sections[].Valves 顺序。valve_coordinates 是阀门面板 RootComponent 坐标。",
+  "_note": "sections[].valves 保持关卡 JSON 里的原始顺序（正向模型的候选池序，不能改成字典序）；section_order 也是原始 Sections[].Valves 顺序。valve_coordinates 是阀门面板 RootComponent 坐标。正向模型：j = RandSeeded(GetSeed(协调器) + 61390 + N, N, seed)，见 level/TFS_MT03.md。",
   "section_order": ["B3", "B2", "B1", "A3", "A1", "A2"],
   "sections": {
     "A1": [
