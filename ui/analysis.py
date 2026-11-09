@@ -70,6 +70,20 @@ PROJECTION_STYLE = {
 PROJECTION_DEFAULT = ('图案', '#64748b')
 TUTORIAL_COLOR = '#94a3b8'
 
+# CHJ_MT03：立牌图案固定配色（9 种列全，实际只画本局的 3 个钱箱图案）
+CHJ_MT03_STYLE = {
+    'Bunny':   ('兔子', '#e11d48'),
+    'Club':    ('梅花', '#10b981'),
+    'Crown':   ('王冠', '#f59e0b'),
+    'Diamond': ('方块', '#3b82f6'),
+    'Fire':    ('火焰', '#f97316'),
+    'Spade':   ('黑桃', '#8b5cf6'),
+    'Moon':    ('月亮', '#0ea5e9'),
+    'Eye':     ('眼睛', '#14b8a6'),
+    'Heart':   ('红心', '#f43f5e'),
+}
+CHJ_MT03_DEFAULT = ('图案', '#64748b')
+
 # SRR_MT01：5 栋富豪宅各自配色
 SRR_HOUSE_COLORS = {
     'H1': '#f59e0b', 'H2': '#8b5cf6', 'H3': '#0ea5e9',
@@ -164,6 +178,25 @@ def _chj_mt02(data):
         index = order.index(m['section']) if m['section'] in order else 99
         return index
     points.sort(key=_rank)
+    return points, _legend(legend)
+
+
+def _chj_mt03(data):
+    """3 个钱箱图案立牌：圆点旁直接写图案名（兔子/方块…），不画教学与干扰项。"""
+    points, legend = [], []
+    for board in data.get('signboards') or []:
+        if board.get('role') != '钱箱':
+            continue
+        p = _coords(board)
+        if not p:
+            continue
+        pattern = str(board.get('pattern') or '')
+        name, color = CHJ_MT03_STYLE.get(pattern, CHJ_MT03_DEFAULT)
+        name = board.get('pattern_zh') or name
+        points.append(_pt(p, board.get('room'), name, str(len(points) + 1),
+                          color, 'pattern', 1.35, section=pattern,
+                          exact=_exact(board)))
+        legend.append((name, color))
     return points, _legend(legend)
 
 
@@ -361,6 +394,7 @@ def _generic(data):
 ADAPTERS = {
     'CHJ_MT01': _chj_mt01,
     'CHJ_MT02': _chj_mt02,
+    'CHJ_MT03': _chj_mt03,
     'RES_MT02': _res_mt02,
     'TFS_MT03': _tfs_mt03,
     'PSA_MT01': _psa_mt01,

@@ -66,6 +66,23 @@ def supported_levels(path=None):
                                         'mannequin'))], None
 
 
+def _chj_mt03_brief(mod, data):
+    """CHJ_MT03 的 UI 口径：只留 3 个钱箱图案，和 seed.py CLI 默认输出一致。
+
+    predict() 的 signboards 里还有 1 个教学段 + 2 个干扰项，面板和地图都不需要；
+    文本仍交给 seed.py 的 render() 排版，只去掉给 CLI 用的 --all 提示行。
+    """
+    brief = dict(data)
+    brief['signboards'] = [s for s in data.get('signboards') or []
+                          if s.get('role') == '钱箱']
+    brief_view = dict(mod.view(brief))
+    brief_view.pop('answer', None)
+    brief_view.pop('note', None)
+    text = '\n'.join(line for line in mod.render(brief_view).splitlines()
+                     if not line.strip().startswith('--all'))
+    return brief, text
+
+
 def answer(info, lib_path=None, players=None, difficulty=None):
     """info 是 gamelog 的返回值；返回 {'ok', 'text', 'level', 'seed', ...}。"""
     if not info:
@@ -102,7 +119,10 @@ def answer(info, lib_path=None, players=None, difficulty=None):
 
     try:
         data = mod.predict(level, seed, players=players, difficulty=diff)
-        text = mod.render(data)
+        if level == 'CHJ_MT03':
+            data, text = _chj_mt03_brief(mod, data)
+        else:
+            text = mod.render(data)
     except Exception as exc:                        # noqa: BLE001
         result = {'ok': False, 'level': level, 'seed': seed,
                   'text': '推理失败（%s: %s）\n关卡 %s，seed %d，%dP，%s'

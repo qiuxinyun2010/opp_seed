@@ -574,3 +574,15 @@ MT03_TF_Gas_ValvePanel_BP_Section_A1_05
 MT03_TF_Gas_ValvePanel_BP_Section_B1_03
 MT03_TF_Gas_ValvePanel_BP_Section_B2_04
 MT03_TF_Gas_ValvePanel_BP_Section_B3_4
+
+Trial ID: TFS_MT02, Program difficulty: Easy, Stage: ToyFactoryShipping, Mission: TFS_MT02, Seed: 698698, EffectiveNumberOfPlayers: 1
+TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_8
+TFS_KeyModule_Spawner_D_BP_PinkKey_InventoryRecords_2
+
+Trial ID: TFS_MT02, Program difficulty: Easy, Stage: ToyFactoryShipping, Mission: TFS_MT02, Seed: 462462, EffectiveNumberOfPlayers: 1
+TFS_KeyModule_Spawner_A_BP_GreenIntro_12
+TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_8（大概率），TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_7（小概率）
+
+Trial ID: TFS_MT02, Program difficulty: Easy, Stage: ToyFactoryShipping, Mission: TFS_MT02, Seed: 777777, EffectiveNumberOfPlayers: 1
+TFS_KeyModule_Spawner_A_BP_GreenIntro_12
+TFS_KeyModule_Spawner_B_BP_GreenKey_Storage_1（大概率），TFS_KeyModule_Spawner_B_BP_GreenKey_Storage_2（小概率）
