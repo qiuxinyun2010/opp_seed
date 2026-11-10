@@ -589,6 +589,99 @@ body {
   border-color: var(--accent);
 }
 
+/* ---- 关卡变量 / 变数点位 ---- */
+.variator-bar {
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(15, 23, 42, 0.18);
+}
+
+.variator-meta {
+  color: var(--accent);
+}
+
+.variator-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-height: 84px;
+  overflow-y: auto;
+}
+
+.variator-chip {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 5px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--ink);
+}
+
+.variator-chip small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.variator-chip.has-layer {
+  border-color: var(--accent);
+  cursor: pointer;
+}
+
+.variator-chip.has-layer:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.variator-chip.has-layer:hover small {
+  color: #fff;
+}
+
+.variator-pill.active-layer {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.type-legend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.type-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  padding: 3px 4px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.type-legend-row:hover {
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.type-legend-row.hidden-zone {
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.type-legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.type-legend-empty {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+body.light-theme .variator-bar {
+  background: rgba(148, 163, 184, 0.10);
+}
+
 .seed-body {
   flex: 1 1 auto;
   min-height: 0;

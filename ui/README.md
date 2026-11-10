@@ -795,3 +795,64 @@ python seedinfo.py --log     # 直接算日志里最新一局
 - `--png` 同样支持：`python mapview.py MHS_MT01 --png a.png --rot 90 --flip x`。
 
 图层/分区/备注都在世界坐标层面算完再投影，所以朝向怎么变都不影响数据和交互。
+
+---
+
+## 9. 关卡变量（Variator）与变数点位图层
+
+### 9.1 识别关卡变量
+
+`gamelog.py` 现在也解析 `RB:  Variator Active: <ID>`，结果放在 `info['variators']`
+（ID 列表，去重保序），`/api/state` 的 `variators` 带中文名和对应图层。
+两组打印的位置不固定：一组常和 `GameStageInfo` 同帧（甚至排在它前面），另一组在
+子关卡加载完、`StageStarted` 前后，中间可能隔上千行日志；所以按同一 seed 的
+`GameStageInfo` 作锚点、前后开窗口 + 时间戳 + 下一局边界归集，不能只取「最后一条
+事件之后」。
+
+ID → 中文名在 `data/variators.json`（`names`），`layers` 指明变数对应的图层：
+
+| 变数 ID | 显示名 | 图层 |
+| --- | --- | --- |
+| `BurningBarrelSecondaryObjective` / `_Ext` | 扑灭火桶 | `barrels` |
+| `NoPlaceToHide` / `NoPlaceToHide2` | 有限隐藏点 / 有限隐藏点2 | `hidespots` |
+
+表里查不到的 ID 直接显示原始 ID（例如新出的 `Ultimate3`）。要改显示名，改
+`variatorpoints.py` 的 `DISPLAY_OVERRIDES` 后重跑 `--import-names`。
+
+Web 版右侧多出「本局关卡变量」一栏；命中上面两个图层的变数会自动打开对应开关
+**一次**（手动关掉后不再抢），点中文名也能直接打开图层。
+
+### 9.2 提取点位数据
+
+```powershell
+cd opp_seed/ui
+python variatorpoints.py --import-names <TotHUD.ps1>
+python variatorpoints.py PSB_MT01 --paks D:/workspace/outlast/pak/OPP/Content/Maps_json/PoliceStationBasement
+```
+
+输出 `data/variator_points/<LEVEL>.json`，`/api/map` 自动合并成地图数据的
+`barrels` / `hidespots` 字段（不写回 `data/maps/<LEVEL>.json`，重跑 `mapdb.py`
+不会冲掉）。没有这份文件的关卡，开关计数显示 0。
+
+- **火桶候选点 `barrels`**：日志里的 `BurningBarrel_SecondaryObjective_BP_C_*` 是运行时
+  动态生成的，静态关卡 JSON 里没有这些 actor。`BurningBarrel_Secondary_ObjCoordBP`
+  的 CDO 写着 `ReplaceRequiredTags = RoomForBarrel / RoomForBarrelInteraction`、
+  `NumberToSpawn = 8`、`FixedMaxCount 1P = 2`，所以这里提取的是**全部带这两个 Tag
+  的静态 actor 位置**——候选池，本局实际刷出哪几个由 seed 决定。`PSB_MT01` 共 579 个，
+  带 `RoomForBarrelInteraction` 的 151 个画成橙色实心菱形，其余画成灰色空心菱形；
+  `replaceable` 标记它是否属于协调器的 `ReplaceActorClasses`。
+- **隐藏点 `hidespots`**：`Hidespot*` / `PhoneBooth*` / `*Locker*` 类静态 actor，
+  `PSB_MT01` 共 89 个，画成绿色空心圆。有限隐藏点变数会封闭其中一部分，但封闭哪些
+  是运行时随机，静态数据只能给出「全部隐藏点位置」，不标哪一个被封。
+
+### 9.3 界面
+
+- 顶栏 `火桶点位 (N)` / `隐藏点 (N)`，快捷键 `B` / `V`，默认关闭；变数命中时自动开。
+- 按 `H` 调出左上角图例，最下面新增「火桶候选点（按类型）」「隐藏点（按类型）」两组：
+  点某一类可单独隐藏/显示（579 个候选点可以只看海报、只看调查点…），
+  「全部显示」一次清掉过滤。
+- 点任意点位 → 信息栏显示实例名、蓝图类、世界坐标、所在房间、楼层、Tag，并自动复制坐标。
+- 分层模式下按点位 z 值过滤，只显示本层的点。
+
+> 这两层目前只在 Web 版（`mapweb.py` + `web/`）实现；Tk 版只剩 `--png` 导出，
+> 不画新图层。

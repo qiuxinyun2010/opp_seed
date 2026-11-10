@@ -46,6 +46,14 @@
         <input type="checkbox" id="chkSeed" checked />
         <span id="lblSeedCount">分析点位 (0)</span>
       </label>
+      <label class="pill-toggle variator-pill" id="pillBarrels" title="火桶变数的全部候选落点（本局实际刷出哪几个由 seed 决定）(快捷键 B)">
+        <input type="checkbox" id="chkBarrels" />
+        <span id="lblBarrelCount">火桶点位 (0)</span>
+      </label>
+      <label class="pill-toggle variator-pill" id="pillHidespots" title="全部隐藏点；有限隐藏点变数会封闭其中一部分 (快捷键 V)">
+        <input type="checkbox" id="chkHidespots" />
+        <span id="lblHideCount">隐藏点 (0)</span>
+      </label>
       <label class="pill-toggle" title="显示/隐藏左上角分区与门图例 (快捷键 H)">
         <input type="checkbox" id="chkLegend" />
         <span>图例 (H)</span>
@@ -81,6 +89,18 @@
         <div class="legend-divider"></div>
         <div class="legend-header"><strong>门类型</strong></div>
         <div id="doorLegendList" class="door-legend-list"></div>
+        <div class="legend-divider"></div>
+        <div class="legend-header">
+          <strong>火桶候选点（按类型）</strong>
+          <button class="link-btn" id="btnShowAllBarrelTypes">全部显示</button>
+        </div>
+        <div id="barrelTypeList" class="type-legend-list"></div>
+        <div class="legend-divider"></div>
+        <div class="legend-header">
+          <strong>隐藏点（按类型）</strong>
+          <button class="link-btn" id="btnShowAllHideTypes">全部显示</button>
+        </div>
+        <div id="hideTypeList" class="type-legend-list"></div>
       </aside>
 
       <button id="mapHint" class="map-hint hidden" title="日志已切换到新关卡，点击立即切图并恢复跟随"></button>
@@ -95,6 +115,14 @@
           <span class="seed-status-badge" id="seedStatusBadge">等待对局</span>
         </div>
         <div class="seed-meta" id="seedMeta">正在监听 OPP.log…</div>
+      </div>
+
+      <div class="variator-bar hidden" id="variatorBar">
+        <div class="bar-label">
+          <span>本局关卡变量（日志 Variator Active）：</span>
+          <span id="variatorMeta" class="variator-meta"></span>
+        </div>
+        <div class="variator-chips" id="variatorChips"></div>
       </div>
 
       <div class="seed-markers-bar hidden" id="seedMarkersBar">

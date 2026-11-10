@@ -27,6 +27,31 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 HERE = os.path.dirname(os.path.abspath(__file__))
 WEB_DIR = os.path.join(HERE, 'web')
 DATA_DIR = os.path.join(HERE, 'data', 'maps')
+VARIATOR_META_FILE = os.path.join(HERE, 'data', 'variators.json')
+VARIATOR_POINTS_DIR = os.path.join(HERE, 'data', 'variator_points')
+
+
+def load_variator_meta():
+    """关卡变量 ID→中文名、变数→点位图层；文件缺失不影响地图功能。"""
+    try:
+        with open(VARIATOR_META_FILE, encoding='utf-8') as fp:
+            data = json.load(fp)
+        return data.get('names') or {}, data.get('layers') or {}
+    except (OSError, ValueError):
+        return {}, {}
+
+
+VARIATOR_NAMES, VARIATOR_LAYERS = load_variator_meta()
+VARIATOR_ORDER = {v: i for i, v in enumerate(VARIATOR_NAMES)}
+
+
+def describe_variators(info):
+    """把 gamelog 解析出的 ID 列表加上中文名与对应图层。"""
+    ids = (info or {}).get('variators') or []
+    ids = sorted(ids, key=lambda v: VARIATOR_ORDER.get(v, 1 << 30))
+    return [{'id': v, 'name': VARIATOR_NAMES.get(v, v),
+             'layer': VARIATOR_LAYERS.get(v)} for v in ids]
+
 
 if HERE not in sys.path:
     sys.path.insert(0, HERE)
@@ -346,6 +371,17 @@ class AppState(object):
         db['_default_flip'] = {'x': fx, 'y': fy}
         return db, path
 
+    def load_variator_points(self, level):
+        """变数点位（火桶候选 / 隐藏点）由 variatorpoints.py 离线提取，独立存放。"""
+        path = os.path.join(VARIATOR_POINTS_DIR, '%s.json' % (level or '').upper())
+        if not os.path.isfile(path):
+            return None
+        try:
+            with open(path, encoding='utf-8') as fp:
+                return json.load(fp)
+        except (OSError, ValueError):
+            return None
+
     def get_state_payload(self):
         info = gamelog.latest(self.cfg.get('log_path'))
         ans = seedinfo.answer(info, self.cfg.get('seed_lib'))
@@ -381,6 +417,7 @@ class AppState(object):
             'trial_has_map': has_trial_map,
             'gamelog': info,
             'gamelog_summary': gamelog.summary(info),
+            'variators': describe_variators(info),
             'seed': {
                 'ok': bool(ans.get('ok')),
                 'level': ans.get('level'),
@@ -465,6 +502,15 @@ def make_handler(app_state):
                 db, _ = app_state.load_map_db(lv)
                 if not db:
                     return self._send_json({'ok': False, 'error': '未找到关卡 %s 的地图数据' % lv}, 404)
+                vp = app_state.load_variator_points(lv)
+                db['barrels'] = (vp or {}).get('barrels') or []
+                db['hidespots'] = (vp or {}).get('hidespots') or []
+                db['variator_points'] = ({
+                    'level': vp.get('level'),
+                    'generated': vp.get('generated'),
+                    'source': vp.get('source'),
+                    'note': vp.get('_说明'),
+                } if vp else None)
                 with app_state.lock:
                     app_state.current_level = lv
                 return self._send_json({'ok': True, 'map': db})

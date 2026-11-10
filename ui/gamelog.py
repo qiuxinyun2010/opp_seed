@@ -27,6 +27,7 @@ StageReady 通常要几十秒后才来（
      'stage_ready': False,             # 这一局是否已经出过 StageReady
      'event': 'stageinfo' / 'ready',   # 这条信息来自哪种行
      'age_min': 12.4,                  # 这局距离现在多少分钟
+     'variators': ['NoPlaceToHide2', 'LimitedItems', ...],  # 本局关卡变量 ID
      'line': '原始行', 'source': 日志路径}
 
 读文件不做常驻轮询；`signature()` 给人做「文件变了没」的廉价判断（stat 一次）。
@@ -53,6 +54,9 @@ RE_GAME_STAGE = re.compile(
     r'\s*Stage:\s*(?P<stage>[^,]+),\s*Mission:\s*(?P<mission>[^,]*),'
     r'\s*Seed:\s*(?P<seed>\d+),\s*EffectiveNumberOfPlayers:\s*(?P<players>\d+)')
 RE_PHASE = re.compile(r'GamePhase changed to (?P<phase>\w+)')
+# 关卡变量：一次加载会按 ID 逐行打印，例如
+#   [..]RB:  Variator Active: NoPlaceToHide2
+RE_VARIATOR = re.compile(r'Variator Active:\s*([A-Za-z0-9_]+)')
 
 PHASE_STATUS = {
     'StageReady': 'ready',
@@ -151,6 +155,44 @@ def _age_min(info):
     return round((datetime.datetime.now() - dt).total_seconds() / 60.0, 1)
 
 
+def collect_variators(lines, anchor, seed):
+    """收集本局加载时打印的 Variator ID（去重保序）。
+
+    日志里 `Variator Active: XXX` 的位置不固定：可能和 GameStageInfo 同一帧
+    （甚至排在它前面几行），可能在子关卡加载完成后，也可能要等到
+    StageStarted 才打印（加载日志能隔开上千行）。而 StageReady 又是另一条
+    更晚的事件，所以不能用「最后一条事件之后」来取。
+
+    做法：以同一 seed 的 GameStageInfo 为锚点，向前 100 行 / 向后 2000 行，
+    用时间戳（本局加载 5 分钟内）挡掉上一局的记录，遇到下一局不同 seed 的
+    GameStageInfo / StageReady 立即停。
+    """
+    base = _parse_ts(_ts(lines[anchor])) if 0 <= anchor < len(lines) else None
+    lo = max(0, anchor - 100)
+    hi = min(len(lines), anchor + 2000)
+    out, seen = [], set()
+    for i in range(lo, hi):
+        if i > anchor:
+            ev = RE_GAME_STAGE.search(lines[i]) or RE_STAGE_READY.search(lines[i])
+            if ev and ev.group('seed').isdigit() and int(ev.group('seed')) != seed:
+                break
+        m = RE_VARIATOR.search(lines[i])
+        if not m:
+            continue
+        if base:
+            dt = _parse_ts(_ts(lines[i]))
+            if dt is None:
+                continue
+            delta = (dt - base).total_seconds()
+            if delta < -5 or delta > 300:      # 上一局残留 / 下一局记录
+                continue
+        vid = m.group(1)
+        if vid not in seen:
+            seen.add(vid)
+            out.append(vid)
+    return out
+
+
 # ---------------------------------------------------------------------------
 # 解析
 # ---------------------------------------------------------------------------
@@ -199,14 +241,18 @@ def parse_text(text, source=None):
         'source': source,
     }
 
-    # 难度：StageReady 里没有，往前找同一 seed 的 GameStageInfo（越过上一局就不找）
-    if not info['difficulty']:
+    # 同一 seed 的 GameStageInfo 是本局加载的锚点：StageReady 里没有难度，
+    # 从它补；关卡变量也以它为中心取（见 collect_variators）。
+    anchor = idx
+    if kind != 'stageinfo':
         for j, k2, m2 in reversed([e for e in evs if e[0] < idx]):
             if k2 == 'stageinfo' and int(m2.group('seed')) == seed:
                 info['difficulty'] = m2.group('difficulty').strip()
+                anchor = j
                 break
             if k2 == 'ready':
                 break
+    info['variators'] = collect_variators(lines, anchor, seed)
 
     # 状态：这一局之后出现的阶段变化（StageReady / StageStarted / StageEnding ...）
     info['status'] = 'loading'

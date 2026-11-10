@@ -1,6 +1,7 @@
 # IDA MCP 静态取证方法与锚点
 
-> 供后续类分析复用的方法、陷阱与校验锚点。类专属结论分别见 `FunParkCanal_Drop_DamageableButton_BP_RightCanal.md`、`RBOperatable.md`、`FunPark_DamageableButton_BP_chain.md`。
+> 供后续类分析复用的方法、陷阱与校验锚点。类专属结论分别见 `FunParkCanal_Drop_DamageableButton_BP_RightCanal.md`、`RBOperatable.md`、`FunPark_DamageableButton_BP_chain.md`；
+> 火桶变数链见 `RBSecondaryBurningBarrelsObjectiveCoordinator.md`（协调器）、`RBVariatorAction_ReplaceForBurningBarrels.md`（Tag 收集 / vtable）、`BurningBarrel_SeedDeterminism.md`（seed 判定与下一步）。
 > 参照 `RBProjectionCodeCoordinator.md` 的取证链，并把本次踩过的坑记下来。
 
 ## 1. 环境

@@ -586,3 +586,5 @@ TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_8（大概率），TFS_KeyModule_Spa
 Trial ID: TFS_MT02, Program difficulty: Easy, Stage: ToyFactoryShipping, Mission: TFS_MT02, Seed: 777777, EffectiveNumberOfPlayers: 1
 TFS_KeyModule_Spawner_A_BP_GreenIntro_12
 TFS_KeyModule_Spawner_B_BP_GreenKey_Storage_1（大概率），TFS_KeyModule_Spawner_B_BP_GreenKey_Storage_2（小概率）
+
+Trial ID: PSB_MT01, Program difficulty: Normal, Stage: PoliceStationBasement, Mission: PSB_MT01, Seed: 781781, EffectiveNumberOfPlayers: 1

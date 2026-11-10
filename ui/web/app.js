@@ -22,6 +22,12 @@
     showAllNames: false,
     showSeed: true,
     showLegend: false,
+    showBarrels: false,
+    showHidespots: false,
+    hiddenBarrelTypes: new Set(),
+    hiddenHideTypes: new Set(),
+    variators: [],
+    autoVariatorLayersFor: null,
     followGame: true,
     lightTheme: true,
     coordTarget: null,
@@ -208,6 +214,15 @@
     }
     buildFloorButtons();
     buildLegend();
+    state.hiddenBarrelTypes.clear();
+    state.hiddenHideTypes.clear();
+    document.getElementById('lblBarrelCount').textContent =
+      `火桶点位 (${(state.db.barrels || []).length})`;
+    document.getElementById('lblHideCount').textContent =
+      `隐藏点 (${(state.db.hidespots || []).length})`;
+    buildVariatorTypeLegend();
+    syncVariatorPills();
+    syncVariatorLayers();
     if (fitView) view.fit();
     updateInspector();
     requestRender();
@@ -615,6 +630,10 @@
       });
     }
 
+    // 变数点位：火桶候选（菱形）/ 隐藏点（空心圆），各自独立开关、按类型还能再细分
+    drawVariatorLayer('barrels', db.barrels || [], state.hiddenBarrelTypes, state.showBarrels);
+    drawVariatorLayer('hidespots', db.hidespots || [], state.hiddenHideTypes, state.showHidespots);
+
     drawCoordTarget();
 
     const parts = [
@@ -625,6 +644,55 @@
     if (view.turns % 4) parts.push(`旋转 ${(view.turns % 4) * 90}°`);
     if (view.flipx) parts.push('镜像 X');
     viewBadge.textContent = parts.join(' · ');
+  }
+
+  // ---- 变数点位图层 ----
+  const VP_COLORS = { barrels: '#f97316', hidespots: '#22c55e' };
+
+  function drawVariatorLayer(kind, rows, hiddenTypes, show) {
+    if (!show || !rows.length) return;
+    let band = null;
+    if (state.mode === 'floor') {
+      const f = (state.db.floors || []).find(item => item.index === state.floor);
+      if (f) band = f.band;
+    }
+    rows.forEach(rec => {
+      if (hiddenTypes.has(rec.type)) return;
+      if (band && rec.p.length > 2) {
+        const [lo, hi] = band;
+        const z = rec.p[2];
+        if ((lo != null && z < lo - 200) || (hi != null && z > hi + 200)) return;
+      }
+      const [sx, sy] = view.pt(rec.p[0], rec.p[1]);
+      if (sx < -30 || sy < -30 || sx > view.w + 30 || sy > view.h + 30) return;
+      const isSel = state.selected?.kind === kind && state.selected?.id === rec.id;
+      const isBarrel = kind === 'barrels';
+      const solid = !isBarrel || rec.interaction;
+      const color = isBarrel ? (solid ? VP_COLORS.barrels : '#94a3b8') : VP_COLORS.hidespots;
+      const r = isSel ? 8 : (isBarrel ? 5.2 : 6.2);
+
+      ctx.save();
+      ctx.beginPath();
+      if (isBarrel) {
+        // 菱形：和普通圆形任务点位一眼分开；灰空心 = 只有空间标记、不可交互
+        ctx.moveTo(sx, sy - r);
+        ctx.lineTo(sx + r, sy);
+        ctx.lineTo(sx, sy + r);
+        ctx.lineTo(sx - r, sy);
+        ctx.closePath();
+        ctx.fillStyle = hexToRgba(color, solid ? 0.85 : 0.3);
+      } else {
+        ctx.arc(sx, sy, r, 0, Math.PI * 2);
+        ctx.fillStyle = hexToRgba(color, 0.22);
+      }
+      ctx.fill();
+      ctx.lineWidth = isSel ? 2.6 : 1.3;
+      ctx.strokeStyle = isSel ? '#f59e0b' : color;
+      ctx.stroke();
+      ctx.restore();
+
+      hitTargets.push({ kind, id: rec.id, cx: sx, cy: sy, r: r + 4 });
+    });
   }
 
   // ---- 坐标定位：一次只保留一个点，定位下一个会自动清掉上一个 ----
@@ -787,7 +855,8 @@
   function pickAt(sx, sy) {
     for (let i = hitTargets.length - 1; i >= 0; i--) {
       const t = hitTargets[i];
-      if (t.kind === 'seed' || t.kind === 'point' || t.kind === 'coord') {
+      if (t.kind === 'seed' || t.kind === 'point' || t.kind === 'coord' ||
+          t.kind === 'barrels' || t.kind === 'hidespots') {
         if (Math.hypot(sx - t.cx, sy - t.cy) <= t.r) return { kind: t.kind, id: t.id };
       } else if (t.kind === 'door') {
         if (distToSegment(sx, sy, t.p1, t.p2) <= 6) return { kind: 'door', id: t.id };
@@ -883,6 +952,28 @@
         title: `楼梯 · ${s.name || '#' + s.id}`,
         sub: `z: ${s.z[0]}~${s.z[1]}  |  楼层: ${fls}  |  宽: ${s.w}  |  台阶数: ${s.steps}`,
         copyRaw: s.name || '',
+      };
+    }
+    if (target.kind === 'barrels' || target.kind === 'hidespots') {
+      const rows = target.kind === 'barrels' ? db.barrels : db.hidespots;
+      const r = (rows || [])[target.id];
+      if (!r) return null;
+      const room = roomAtWorld(r.p[0], r.p[1]);
+      const floor = floorOfZ(r.p[2]);
+      const isBarrel = target.kind === 'barrels';
+      const tag = isBarrel
+        ? (r.interaction ? '火桶候选 · 可交互落点' : '火桶候选 · 空间标记')
+        : '隐藏点';
+      const extra = isBarrel
+        ? `  |  标签: ${(r.tags || []).join(', ') || '-'}` +
+          `  |  可替换: ${r.replaceable ? '是' : '否'}`
+        : '';
+      return {
+        title: `${tag} · ${r.name}`,
+        sub: `类型: ${r.type}  |  坐标: (${r.p.join(', ')})` +
+             `  |  房间: ${room ? room.raw : '-'}  |  楼层: ${floor ? floor.label : '-'}` +
+             `  |  来源: ${r.file}${extra}`,
+        copyRaw: `${r.p[0]}, ${r.p[1]}, ${r.p[2]}`,
       };
     }
     if (target.kind === 'seed') {
@@ -1130,10 +1221,30 @@
     state.showLegend = e.target.checked;
     legendCard.classList.toggle('hidden', !state.showLegend);
   });
+  document.getElementById('chkBarrels').addEventListener('change', (e) => {
+    state.showBarrels = e.target.checked;
+    syncVariatorPills();
+    requestRender();
+  });
+  document.getElementById('chkHidespots').addEventListener('change', (e) => {
+    state.showHidespots = e.target.checked;
+    syncVariatorPills();
+    requestRender();
+  });
 
   document.getElementById('btnShowAllZones').addEventListener('click', () => {
     state.hiddenZones.clear();
     buildLegend();
+    requestRender();
+  });
+  document.getElementById('btnShowAllBarrelTypes').addEventListener('click', () => {
+    state.hiddenBarrelTypes.clear();
+    buildVariatorTypeLegend();
+    requestRender();
+  });
+  document.getElementById('btnShowAllHideTypes').addEventListener('click', () => {
+    state.hiddenHideTypes.clear();
+    buildVariatorTypeLegend();
     requestRender();
   });
 
@@ -1216,6 +1327,16 @@
       chk.checked = !chk.checked;
       chk.dispatchEvent(new Event('change'));
     }
+    else if (k === 'b') {
+      const chk = document.getElementById('chkBarrels');
+      chk.checked = !chk.checked;
+      chk.dispatchEvent(new Event('change'));
+    }
+    else if (k === 'v') {
+      const chk = document.getElementById('chkHidespots');
+      chk.checked = !chk.checked;
+      chk.dispatchEvent(new Event('change'));
+    }
     else if (k === 'l') {
       const chk = document.getElementById('chkFollow');
       chk.checked = true;
@@ -1236,6 +1357,105 @@
       }
     }
   });
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+    }[c]));
+  }
+
+  /* 右侧「本局关卡变量」：中文名来自 data/variators.json，点一下直接开对应图层 */
+  function renderVariators() {
+    const bar = document.getElementById('variatorBar');
+    const box = document.getElementById('variatorChips');
+    const meta = document.getElementById('variatorMeta');
+    if (!state.variators.length) {
+      bar.classList.add('hidden');
+      box.innerHTML = '';
+      meta.textContent = '';
+      return;
+    }
+    bar.classList.remove('hidden');
+    meta.textContent = `${state.variators.length} 个 · 来自 OPP.log`;
+    box.innerHTML = state.variators.map(v => {
+      const layerName = v.layer === 'barrels' ? '火桶点位'
+        : (v.layer === 'hidespots' ? '隐藏点' : '');
+      return `<span class="variator-chip${v.layer ? ' has-layer' : ''}" ` +
+             `title="ID: ${escapeHtml(v.id)}${layerName ? ' · 对应图层: ' + layerName : ''}">` +
+             `${escapeHtml(v.name)}${layerName ? `<small> · ${layerName}</small>` : ''}</span>`;
+    }).join('');
+    box.querySelectorAll('.variator-chip').forEach((el, i) => {
+      el.addEventListener('click', () => {
+        const layer = state.variators[i]?.layer;
+        if (!layer) return;
+        const chk = document.getElementById(layer === 'barrels' ? 'chkBarrels' : 'chkHidespots');
+        chk.checked = true;
+        chk.dispatchEvent(new Event('change'));
+      });
+    });
+  }
+
+  /* 图例里按 actor 类型单独切换显示（火桶候选很多时可以只看某一类） */
+  function buildVariatorTypeLegend() {
+    const cfg = [
+      ['barrelTypeList', 'barrels', state.hiddenBarrelTypes],
+      ['hideTypeList', 'hidespots', state.hiddenHideTypes],
+    ];
+    cfg.forEach(([elId, key, hidden]) => {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      const counts = new Map();
+      (state.db?.[key] || []).forEach(r =>
+        counts.set(r.type, (counts.get(r.type) || 0) + 1));
+      if (!counts.size) {
+        el.innerHTML = '<div class="type-legend-empty">本关暂无点位数据（先跑 variatorpoints.py）</div>';
+        return;
+      }
+      el.innerHTML = [...counts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .map(([type, n]) => {
+          const color = key === 'barrels' ? VP_COLORS.barrels : VP_COLORS.hidespots;
+          return `<div class="type-legend-row${hidden.has(type) ? ' hidden-zone' : ''}" ` +
+                 `data-type="${encodeURIComponent(type)}" title="点击切换显示该类点位">` +
+                 `<span class="type-legend-dot" style="background:${color}"></span>` +
+                 `<span style="flex:1">${escapeHtml(type.replace(/_BP_C$/, ''))}</span>` +
+                 `<span>${n}</span></div>`;
+        }).join('');
+      el.querySelectorAll('.type-legend-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const type = decodeURIComponent(row.dataset.type);
+          if (hidden.has(type)) hidden.delete(type);
+          else hidden.add(type);
+          buildVariatorTypeLegend();
+          requestRender();
+        });
+      });
+    });
+  }
+
+  function syncVariatorPills() {
+    document.getElementById('pillBarrels').classList.toggle('active-layer', state.showBarrels);
+    document.getElementById('pillHidespots').classList.toggle('active-layer', state.showHidespots);
+  }
+
+  /* 本局变数命中火桶/隐藏点图层时自动打开一次；用户手动关掉后不再抢 */
+  function syncVariatorLayers() {
+    const key = `${state.level}|${state.seedLine}|${state.variators.map(v => v.id).join(',')}`;
+    if (state.autoVariatorLayersFor === key) return;
+    const layers = new Set(state.variators.map(v => v.layer).filter(Boolean));
+    if (!layers.size) return;
+    state.autoVariatorLayersFor = key;
+    if (layers.has('barrels') && (state.db?.barrels || []).length) {
+      state.showBarrels = true;
+      document.getElementById('chkBarrels').checked = true;
+    }
+    if (layers.has('hidespots') && (state.db?.hidespots || []).length) {
+      state.showHidespots = true;
+      document.getElementById('chkHidespots').checked = true;
+    }
+    syncVariatorPills();
+    requestRender();
+  }
 
   function renderSeedText(text, ok) {
     const pre = document.getElementById('seedText');
@@ -1347,6 +1567,10 @@
         }
       });
       syncAnalysisToggle();
+
+      state.variators = data.variators || [];
+      renderVariators();
+      syncVariatorLayers();
 
       const markersBar = document.getElementById('seedMarkersBar');
       const chips = document.getElementById('markerChips');
