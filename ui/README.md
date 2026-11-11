@@ -45,8 +45,9 @@ python mapweb.py PSA_MT01          # 指定初始关卡
 ```
 ui/
   mapdb.py                 提取器（paks → data/maps/<关卡>.json）
+  map3d.py                 3D 提取器（paks → data/3d/<关卡>.json，见 §10）
   mapweb.py                Web 版入口（本地 HTTP 服务 + 浏览器窗口，默认）
-  web/                     前端（index.html / style.css / app.js，Canvas 渲染）
+  web/                     前端（index.html / style.css / app.js / 3d.js + vendor/three.min.js）
   mapview.py               渲染器（窗口 / --png 导出 / 右侧答案面板 / 全局快捷键）
   gamelog.py               读 OPP.log 里本局的关卡 + 种子（GameStageInfo / StageReady 都认）
   seedinfo.py              调 seed.py 推理（关卡 + 种子 → 答案文本，带缓存）
@@ -83,6 +84,8 @@ ui/
 |---|---|
 | `mapview.py`（窗口 / `--png`） | 标准库 `tkinter`；`--png` 另需 Pillow |
 | `mapdb.py`（提取数据） | 同目录 `maplib/`（自带）+ 游戏 `paks/MAP/Maps` |
+| `map3d.py`（3D 提取） | 同上；输出 `data/3d/<关卡>.json` |
+| `web/3d.js`（3D 模式） | `web/vendor/three.min.js`（已随目录附带，离线可用）+ 浏览器 WebGL |
 | `maplib/extract.py` | 只依赖 `data/i18n_names.json`（房间译名覆盖表） |
 | `maplib/names.py` | 只依赖 `data/room_names.json`（全局房间备注名） |
 | `gamelog.py` / `seedpanel.py` / `uifont.py` | 只读游戏日志，无第三方依赖 |
@@ -856,3 +859,78 @@ python variatorpoints.py PSB_MT01 --paks D:/workspace/outlast/pak/OPP/Content/Ma
 
 > 这两层目前只在 Web 版（`mapweb.py` + `web/`）实现；Tk 版只剩 `--png` 导出，
 > 不画新图层。
+
+---
+
+## 10. 3D 模式（2D ⇄ 3D）
+
+顶栏 `叠加 / 分层 / 3D` 的第三个按钮，或按 **`D`**，在原来的俯视 2D 和 3D 视图之间来回切。
+3D 完全离线：`three.min.js` 已放在 `web/vendor/`，不联网、不改 2D 数据、不影响 `--png` 导出。
+**`CHJ_MT02` 已经出好 3D 数据**，可以直接点开看。
+
+### 能看到什么
+
+| 层 | 数据来源 | 内容 |
+|---|---|---|
+| 房间地板 / 矮墙 | `data/maps/<关卡>.json` 的 `rooms[].hulls` + `z` | 凸包挤出薄地板、沿轮廓立墙；面板可切「无 / 矮墙(135cm) / 全高」 |
+| 门 | 同上 `doors[]` | 按 `p / yaw / w` 生成**门框**（两根立柱 + 门楣）和半透明门板，按门类型上色；`(0,0,0)` 的模板占位已过滤 |
+| 楼梯 / 任务点位 | `stairs[]` / `points[]` | 斜坡盒 / 八面体标记，按各自 z 摆放 |
+| 家具道具 | `data/3d/<关卡>.json` 的 `props[]` | 从 paks 的 `*_LA_*.json` 提取 `StaticMeshComponent` 的世界变换，按网格名推断类别和近似尺寸，画成占位盒：桌子、椅子、柜子、箱子、书、柱子、放映机、电视、桶、推车…… |
+| 原始墙体 / 房间体块 | `structures[]` / `solids[]` | 前者是 paks 里的墙/胶合板实例，后者是 `*LD_Rooms.json` 里每个 `ConvexElems` 的世界包围盒；默认关闭 |
+
+**物体没有材质、没有真实网格表面**：paks 里只有 `StaticMesh'xxx'` 资产引用，没有网格顶点/包围盒
+（`/Content/Modules`、`/Content/Props`、`/Content/MapSet` 的资产包不在导出里），所以只能按名字里的
+标称尺寸（`1m` / `375cm` / `150x130`）+ 类别经验值给一个大致形状。这正是「能看到门、桌子」所需的粒度。
+
+已有 `data/maps/<关卡>.json` 的其它关卡**即使没有 `data/3d/` 也能进 3D**，只是没有家具道具一层。
+
+### 重新提取（换关卡 / 游戏更新后）
+
+```powershell
+cd opp_seed\ui
+python map3d.py CHJ_MT02                          # 自动找 ../../paks/MAP/Maps
+python map3d.py CHJ_MT02 --paks D:\...\paks\MAP\Maps
+python map3d.py CHJ_MT02 --check                 # 自检：道具/体块数量、类别分布
+python map3d.py --all                            # 所有 2D 关卡；同一张地图只扫一次 paks
+```
+
+`map3d.py` 只读 paks 与 `data/maps/<关卡>.json`，写 `data/3d/<关卡>.json`（CHJ_MT02 约 1 MB）。
+`*_LA_*.json` 里最大的 `CHJ_LA_MayorCorridor_01.json` 有 335 MB，用 `maplib.extract.iter_objects`
+按行流式解析，不会整文件进内存；本机全扫约 20 秒。可用环境变量 `OUTLAST_MAPS_DIR` 固定 paks 位置。
+
+数据格式：`{schema, level, map, bbox, zrange, props[], structures[], solids[], stats}`，
+`props/structures` 每项 `{p:[x,y,z], yaw, size:[宽,深,高], cat, mesh, file}`（UU=cm，p 为底面中心），
+`solids` 每项 `{raw, boxes:[[x0,y0,z0,x1,y1,z1], ...]}`。世界坐标**未做镜像**，镜像在渲染时按
+2D 的 `flipx/flipy` 统一处理，所以切回 2D 时朝向一致。
+
+### 操作
+
+| 操作 | 效果 |
+|---|---|
+| 左键拖动 | 旋转视角 |
+| 右键 / Shift+左键拖动 | 平移 |
+| 滚轮 | 缩放 |
+| 单击 | 选中物体；右侧检视面板显示名称/坐标/尺寸并自动复制原始名（房间/门/点位复用 2D 的备注与复制链路） |
+| 双击 | 聚焦到该处 |
+| `D` | 2D ⇄ 3D |
+| `F` / `T` / `X` / `1`~`4` | 3D 下分别是 复位 / 转 90° / 镜像 / 切楼层 |
+| `O` / `Esc` | 回 2D 叠加 / 清除选中 |
+
+右上角「3D 视图」面板：`俯视 / 斜视 / 平视`、`无 / 矮墙 / 全高`、
+`家具道具 / 原始墙体 / 房间体块 / 房间名 / 仅本层`。顶栏原有的
+`门`、`楼梯`、`点位`、`图例(H)` 复选框在 3D 下同样生效。
+
+`?mode=3d` 可以直接以 3D 打开（`&view=top|iso|side` 指定初始视角），方便无头浏览器截图自检。
+
+### 新增文件
+
+```
+ui/
+  map3d.py                  提取器：paks → data/3d/<关卡>.json
+  data/3d/CHJ_MT02.json     生成的粗略 3D 几何（其它关卡按需生成）
+  web/vendor/three.min.js   three.js r128，本地 vendor，离线可用
+  web/3d.js                 3D 场景 / 相机 / 拾取 / 图层，通过 window.MapApp 桥接 2D 状态
+```
+
+改动到的既有文件：`mapweb.py`（新增 `/api/3d?level=`）、
+`web/index.html`（3D 按钮 + 画布 + 脚本）、`web/app.js`（模式分派 / 快捷键 / 桥接）、`web/style.css`。

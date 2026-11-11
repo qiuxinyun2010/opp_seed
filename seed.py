@@ -18,6 +18,7 @@
     python seed.py TSR_MT02 726726                      # 本局可用的刻录机点位（按抽取顺序）
     python seed.py TSR_MT02 726726 --trace              # 附带每轮候选池与抽取序号
     python seed.py FPI_MT01 335335                      # 放映机坐标 / 录像盘 / 图案
+    python seed.py TFS_MT02 698698                      # 本局钥匙点位（1P 2 把 / 2P 3P 4 把）
     python seed.py TFS_MT03 527527                      # 六个阀门的点位（正向模型）
     python seed.py TFS_MT03 527527 --trace              # 逐区抽取过程（取证见 level/TFS_MT03.md）
     python seed.py FPB_MT03 249249                      # 区域1/3 各 4 个移动靶点位
@@ -102,6 +103,14 @@ LEVELS = {
         'kind': 'DiaporamaCode',
         'projectors': True,
         'doc': 'release/coop/FPI_MT01/FPI_MT01.md',
+    },
+    'TFS_MT02': {
+        'name': '玩具工厂 · 把推车送入焚化炉（钥匙点位）',
+        'english': 'Push the Carts into the Incinerator',
+        'map': 'ToyFactoryShipping',
+        'kind': 'UseQuestItems',
+        'keygate': True,
+        'doc': 'level/TFS_MT02.md',
     },
     'TFS_MT03': {
         'name': '玩具工厂 · 开启六个阀门',
@@ -766,6 +775,179 @@ def _predict_fpi_mt01(level_seed, trace=False):
         'projectors': projectors,
         'codes': ['%d:%s' % (p['reel_index'], p['symbol']) for p in projectors],
     }
+
+
+# TFS_MT02 四个钥匙候选池（actor -> 坐标），池序 = 名字不区分大小写字典序。
+# 来源：ui/data/maps/TFS_MT02.json；坐标单位 UE cm。
+TFS_MT02_POOLS = {
+    'A': {
+        'coord': 'MT02_SimpleQuestItem_ObjCoord_BP_GreenSide_Intro',
+        'actors': {
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_1': (-1275.0, -1908.0, 239.1),
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_10': (-4285.0, -2264.0, 350.1),
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_11': (-4103.0, -2255.0, 330.1),
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_12': (-4392.0, -3164.0, 330.0),
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_2': (-2738.0, -1894.5, 425.8),
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_3': (-4323.0, -2645.0, 295.0),
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_4': (-1227.0, -2156.0, 195.0),
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_5': (-1554.0, -1798.0, 190.0),
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_6': (-2861.0, -2117.0, 385.5),
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_7': (-3004.0, -2111.0, 423.5),
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_8': (-3991.5, -2739.2, 329.7),
+            'TFS_KeyModule_Spawner_A_BP_GreenIntro_9': (-4612.0, -2560.0, 336.7),
+        },
+    },
+    'B': {
+        'coord': 'MT02_SimpleQuestItem_ObjCoord_BP_GreenSide_A',
+        'actors': {
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_DollAssembly_1': (-4823.9, -917.6, 75.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_DollAssembly_2': (-4189.9, -786.7, 95.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_DollAssembly_3': (-4324.7, -1163.6, 55.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_1': (-5089.3, 1329.4, 65.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_2': (-4647.8, 607.6, 55.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_3': (-4980.8, 831.7, 55.9),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_4': (-5078.9, 930.9, 55.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_5': (-3996.6, 1453.4, 65.1),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_6': (-4153.9, 1522.4, 66.4),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_7': (-4581.0, 1278.5, 75.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_8': (-4532.1, 1362.7, 76.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Processing_': (-4081.0, 592.4, 66.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Processing_2': (-3650.2, 623.3, 51.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Processing_3': (-4208.6, -40.0, 52.4),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Security_1': (-1630.4, 1887.4, 80.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Security_2': (-1447.8, 2215.8, 80.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Security_3': (-1217.4, 2089.2, 81.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Sorting_1': (-1453.1, 235.1, 76.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Sorting_2': (-1319.4, 614.1, 76.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Sorting_3': (-862.1, 52.4, 72.9),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Storage_1': (-1275.3, 926.8, 92.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Storage_2': (-1131.0, 1089.4, 140.1),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Storage_3': (-773.2, 1335.1, 100.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_SumpPump_1': (-2330.7, 258.8, 60.9),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_SumpPump_2': (-2524.0, 248.2, -29.9),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_SumpPump_3': (-2590.6, -357.2, 50.1),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Workshop_1': (-300.3, 2335.3, 90.0),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Workshop_2': (-502.5, 2163.1, 72.4),
+            'TFS_KeyModule_Spawner_B_BP_GreenKey_Workshop_3': (-403.6, 1890.4, 120.0),
+        },
+    },
+    'C': {
+        'coord': 'MT02_SimpleQuestItem_ObjCoord_BP_PinkSide_Intro',
+        'actors': {
+            'TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_1': (-2522.2, 6462.1, 180.0),
+            'TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_11': (-827.2, 6771.1, 289.0),
+            'TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_2': (-2586.2, 6180.1, 198.0),
+            'TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_3': (-2286.2, 5851.1, 178.0),
+            'TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_4': (-603.1, 7112.5, 280.0),
+            'TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_5': (1481.8, 6796.1, 290.0),
+            'TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_6': (1669.7, 6557.2, 311.0),
+            'TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_7': (1681.8, 6840.1, 310.2),
+            'TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_8': (1751.4, 6948.6, 290.1),
+            'TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_9': (-846.7, 7005.6, 280.0),
+        },
+    },
+    'D': {
+        'coord': 'MT02_SimpleQuestItem_ObjCoord_BP_PinkSide_B',
+        'actors': {
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Bathroom_1': (-3204.7, 5140.2, 40.0),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Bathroom_2': (-2729.2, 5088.2, 23.0),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Bathroom_3': (-2665.2, 4388.9, 89.0),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Bathroom_4': (-2519.4, 4882.7, 84.8),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Compactor_1': (224.4, 2089.4, 90.0),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Compactor_3': (678.5, 1960.4, 72.7),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Electrical_1': (-202.0, 4236.9, 115.0),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Electrical_2': (-232.7, 3929.1, 80.0),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Electrical_3': (440.3, 3862.2, 92.0),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_InventoryRecords_1': (-491.9, 3311.4, 90.1),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_InventoryRecords_2': (-1011.3, 3303.2, 90.1),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_InventoryRecords_3': (-794.7, 2960.0, 80.6),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Laundry_1': (-1159.8, 4750.0, 100.0),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Laundry_2': (-1489.8, 4066.3, 107.7),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_Laundry_3': (-1041.2, 3989.8, 107.7),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_RecalledProducts_1': (-242.0, 2995.1, 90.0),
+            'TFS_KeyModule_Spawner_D_BP_PinkKey_RecalledProducts_2': (-310.5, 3307.0, 90.0),
+        },
+    },
+}
+
+TFS_MT02_CART_COORD = 'MT02_B00_PushCart_ObjCoord_BP'
+TFS_MT02_CART_STARTS = [
+    'MT02_RBPushCartSpawner_EastSide_Pink',
+    'MT02_RBPushCartSpawner_WestSide_Green',
+]
+TFS_MT02_R = 4096.0        # sub_1402B4CA0 的 a6 = [setup+0x65c] 异区半径（拟合值）
+TFS_MT02_ZTOL = 200.0      # 调用点硬编码 0x43480000 = 200.0f
+TFS_MT02_SAMPLES = {
+    698698: {'side': 'Pink',
+             'C': 'TFS_KeyModule_Spawner_C_BP_PinkKeyIntro_8',
+             'D': 'TFS_KeyModule_Spawner_D_BP_PinkKey_InventoryRecords_2'},
+    462462: {'side': 'Green',
+             'A': 'TFS_KeyModule_Spawner_A_BP_GreenIntro_12',
+             'B': 'TFS_KeyModule_Spawner_B_BP_GreenKey_Foreman_8'},
+    777777: {'side': 'Green',
+             'A': 'TFS_KeyModule_Spawner_A_BP_GreenIntro_12',
+             'B': 'TFS_KeyModule_Spawner_B_BP_GreenKey_Storage_1'},
+}
+
+
+def _tfs_mt02_purge(tag, pool, placed):
+    """sub_1402B4CA0：尾→头，近邻命中则末尾交换删除。"""
+    actors = TFS_MT02_POOLS[tag]['actors']
+    i = len(pool) - 1
+    while i >= 0:
+        x, y, z = actors[pool[i]]
+        if any((x - q[0]) ** 2 + (y - q[1]) ** 2 < TFS_MT02_R ** 2
+               and abs(z - q[2]) <= TFS_MT02_ZTOL for q in placed):
+            pool[i] = pool[-1]
+            pool.pop()
+        i -= 1
+    return pool
+
+
+def _tfs_mt02_side(level_seed, tag_a, tag_b, trace):
+    """单侧：Intro 先抽，固定门后抽；同侧已放置点作排除参照。"""
+    out, placed = [], []
+    for tag in (tag_a, tag_b):
+        base = (sc.crc32_fname('Item Spawner') +
+                sc.seed_chain([sc.LEVEL_OBJECT,
+                               TFS_MT02_POOLS[tag]['coord']])) & sc.M32
+        actors = TFS_MT02_POOLS[tag]['actors']
+        pool = _tfs_mt02_purge(tag, sorted(actors, key=str.lower), placed)
+        idx = sc.rand_seeded(base, len(pool), level_seed)
+        name = pool[idx]
+        placed.append(actors[name])
+        out.append({'tag': tag, 'actor': name,
+                    'coordinates': list(actors[name])})
+        if trace is not None:
+            trace.append('  TFS_MT02 %s base=0x%08X N=%d idx=%d -> %s'
+                         % (tag, base, len(pool), idx, name))
+    return out
+
+
+def _predict_tfs_mt02(level_seed, players=1, difficulty='easy', trace=False):
+    """seed -> 本局钥匙点位（取证见 level/TFS_MT02.md）。
+
+    人数/难度不改变 4 个池的 base、池长与 DesiredCount，只决定本局需要几条推车线：
+    1P 只输出该侧 2 把钥匙，2P/3P 输出两侧 4 把。只返回点位，不带门/推车线/中间量。
+    """
+    if not 0 < level_seed <= sc.M32:
+        raise ValueError('seed 必须在 [1, 2^32-1]')
+    tr = [] if trace else None
+    cart_base = (sc.crc32_fname('Objective Actors') +
+                 sc.seed_chain([sc.LEVEL_OBJECT,
+                                TFS_MT02_CART_COORD])) & sc.M32
+    cart_idx = sc.rand_seeded(cart_base, len(TFS_MT02_CART_STARTS), level_seed)
+    side_1p = ('Pink' if 'Pink' in TFS_MT02_CART_STARTS[cart_idx]
+               else 'Green')
+    sides = [side_1p] if players == 1 else ['Green', 'Pink']
+    pairs = {'Green': ('A', 'B'), 'Pink': ('C', 'D')}
+    keys = []
+    for side in sides:
+        keys.extend(_tfs_mt02_side(level_seed, *pairs[side], trace=tr))
+    out = {'key_points': keys}
+    if tr:
+        out['trace'] = tr
+    return out
 
 
 def _tfs_candidate(section, index):
@@ -2585,6 +2767,11 @@ def predict(level_id, seed, players=1, difficulty='easy', max_fake=None,
         result.update(_predict_fpi_mt01(seed, trace=trace))
         return result
 
+    if cfg.get('keygate'):
+        result.update(_predict_tfs_mt02(seed, players=players,
+                                        difficulty=difficulty, trace=trace))
+        return result
+
     if cfg.get('firepump'):
         result.update(_predict_tfs_mt03(seed, trace=trace))
         return result
@@ -2797,6 +2984,11 @@ def view(result):
             ' '.join('%s=%d' % (x['label'], x['digit'])
                      for x in result['slots'])))
 
+    elif 'key_points' in result:                            # TFS_MT02
+        for item in result['key_points']:
+            points.append(_point(item['actor'], item['tag'], item['actor'],
+                                 item['coordinates']))
+
     elif 'valves' in result:                                # TFS_MT03
         for item in sorted(result['valves'], key=lambda x: x['section']):
             points.append(_point(item['room'], item['section'], item['actor'],
@@ -2941,6 +3133,14 @@ def render(result):
                          % (name, c[0], c[1], c[2],
                             p.get('lot') or '-',
                             ('第%d抽' % p['order']) if p.get('order') else '-'))
+        return '\n'.join(lines)
+    if v.get('level') == 'TFS_MT02':              # 只输出每个钥匙的点位
+        lines = ['TFS_MT02  seed=%d  salt=%d' % (v['seed'], v['seed'] % 1000)]
+        for p in v.get('points') or []:
+            c = p.get('coordinates') or []
+            lines.append('  %-2s %-58s (%s)'
+                         % (p.get('label') or '', p.get('id') or '',
+                            ', '.join('%g' % x for x in c)))
         return '\n'.join(lines)
     if v.get('level') == 'TFS_MT03':              # 只输出 6 个阀门点位
         lines = ['TFS_MT03  seed=%d  salt=%d' % (v['seed'], v['seed'] % 1000)]
@@ -3101,6 +3301,28 @@ def selftest(verbose=True):
             if verbose:
                 print('  TFS %-7d %-3s 预测=%s/%s 实测=%s %s'
                       % (seed, section, item['room'], item['actor'], actor,
+                         'OK' if ok else 'MISMATCH'))
+    for seed, expect in TFS_MT02_SAMPLES.items():
+        r = predict('TFS_MT02', seed)
+        got = {k['tag']: k['actor'] for k in r['key_points']}
+        total += 1
+        got_side = ('Pink' if all(k['tag'] in ('C', 'D')
+                                  for k in r['key_points']) else 'Green')
+        ok = got_side == expect['side']
+        bad += 0 if ok else 1
+        if verbose:
+            print('  TFS2 %-7d 推车线 预测=%-5s 实测=%-5s %s'
+                  % (seed, got_side, expect['side'],
+                     'OK' if ok else 'MISMATCH'))
+        for tag in ('A', 'B', 'C', 'D'):
+            if tag not in expect:
+                continue
+            total += 1
+            ok = got.get(tag) == expect[tag]
+            bad += 0 if ok else 1
+            if verbose:
+                print('  TFS2 %-7d %s 预测=%-52s 实测=%-52s %s'
+                      % (seed, tag, got.get(tag, '---'), expect[tag],
                          'OK' if ok else 'MISMATCH'))
     for seed, expect in SAMPLES_SMC:
         got = {item['color']: item['room']
@@ -3354,7 +3576,7 @@ def main(argv=None):
                   or cfg.get('puzzle') or cfg.get('srtrial')
                   or cfg.get('freqclue') or cfg.get('movingtargets')
                   or cfg.get('ticketbooth') or cfg.get('signboards')
-                  or cfg.get('converters'))
+                  or cfg.get('converters') or cfg.get('keygate'))
             status = 'PART' if cfg.get('partial') else ('OK' if ok else 'TODO')
             print('%-10s [%-4s] %-24s %s'
                   % (key, status, cfg['name'], cfg['map']))

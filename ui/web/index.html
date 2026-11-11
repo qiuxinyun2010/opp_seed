@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OPP Map Tool</title>
+  <link rel="icon" href="data:," />
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body class="light-theme">
@@ -21,6 +22,7 @@
       <div class="segmented" id="modeSwitch">
         <button data-mode="overlay" class="active" title="叠加所有楼层 (快捷键 O)">叠加</button>
         <button data-mode="floor" title="分层查看 (快捷键 1/2/3/4)">分层</button>
+        <button data-mode="3d" title="切换到 3D 视图，可看到门、桌子等物体的大致形状 (快捷键 D)">3D</button>
       </div>
       <div class="floor-buttons" id="floorButtons"></div>
     </div>
@@ -79,6 +81,7 @@
   <main class="workspace">
     <section class="map-container" id="mapContainer">
       <canvas id="mapCanvas"></canvas>
+      <canvas id="map3dCanvas" class="hidden"></canvas>
 
       <aside class="legend-card hidden" id="legendCard">
         <div class="legend-header">
@@ -172,6 +175,8 @@
     </div>
   </div>
 
+  <script src="/vendor/three.min.js"></script>
+  <script src="/3d.js"></script>
   <script src="/app.js"></script>
 </body>
 </html>

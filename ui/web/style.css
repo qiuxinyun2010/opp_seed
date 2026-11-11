@@ -796,3 +796,134 @@ body.light-theme .seed-markers-bar {
 .hidden {
   display: none !important;
 }
+
+/* ---------------------------------------------------------------- 3D 模式 */
+#map3dCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+}
+
+#map3dCanvas:active {
+  cursor: grabbing;
+}
+
+#map3dLabels {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.map3d-label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  font-size: 11px;
+  line-height: 1.3;
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.map3d-panel {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 292px;
+  z-index: 12;
+  background: var(--card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 11px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+  font-size: 12px;
+}
+
+.map3d-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 9px;
+  font-size: 13px;
+}
+
+.map3d-head span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.map3d-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 7px;
+}
+
+.map3d-key {
+  width: 34px;
+  flex: 0 0 34px;
+  color: var(--muted);
+}
+
+.map3d-row button {
+  flex: 1;
+  padding: 4px 2px;
+  font-size: 11px;
+  color: var(--ink);
+  background: rgba(148, 163, 184, 0.14);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.map3d-row button:hover {
+  background: rgba(148, 163, 184, 0.28);
+}
+
+.map3d-row button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.map3d-checks {
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: 2px;
+  margin-bottom: 8px;
+}
+
+.map3d-checks label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.map3d-checks input {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.map3d-hint {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.65;
+  border-top: 1px solid var(--border);
+  padding-top: 7px;
+}
+
+.map3d-hint b {
+  color: var(--accent);
+}

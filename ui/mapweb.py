@@ -16,6 +16,7 @@ import json
 import mimetypes
 import os
 import queue
+import re
 import shutil
 import subprocess
 import sys
@@ -27,6 +28,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 HERE = os.path.dirname(os.path.abspath(__file__))
 WEB_DIR = os.path.join(HERE, 'web')
 DATA_DIR = os.path.join(HERE, 'data', 'maps')
+DATA_3D_DIR = os.path.join(HERE, 'data', '3d')       # map3d.py 生成的粗略 3D 几何
 VARIATOR_META_FILE = os.path.join(HERE, 'data', 'variators.json')
 VARIATOR_POINTS_DIR = os.path.join(HERE, 'data', 'variator_points')
 
@@ -62,7 +64,7 @@ import hotkey        # noqa: E402
 import mapview       # noqa: E402
 import seedinfo      # noqa: E402
 
-VERSION = '2026-11-01.web10'
+VERSION = '2026-11-11.web11-3d'
 
 SW_HIDE = 0
 SW_SHOW = 5
@@ -514,6 +516,19 @@ def make_handler(app_state):
                 with app_state.lock:
                     app_state.current_level = lv
                 return self._send_json({'ok': True, 'map': db})
+
+            if path == '/api/3d':
+                # 3D 模式的可选增强数据：没有生成过就返回 ok=False，
+                # 前端仍会用 /api/map 的房间/门/楼梯/点位搭一个基础 3D 场景。
+                lv = (qs.get('level') or [''])[0].strip().upper()
+                if not lv:
+                    lv = app_state.current_level
+                lv = re.sub(r'[^A-Z0-9_\-]', '', lv)
+                f = os.path.join(DATA_3D_DIR, '%s.json' % lv) if lv else ''
+                if not f or not os.path.isfile(f):
+                    return self._send_json({'ok': False, 'error': '没有 %s 的 3D 数据' % lv})
+                with open(f, encoding='utf-8') as fp:
+                    return self._send_json({'ok': True, 'data': json.load(fp)})
 
             if path in ('/', '/index.html'):
                 return self._send_file(os.path.join(WEB_DIR, 'index.html'))

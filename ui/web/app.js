@@ -15,6 +15,7 @@
     db: null,
     level: null,
     mode: 'overlay',
+    prev2dMode: 'overlay',     // 从 3D 返回时回到原来的叠加/分层模式
     floor: 0,
     showDoors: true,
     showStairs: true,
@@ -225,6 +226,7 @@
     syncVariatorLayers();
     if (fitView) view.fit();
     updateInspector();
+    if (window.Map3D) window.Map3D.load(state.level);
     requestRender();
   }
 
@@ -236,7 +238,7 @@
       btn.textContent = f.label;
       if (state.mode === 'floor' && state.floor === f.index) btn.classList.add('active');
       btn.addEventListener('click', () => {
-        state.mode = 'floor';
+        if (state.mode !== '3d') state.mode = 'floor';
         state.floor = f.index;
         syncModeUI();
         requestRender();
@@ -250,7 +252,8 @@
       b.classList.toggle('active', b.dataset.mode === state.mode);
     });
     Array.from(floorButtons.children).forEach((btn, idx) => {
-      btn.classList.toggle('active', state.mode === 'floor' && state.floor === idx);
+      btn.classList.toggle('active',
+        (state.mode === 'floor' || state.mode === '3d') && state.floor === idx);
     });
   }
 
@@ -303,7 +306,21 @@
   }
 
   let rafId = null;
+  function toggle3D() {
+    if (state.mode !== '3d' && window.Map3D && !window.Map3D.available) {
+      showToast('本环境不支持 WebGL，3D 模式不可用');
+      return;
+    }
+    if (state.mode === '3d') state.mode = state.prev2dMode || 'overlay';
+    else { state.prev2dMode = state.mode; state.mode = '3d'; }
+    syncModeUI();
+    requestRender();
+  }
+
   function requestRender() {
+    // 3D 模式用独立的连续渲染循环，2D 那套单次 rAF 合并绘制在这里让路
+    if (window.Map3D) window.Map3D.setActive(state.mode === '3d');
+    if (state.mode === '3d') return;
     if (rafId) return;
     rafId = requestAnimationFrame(() => {
       rafId = null;
@@ -319,10 +336,12 @@
     canvas.width = Math.round(rect.width * dpr);
     canvas.height = Math.round(rect.height * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (window.Map3D) window.Map3D.resize();
     requestRender();
   }
 
   function render() {
+    if (state.mode === '3d') return;
     ctx.clearRect(0, 0, view.w, view.h);
     hitTargets = [];
 
@@ -894,6 +913,7 @@
   function describeTarget(target) {
     if (!target || !state.db) return null;
     const db = state.db;
+    if (target.kind === 'custom') return target.info || null;   // 3D 道具 / 结构网格
     if (target.kind === 'coord') {
       const m = state.coordTarget;
       if (!m) return null;
@@ -1079,6 +1099,7 @@
   });
 
   window.addEventListener('mousemove', (e) => {
+    if (state.mode === '3d') return;      // 3D 画布自己处理旋转/拾取
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -1120,6 +1141,7 @@
   });
 
   window.addEventListener('mouseup', (e) => {
+    if (state.mode === '3d') return;
     if (!dragStart) return;
     const wasDragged = dragged;
     const btn = dragStart.button;
@@ -1155,7 +1177,13 @@
 
   document.querySelectorAll('#modeSwitch button').forEach(btn => {
     btn.addEventListener('click', () => {
-      state.mode = btn.dataset.mode;
+      const next = btn.dataset.mode;
+      if (next === '3d' && window.Map3D && !window.Map3D.available) {
+        showToast('本环境不支持 WebGL，3D 模式不可用');
+        return;
+      }
+      if (next === '3d' && state.mode !== '3d') state.prev2dMode = state.mode;
+      state.mode = next;
       syncModeUI();
       requestRender();
     });
@@ -1313,6 +1341,24 @@
     if (!noteModal.classList.contains('hidden')) return;
 
     const k = e.key.toLowerCase();
+    if (k === 'd') { toggle3D(); return; }        // 2D ⇄ 3D
+    if (state.mode === '3d') {
+      if (k === 'o') {
+        state.mode = state.prev2dMode || 'overlay';
+        syncModeUI(); requestRender(); return;
+      }
+      if (k === 'f') { window.Map3D?.resetView(); return; }
+      if (k === 't') { window.Map3D?.rotate(Math.PI / 2); return; }
+      if (k === 'x') { document.getElementById('btnMirror').click(); return; }
+      if (['1', '2', '3', '4'].includes(k)) {
+        const idx = parseInt(k, 10) - 1;
+        if (state.db && idx < (state.db.floors || []).length) {
+          state.floor = idx;
+          syncModeUI(); requestRender();
+        }
+        return;
+      }
+    }
     if (k === 'f') { view.fit(); requestRender(); }
     else if (k === 't') { document.getElementById('btnRotate').click(); }
     else if (k === 'x') { document.getElementById('btnMirror').click(); }
@@ -1631,8 +1677,32 @@
     if (!state.db && levelSelect.options.length) {
       await loadMap(levelSelect.options[0].value, true);
     }
+    // ?mode=3d 可直接以 3D 打开（也方便无头浏览器截图自检）
+    if (new URLSearchParams(location.search).get('mode') === '3d' && window.Map3D?.available) {
+      state.prev2dMode = state.mode;
+      state.mode = '3d';
+      syncModeUI();
+      requestRender();
+      const v = new URLSearchParams(location.search).get('view');
+      if (v) window.Map3D.setView(v);
+    }
     setInterval(() => pollState(false), 900);
   }
+
+  /* 3D 渲染器（3d.js）通过这层桥接复用 2D 的状态 / 检视面板 / 复制能力 */
+  window.MapApp = {
+    state, view,
+    describe: describeTarget,
+    showToast,
+    requestRender,
+    setMode(mode) { state.mode = mode; syncModeUI(); requestRender(); },
+    select(target, autoCopy = true) {
+      state.selected = target;
+      updateInspector(autoCopy);
+      requestRender();
+    },
+  };
+  if (window.Map3D?.init) window.Map3D.init(window.MapApp);
 
   init();
 })();
