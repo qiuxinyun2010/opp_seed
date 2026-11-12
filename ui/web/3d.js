@@ -1,7 +1,10 @@
 /* 3d.js — Web 版 3D 地图模式（three.js r128，本地 vendor，无外部依赖）
  *
  * 数据：/api/map 提供房间 2D 轮廓 + z、门、楼梯、点位；/api/3d 提供 map3d.py
- *       从 paks 提取的家具/道具占位盒与房间 3D 体块（可选，缺失时只画基础体量）。
+ *       从关卡 JSON + 资产包提取的家具占位盒、房间 3D 体块（可选，缺失时只画基础体量）、
+ *       shapes[] / point_instances[]（任务道具的真实凸包 + 实测包围盒，按实例 yaw 画实体）、
+ *       open_shapes[] / open_instances[]（Modules 墙板的多个碰撞体围出的门窗洞）、
+ *       以及 reachable（RBRoomGroup 房间白名单，默认只画本关可达区域；3D 项带 reach 标记）。
  * 坐标：UE 是 Z-up，three.js 是 Y-up。为了让 3D 俯视和 2D 地图朝向一致，
  *       world(x,y,z) -> three(fx*x, z, -fy*y)，fx/fy 就是 2D 视图的镜像符号；
  *       UE yaw -> three rotation.y = fx*fy*yaw。
@@ -31,7 +34,8 @@
     access: '#f59e0b', backdrop: '#64748b', other: '#94a3b8',
   };
   const LAYERS = ['rooms', 'walls', 'solids', 'doors', 'stairs',
-                  'props', 'structures', 'points', 'markers'];
+                  'props', 'structures', 'shapes', 'openings',
+                  'points', 'markers'];
 
   let app = null;
   let canvas, mapCanvas, container, panel, labelLayer, tip, badge;
@@ -44,9 +48,17 @@
   let lastLevel = null, pendingView = null;
   const cam = { theta: 0.0, phi: 0.86, radius: 12000, target: new T.Vector3() };
   const cfg = {
-    walls: 'low', props: true, structures: false, solids: false,
+    walls: 'low', props: false, structures: false, solids: false,
     labels: false, onlyFloor: false, rooms: true, view: 'iso',
+    shapes: true, shapeScale: 3, openings: true, reachableOnly: true,
   };
+  let shapeNotes = new Map();     // 点位 id -> 资产实测信息（tooltip 用）
+  let shapeTopZ = 0;              // 任务道具形状的最高点（决定标记悬浮高度）
+  let reachSets = null;           // 本关可达的 rooms/doors/stairs/points id 集合
+  // ?zoom=0.02&focus=0 可把相机拉到某个点位做局部特写（截图自检用，默认不影响）
+  const urlParams = new URLSearchParams(location.search);
+  const urlZoom = Math.max(0.005, Math.min(4, Number(urlParams.get('zoom')) || 1));
+  const urlFocus = urlParams.get('focus');
 
   // ------------------------------------------------------------------ 坐标
   function P(x, y, z) { return [fx * x, z, -fy * y]; }
@@ -73,6 +85,20 @@
   }
   function allowedFloor(z) {
     return !cfg.onlyFloor || floorOfZ(z) === (app.state.floor || 0);
+  }
+  /** 只画本关可达区域：RBRoomGroup 白名单由 map3d.py 写进 d3.reachable。 */
+  function applyReachFilter() {
+    const r = cfg.reachableOnly && d3?.reachable?.enabled ? d3.reachable : null;
+    reachSets = r ? {
+      rooms: new Set(r.room_ids || []), doors: new Set(r.door_ids || []),
+      stairs: new Set(r.stair_ids || []), points: new Set(r.point_ids || []),
+    } : null;
+  }
+  function keep(kind, id) {
+    return !reachSets || reachSets[kind].has(id);
+  }
+  function keepItem(it) {          // 3D 数据里由 map3d.py 打的 reach 标记
+    return !reachSets || it.reach !== 0;
   }
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
@@ -146,11 +172,23 @@
         <button data-walls="full">全高</button>
       </div>
       <div class="map3d-row map3d-checks">
-        <label><input type="checkbox" id="d3Props" checked> 家具道具</label>
+        <label><input type="checkbox" id="d3Reach" checked> 仅可达区域</label>
+        <label><input type="checkbox" id="d3Rooms" checked> 房间地板</label>
+        <label><input type="checkbox" id="d3Openings" checked> 门窗洞</label>
+        <label><input type="checkbox" id="d3Props"> 家具道具</label>
+        <label><input type="checkbox" id="d3Shapes" checked> 任务道具</label>
         <label><input type="checkbox" id="d3Struct"> 原始墙体</label>
         <label><input type="checkbox" id="d3Solids"> 房间体块</label>
         <label><input type="checkbox" id="d3Labels"> 房间名</label>
         <label><input type="checkbox" id="d3Floor"> 仅本层</label>
+      </div>
+      <div class="map3d-row" id="map3dShapeRow">
+        <span class="map3d-key">道具倍率</span>
+        <button data-scale="1">1×</button>
+        <button data-scale="2">2×</button>
+        <button data-scale="3" class="active">3×</button>
+        <button data-scale="5">5×</button>
+        <span class="map3d-scale-note">仅显示放大</span>
       </div>
       <div class="map3d-hint">左键拖动旋转 · 右键拖动平移 · 滚轮缩放<br>
         单击查看物体 · 双击聚焦 · <b>D</b> 返回 2D · <b>F</b> 复位</div>`;
@@ -166,9 +204,20 @@
         build(true);
       });
     });
+    panel.querySelectorAll('[data-scale]').forEach(b => {
+      b.addEventListener('click', () => {
+        cfg.shapeScale = Number(b.dataset.scale) || 1;
+        syncPanel();
+        build(true);
+      });
+    });
     panel.querySelector('[data-act="reset"]').addEventListener('click', () => resetView());
     const binds = {
+      d3Reach: v => { cfg.reachableOnly = v; build(true); },
+      d3Openings: v => { cfg.openings = v; applyLayers(); },
+      d3Rooms: v => { cfg.rooms = v; applyLayers(); },
       d3Props: v => { cfg.props = v; applyLayers(); },
+      d3Shapes: v => { cfg.shapes = v; build(true); },
       d3Struct: v => { cfg.structures = v; applyLayers(); },
       d3Solids: v => { cfg.solids = v; applyLayers(); },
       d3Labels: v => { cfg.labels = v; labelDirty = true; applyLayers(); },
@@ -186,9 +235,33 @@
       b.classList.toggle('active', b.dataset.view === cfg.view));
     panel.querySelectorAll('[data-walls]').forEach(b =>
       b.classList.toggle('active', b.dataset.walls === cfg.walls));
+    panel.querySelectorAll('[data-scale]').forEach(b =>
+      b.classList.toggle('active', Number(b.dataset.scale) === cfg.shapeScale));
+    const shapes = d3?.shapes || [];
+    const row = panel.querySelector('#map3dShapeRow');
+    if (row) row.style.display = shapes.length ? '' : 'none';
+    const reach = d3?.reachable;
+    const sync = (id, val, disabled) => {
+      const el = panel.querySelector('#' + id);
+      if (!el) return;
+      el.checked = val;
+      if (disabled !== undefined) el.disabled = disabled;
+    };
+    sync('d3Shapes', cfg.shapes);
+    sync('d3Rooms', cfg.rooms);
+    sync('d3Props', cfg.props);
+    sync('d3Openings', cfg.openings);
+    sync('d3Reach', cfg.reachableOnly, !reach?.enabled);
     const info = panel.querySelector('#map3dInfo');
     if (info) {
-      info.textContent = `${(d3?.props || []).length} 道具 · ${(db?.rooms || []).length} 房间`;
+      const reachOn = !!(cfg.reachableOnly && reach?.enabled);
+      const nrooms = reachOn ? reach.room_ids.length : (db?.rooms || []).length;
+      const nopen = (d3?.open_instances || []).length;
+      const npts = (d3?.point_instances || []).length;
+      const sh = shapes[0];
+      const size = sh ? ` (${(sh.size || []).map(n => Math.round(n)).join('×')}cm)` : '';
+      info.textContent = `${nrooms} 房间 · ${nopen} 门窗洞 · ${npts} 任务道具${size}` +
+        (reachOn ? ' · 仅可达' : '');
     }
   }
 
@@ -265,7 +338,8 @@
   function buildRooms() {
     const wallItems = [];
     const seenEdges = new Set();
-    (db.rooms || []).forEach((r, ri) => {
+    (db.rooms || []).forEach(r => {
+      if (!keep('rooms', r.id)) return;
       if (!allowedFloor(r.z[0])) return;
       if (app.state.hiddenZones && app.state.hiddenZones.has(r.zone)) return;
       const color = zoneColor(r.zone);
@@ -276,7 +350,7 @@
           prismGeometry(pts, r.z[0], 18),
           new T.MeshLambertMaterial({ color, side: T.DoubleSide,
                                      transparent: true, opacity: 0.88 }));
-        mesh.userData.pick = { kind: 'room', id: ri };
+        mesh.userData.pick = { kind: 'room', id: r.id };
         groups.rooms.add(mesh);
         pickables.push(mesh);
 
@@ -302,7 +376,7 @@
           wallItems.push({
             p: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, r.z[0]],
             yaw: ueAngle, size: [len, 16, height],
-            color: '#' + shade(color, 0.72).getHexString(), _id: ri,
+            color: '#' + shade(color, 0.72).getHexString(), _id: r.id,
           });
         }
       });
@@ -316,6 +390,7 @@
     const byRaw = {};
     (db.rooms || []).forEach((r, i) => { byRaw[r.raw] = r; });
     (d3?.solids || []).forEach(s => {
+      if (!keepItem(s)) return;
       const room = byRaw[s.raw];
       if (room && !allowedFloor(room.z[0])) return;
       (s.boxes || []).forEach(b => {
@@ -340,6 +415,7 @@
   function buildDoors() {
     const frame = [], leaf = [];
     (db.doors || []).forEach(d => {
+      if (!keep('doors', d.id)) return;
       const [x, y, z] = d.p || [0, 0, 0];
       if (Math.abs(x) < 1 && Math.abs(y) < 1 && Math.abs(z) < 1) return; // 模板占位
       if (!allowedFloor(z)) return;
@@ -364,7 +440,8 @@
   }
 
   function buildStairs() {
-    (db.stairs || []).forEach((s, i) => {
+    (db.stairs || []).forEach(s => {
+      if (!keep('stairs', s.id)) return;
       if (!s.a || !s.b) return;
       if (!allowedFloor((s.a[2] + s.b[2]) / 2)) return;
       const A = P(s.a[0], s.a[1], s.a[2]);
@@ -379,7 +456,7 @@
       mesh.position.set((A[0] + B[0]) / 2, (A[1] + B[1]) / 2, (A[2] + B[2]) / 2);
       mesh.quaternion.setFromUnitVectors(
         new T.Vector3(0, 0, 1), new T.Vector3(dx, dy, dz).normalize());
-      mesh.userData.pick = { kind: 'stair', id: i };
+      mesh.userData.pick = { kind: 'stair', id: s.id };
       groups.stairs.add(mesh);
       pickables.push(mesh);
     });
@@ -388,6 +465,7 @@
   function buildProps(list, group, kind, fallbackColor) {
     const items = [];
     (list || []).forEach((p, i) => {
+      if (!keepItem(p)) return;
       if (!allowedFloor(p.p[2])) return;
       items.push({
         p: p.p, yaw: p.yaw, size: p.size,
@@ -397,19 +475,131 @@
     boxInstances(group, items, kind, { opacity: kind === 'structure' ? 0.5 : 1 });
   }
 
+  /** 资产凸包 + 程序化装饰件 -> 带顶点色的非索引几何（按面算法线，棱角分明）。 */
+  function shapeGeometry(shape) {
+    const pos = [], col = [];
+    const c = new T.Color();
+    (shape.parts || []).forEach(part => {
+      const verts = part.verts || [], tris = part.tris || [];
+      c.set(part.color || '#9aa3af');
+      tris.forEach(tri => {
+        tri.forEach(vi => {
+          const v = verts[vi];
+          if (!v) return;
+          // 与 P() 相同的镜像/轴置换；局部几何随实例一起绕 Y 旋转
+          pos.push(fx * v[0], v[2], -fy * v[1]);
+          col.push(c.r, c.g, c.b);
+        });
+      });
+    });
+    if (!pos.length) return null;
+    const g = new T.BufferGeometry();
+    g.setAttribute('position', new T.Float32BufferAttribute(pos, 3));
+    g.setAttribute('color', new T.Float32BufferAttribute(col, 3));
+    g.computeVertexNormals();
+    return g;
+  }
+
+  /** 任务点位按资产真实形状画实体：一种形状一个 InstancedMesh。 */
+  function buildPointShapes() {
+    shapeNotes = new Map();
+    shapeTopZ = 0;
+    const shapes = d3?.shapes || [];
+    const insts = d3?.point_instances || [];
+    if (!shapes.length || !insts.length) return;
+    const byId = new Map(shapes.map(s => [s.id, s]));
+    const buckets = new Map();
+    insts.forEach(it => {
+      if (!keep('points', it.id)) return;
+      if (!it.p || !allowedFloor(it.p[2]) || !keepItem(it)) return;
+      const sh = byId.get(it.shape);
+      if (!sh) return;
+      if (!buckets.has(sh.id)) buckets.set(sh.id, []);
+      buckets.get(sh.id).push(it);
+      shapeTopZ = Math.max(shapeTopZ, (sh.bmax && sh.bmax[2]) || 0);
+      shapeNotes.set(it.id,
+        `资产: ${sh.mesh}  |  实测: ${(sh.size || []).map(n => Math.round(n)).join('×')} cm` +
+        `  |  显示 ×${cfg.shapeScale}`);
+    });
+    buckets.forEach((list, sid) => {
+      const geo = shapeGeometry(byId.get(sid));
+      if (!geo || !list.length) return;
+      const mesh = new T.InstancedMesh(geo,
+        new T.MeshLambertMaterial({ vertexColors: true, side: T.DoubleSide }),
+        list.length);
+      const dummy = new T.Object3D();
+      const ids = [];
+      list.forEach((it, i) => {
+        const [x, y, z] = P(it.p[0], it.p[1], it.p[2]);
+        dummy.position.set(x, y, z);
+        dummy.rotation.set(0, rotY(it.yaw), 0);
+        dummy.scale.setScalar(cfg.shapeScale);
+        dummy.updateMatrix();
+        mesh.setMatrixAt(i, dummy.matrix);
+        ids.push(it.id);
+      });
+      mesh.instanceMatrix.needsUpdate = true;
+      mesh.userData.pick = { kind: 'point', ids };
+      groups.shapes.add(mesh);
+      pickables.push(mesh);
+    });
+  }
+
+  /** 窗 / 门洞：Modules 墙板的多个碰撞体围出的真实开口。 */
+  function buildOpenings() {
+    const shapes = d3?.open_shapes || [];
+    const insts = d3?.open_instances || [];
+    if (!shapes.length || !insts.length) return;
+    const byId = new Map(shapes.map(s => [s.id, s]));
+    const buckets = new Map();
+    insts.forEach(it => {
+      if (!keepItem(it) || !it.p || !allowedFloor(it.p[2])) return;
+      if (!byId.has(it.shape)) return;
+      if (!buckets.has(it.shape)) buckets.set(it.shape, []);
+      buckets.get(it.shape).push(it);
+    });
+    buckets.forEach((list, sid) => {
+      const geo = shapeGeometry(byId.get(sid));
+      if (!geo || !list.length) return;
+      const mesh = new T.InstancedMesh(geo,
+        new T.MeshLambertMaterial({ vertexColors: true, side: T.DoubleSide }),
+        list.length);
+      const dummy = new T.Object3D();
+      list.forEach((it, i) => {
+        const [x, y, z] = P(it.p[0], it.p[1], it.p[2]);
+        const s = it.scale || [1, 1, 1];
+        dummy.position.set(x, y, z);
+        dummy.rotation.set(0, rotY(it.yaw), 0);
+        // shapeGeometry 已把资产 (x,y,z) 映射成 three (fx*x, z, -fy*y)
+        dummy.scale.set(s[0], s[2], s[1]);
+        dummy.updateMatrix();
+        mesh.setMatrixAt(i, dummy.matrix);
+      });
+      mesh.instanceMatrix.needsUpdate = true;
+      groups.openings.add(mesh);   // 纯视觉层，不参与拾取
+    });
+  }
+
   function buildPoints() {
-    const pts = (db.points || []).filter(p => allowedFloor(p.p[2]));
+    const pts = (db.points || []).filter(p =>
+      keep('points', p.id) && allowedFloor(p.p[2]));
     if (!pts.length) return;
+    const hasShapes = cfg.shapes && (d3?.shapes || []).length > 0;
+    const markY = hasShapes ? Math.max(105, shapeTopZ * cfg.shapeScale + 45) : 105;
+    const markScale = hasShapes ? 0.5 : 1;
+    // 有实体形状时标记改线框，避免放大的八面体挡住下面的道具
     const mesh = new T.InstancedMesh(
       new T.OctahedronGeometry(36, 0),
-      new T.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: 0.95 }),
+      new T.MeshLambertMaterial({ color: 0xffffff, transparent: true,
+                                  opacity: hasShapes ? 0.9 : 0.95,
+                                  wireframe: hasShapes }),
       pts.length);
     const dummy = new T.Object3D(), col = new T.Color();
     const ids = [];
     pts.forEach((p, i) => {
       const [x, y, z] = P(p.p[0], p.p[1], p.p[2]);
-      dummy.position.set(x, y + 105, z);
-      dummy.scale.setScalar(1);
+      dummy.position.set(x, y + markY, z);
+      dummy.scale.setScalar(markScale);
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
       mesh.setColorAt(i, col.set(p.color || zoneColor(p.zone) || '#f59e0b'));
@@ -459,14 +649,15 @@
     if (!labelLayer) return;
     labelLayer.innerHTML = '';
     labels = [];
-    (db.rooms || []).forEach((r, i) => {
+    (db.rooms || []).forEach(r => {
+      if (!keep('rooms', r.id)) return;
       if (!allowedFloor(r.z[0])) return;
       if (app.state.hiddenZones && app.state.hiddenZones.has(r.zone)) return;
       const el = document.createElement('span');
       el.className = 'map3d-label';
       el.textContent = (app.state.db.notes?.rooms?.[r.raw]) || r.name || r.raw;
       labelLayer.appendChild(el);
-      labels.push({ el, pos: new T.Vector3(fx * r.c[0], r.z[0] + 40, -fy * r.c[1]), id: i });
+      labels.push({ el, pos: new T.Vector3(fx * r.c[0], r.z[0] + 40, -fy * r.c[1]), id: r.id });
     });
     labelDirty = true;
   }
@@ -477,6 +668,7 @@
     db = app.state.db;
     fx = app.view.flipx ? -1 : 1;
     fy = app.view.flipy ? -1 : 1;
+    applyReachFilter();
     disposeRoot();
     root = new T.Group();
     scene.add(root);
@@ -492,6 +684,8 @@
     buildStairs();
     buildProps(d3?.props || [], groups.props, 'prop', '#9aa3af');
     buildProps(d3?.structures || [], groups.structures, 'structure', '#9aa2ab');
+    buildOpenings();
+    buildPointShapes();
     buildPoints();
     buildLabels();
     if (!keepCamera || lastLevel !== level) {
@@ -513,6 +707,8 @@
     groups.solids.visible = cfg.solids;
     groups.props.visible = cfg.props;
     groups.structures.visible = cfg.structures;
+    groups.shapes.visible = cfg.shapes;
+    groups.openings.visible = cfg.openings;
     groups.doors.visible = st.showDoors;
     groups.stairs.visible = st.showStairs;
     groups.points.visible = st.showPoints;
@@ -525,7 +721,11 @@
     const [x0, y0, x1, y1] = db.bbox || [0, 0, 1000, 1000];
     const [z0, z1] = db.zrange || [0, 400];
     cam.target.set(fx * (x0 + x1) / 2, (z0 + z1) / 2, -fy * (y0 + y1) / 2);
-    cam.radius = Math.max(x1 - x0, y1 - y0, 1000) * 0.80;
+    if (urlFocus) {
+      const fp = (db.points || []).find(q => String(q.id) === urlFocus);
+      if (fp) cam.target.set(fx * fp.p[0], fp.p[2], -fy * fp.p[1]);
+    }
+    cam.radius = Math.max(x1 - x0, y1 - y0, 1000) * 0.80 * urlZoom;
     camera.near = Math.max(1, cam.radius / 3000);
     camera.far = cam.radius * 12;
     camera.updateProjectionMatrix();
@@ -625,8 +825,10 @@
     let desc = target ? infoFor(target.kind, target.id) : null;
     if (desc?.kind) desc = app.describe(desc);
     if (!desc || !desc.title) { tip.classList.add('hidden'); return; }
+    const note = target?.kind === 'point' ? shapeNotes.get(target.id) : '';
     tip.innerHTML = `<strong>${esc(desc.title)}</strong>` +
-      `<div style="color:var(--muted);margin-top:2px">${esc(desc.sub || '')}</div>`;
+      `<div style="color:var(--muted);margin-top:2px">${esc(desc.sub || '')}</div>` +
+      (note ? `<div style="color:var(--accent);margin-top:2px">${esc(note)}</div>` : '');
     const rect = container.getBoundingClientRect();
     tip.style.left = `${Math.min(rect.width - 300, clientX - rect.left + 14)}px`;
     tip.style.top = `${Math.max(12, clientY - rect.top - 18)}px`;
@@ -729,9 +931,14 @@
     renderer.render(scene, camera);
     if (badge) {
       const views = { top: '俯视', iso: '斜视', side: '平视', free: '自由' };
-      const nprops = (d3?.props || []).length;
-      badge.textContent = `3D · ${views[cfg.view] || '自由'} · ` +
-        `${(db?.rooms || []).length} 房间 · ${nprops} 道具` +
+      const nshapes = (d3?.point_instances || []).length;
+      const nopen = (d3?.open_instances || []).length;
+      const reachOn = !!(cfg.reachableOnly && d3?.reachable?.enabled);
+      const nrooms = reachOn ? d3.reachable.room_ids.length : (db?.rooms || []).length;
+      badge.textContent = `3D · ${views[cfg.view] || '自由'} · ${nrooms} 房间` +
+        (nopen && cfg.openings ? ` · ${nopen} 门窗洞` : '') +
+        (nshapes && cfg.shapes ? ` · ${nshapes} 任务道具` : '') +
+        (reachOn ? ' · 仅可达' : '') +
         (cfg.onlyFloor ? ` · 仅 ${(db?.floors || [])[st.floor]?.label || st.floor + 1}` : '');
     }
   }

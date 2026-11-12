@@ -45,7 +45,7 @@ python mapweb.py PSA_MT01          # 指定初始关卡
 ```
 ui/
   mapdb.py                 提取器（paks → data/maps/<关卡>.json）
-  map3d.py                 3D 提取器（paks → data/3d/<关卡>.json，见 §10）
+  map3d.py                 3D 提取器（关卡 JSON + 资产包 → data/3d/<关卡>.json，见 §10）
   mapweb.py                Web 版入口（本地 HTTP 服务 + 浏览器窗口，默认）
   web/                     前端（index.html / style.css / app.js / 3d.js + vendor/three.min.js）
   mapview.py               渲染器（窗口 / --png 导出 / 右侧答案面板 / 全局快捷键）
@@ -84,7 +84,7 @@ ui/
 |---|---|
 | `mapview.py`（窗口 / `--png`） | 标准库 `tkinter`；`--png` 另需 Pillow |
 | `mapdb.py`（提取数据） | 同目录 `maplib/`（自带）+ 游戏 `paks/MAP/Maps` |
-| `map3d.py`（3D 提取） | 同上；输出 `data/3d/<关卡>.json` |
+| `map3d.py`（3D 提取） | 同上；资产包 `pak/OPP/Content`（`MapSet/LD/Props/Modules`，缺了就退回经验尺寸、不画任务实体与门窗洞）；输出 `data/3d/<关卡>.json` |
 | `web/3d.js`（3D 模式） | `web/vendor/three.min.js`（已随目录附带，离线可用）+ 浏览器 WebGL |
 | `maplib/extract.py` | 只依赖 `data/i18n_names.json`（房间译名覆盖表） |
 | `maplib/names.py` | 只依赖 `data/room_names.json`（全局房间备注名） |
@@ -866,7 +866,8 @@ python variatorpoints.py PSB_MT01 --paks D:/workspace/outlast/pak/OPP/Content/Ma
 
 顶栏 `叠加 / 分层 / 3D` 的第三个按钮，或按 **`D`**，在原来的俯视 2D 和 3D 视图之间来回切。
 3D 完全离线：`three.min.js` 已放在 `web/vendor/`，不联网、不改 2D 数据、不影响 `--png` 导出。
-**`CHJ_MT02` 已经出好 3D 数据**，可以直接点开看。
+**`CHJ_MT02`、`PSB_MT03` 已经出好 3D 数据**，可以直接点开看。默认只画
+**地板 / 墙 / 门 / 窗洞 / 楼梯 / 任务点位**：家具与关卡不可达区域默认不显示。
 
 ### 能看到什么
 
@@ -874,34 +875,61 @@ python variatorpoints.py PSB_MT01 --paks D:/workspace/outlast/pak/OPP/Content/Ma
 |---|---|---|
 | 房间地板 / 矮墙 | `data/maps/<关卡>.json` 的 `rooms[].hulls` + `z` | 凸包挤出薄地板、沿轮廓立墙；面板可切「无 / 矮墙(135cm) / 全高」 |
 | 门 | 同上 `doors[]` | 按 `p / yaw / w` 生成**门框**（两根立柱 + 门楣）和半透明门板，按门类型上色；`(0,0,0)` 的模板占位已过滤 |
-| 楼梯 / 任务点位 | `stairs[]` / `points[]` | 斜坡盒 / 八面体标记，按各自 z 摆放 |
-| 家具道具 | `data/3d/<关卡>.json` 的 `props[]` | 从 paks 的 `*_LA_*.json` 提取 `StaticMeshComponent` 的世界变换，按网格名推断类别和近似尺寸，画成占位盒：桌子、椅子、柜子、箱子、书、柱子、放映机、电视、桶、推车…… |
-| 原始墙体 / 房间体块 | `structures[]` / `solids[]` | 前者是 paks 里的墙/胶合板实例，后者是 `*LD_Rooms.json` 里每个 `ConvexElems` 的世界包围盒；默认关闭 |
+| 楼梯 / 任务点位 | `stairs[]` / `points[]` | 斜坡盒 / 八面体标记（有实体形状时自动改线框，避免挡住道具），按各自 z 摆放 |
+| **窗 / 门洞** | `open_shapes[]` + `open_instances[]` | `*_ART*.json` 里引用 `Modules/Walls`、`Props/Doors` 的带洞墙板，把资产的**全部** `ConvexElems` / `BoxElems` 合并成上梁 / 下墙裙 / 左右立板，中间留出来的空白就是真实洞口。`PSB_MT03` 有 30 种 / 451 个实例 |
+| **任务道具实体** | `shapes[]` + `point_instances[]` | 沿蓝图继承链找到网格资产，按碰撞凸包 + 实测包围盒画真实形状。以 `PSB_MT03` 为例：60 个点位都是 `PrivateFilesBox-01_BP`（档案箱），实测 **27.6×27.9×24.4 cm**，带每个实例的 `yaw`、盖沿 / 标签 / 封条与蓝色点位底座框；单击复用 2D 点位选中，悬停显示资产实测尺寸 |
+| 家具道具（默认关） | `props[]` | 从 `*_LA_*.json` / `*_ART*.json` 提取 `StaticMeshComponent` 的世界变换画占位盒；命中资产时改用**实测尺寸** |
+| 原始墙体 / 房间体块（默认关） | `structures[]` / `solids[]` | 前者是关卡 JSON 里的墙/胶合板实例，后者是 `*LD_Rooms.json` 里每个 `ConvexElems` 的世界包围盒 |
 
-**物体没有材质、没有真实网格表面**：paks 里只有 `StaticMesh'xxx'` 资产引用，没有网格顶点/包围盒
-（`/Content/Modules`、`/Content/Props`、`/Content/MapSet` 的资产包不在导出里），所以只能按名字里的
-标称尺寸（`1m` / `375cm` / `150x130`）+ 类别经验值给一个大致形状。这正是「能看到门、桌子」所需的粒度。
+**本关可达区域**：`<LEVEL>_B00.json` 里的 `RBRoomGroup.Rooms[]` 是引擎实际使用的房间白名单
+（比按文件名猜 trial 可靠：三关共用的 37 间房在每关 B00 里都会被提到，无法区分开放/关闭）。
+`map3d.py` 据此输出 `reachable.{room_ids, door_ids, stair_ids, point_ids}` 并给每个 3D 项打
+`reach` 标记；门 / 楼梯按坐标落在保留房间 hull 内判定（贴边容差 180cm、z 容差 250cm）。
+`PSB_MT03` 保留 **42/53 房间、103/115 门、11/18 楼梯、60/60 点位**，`Alley`、
+`BackAlleyStore`、`PipesHallway*`、`GymAccessCorridor` 等不可达区域不再显示。
+任务点位**永不因可达性被过滤**，有点位的房间会自动补回保留区；面板「仅可达区域」可一键看全图。
+找不到 `RBRoomGroup` 的关卡 `reachable.enabled=false`，前端显示全图。
 
-已有 `data/maps/<关卡>.json` 的其它关卡**即使没有 `data/3d/` 也能进 3D**，只是没有家具道具一层。
+**补充的资产包能补到什么程度**：`MapSet` / `LD` / `Props` / `Modules` 里的 FModel JSON 保留了
+`AggGeom`（碰撞凸包 / 盒）与 `ExtendedBounds` / `ImportedBounds`（实测包围盒），
+所以任务道具按真实尺寸 + 真实低模形状画、门窗洞按多个碰撞体还原、家具命中同名资产时改用实测尺寸
+（`PSB_MT03` 的 1557 件家具有 1555 件命中）。`RenderData` / `LODModels` 在导出里是 `null`，
+`.uexp` 的 cooked 渲染顶点没有解析工具，**没有贴图、UV、箱盖开合**；盖沿 / 标签 / 封条 /
+底座框是按实测包围盒比例程序化补的，只为在 3D 里一眼认出是档案箱。
+
+已有 `data/maps/<关卡>.json` 的其它关卡**即使没有 `data/3d/` 也能进 3D**，只是没有家具、
+门窗洞和任务实体；旧格式（只有 `props/structures/solids`）的 3D 数据完全兼容，不画新层、不过滤。
 
 ### 重新提取（换关卡 / 游戏更新后）
 
 ```powershell
 cd opp_seed\ui
-python map3d.py CHJ_MT02                          # 自动找 ../../paks/MAP/Maps
-python map3d.py CHJ_MT02 --paks D:\...\paks\MAP\Maps
-python map3d.py CHJ_MT02 --check                 # 自检：道具/体块数量、类别分布
-python map3d.py --all                            # 所有 2D 关卡；同一张地图只扫一次 paks
+python map3d.py PSB_MT03 --paks ..\..\pak\OPP\Content\Maps_json   # 关卡 JSON 在仓库内
+python map3d.py --all --reachable-only --paks ..\..\pak\OPP\Content\Maps_json  # 只刷新可达区域
+python map3d.py CHJ_MT02 --content D:\...\pak\OPP\Content          # 资产包另放位置时
+python map3d.py CHJ_MT02 --check                 # 自检：道具/体块/形状/可达数量
+python map3d.py --all                            # 所有 2D 关卡；同一张地图只扫一次关卡 JSON
 ```
 
-`map3d.py` 只读 paks 与 `data/maps/<关卡>.json`，写 `data/3d/<关卡>.json`（CHJ_MT02 约 1 MB）。
-`*_LA_*.json` 里最大的 `CHJ_LA_MayorCorridor_01.json` 有 335 MB，用 `maplib.extract.iter_objects`
-按行流式解析，不会整文件进内存；本机全扫约 20 秒。可用环境变量 `OUTLAST_MAPS_DIR` 固定 paks 位置。
+`map3d.py` 读关卡 JSON（`--paks` 或 `OUTLAST_MAPS_DIR`）、资产包（`--content` 或
+`OUTLAST_CONTENT_DIR`，默认 `<仓库根>/pak/OPP/Content`）与 `data/maps/<关卡>.json`，
+写 `data/3d/<关卡>.json`。`*_LA_*.json` 和 `*_ART*.json` 都扫（`--no-art` 可跳过），
+用 `maplib.extract.iter_objects` 按行流式解析，不会整文件进内存。
+`--no-shapes` / `--no-openings` / `--no-reachable` 分别关掉任务道具形状、门窗洞、可达过滤；
+`--no-asset-sizes` 退回按名字猜尺寸；`--max-props` / `--max-openings` 控制数量上限。
+`--reachable-only` **只重算可达区域**（读 B00 + 已有 3D 数据，不重扫几百 MB 几何），
+可配合 `--all` 给旧数据批量加过滤；没有 3D 数据的关卡自动跳过。
 
-数据格式：`{schema, level, map, bbox, zrange, props[], structures[], solids[], stats}`，
-`props/structures` 每项 `{p:[x,y,z], yaw, size:[宽,深,高], cat, mesh, file}`（UU=cm，p 为底面中心），
-`solids` 每项 `{raw, boxes:[[x0,y0,z0,x1,y1,z1], ...]}`。世界坐标**未做镜像**，镜像在渲染时按
-2D 的 `flipx/flipy` 统一处理，所以切回 2D 时朝向一致。
+数据格式：`{schema:3, level, map, bbox, zrange, props[], structures[], solids[],
+open_shapes[], open_instances[], shapes[], point_instances[], reachable, stats}`。
+`props/structures` 每项 `{p:[x,y,z], yaw, size:[宽,深,高], cat, mesh, file, size_src, reach}`（UU=cm，p 为底面中心）；
+`solids` 每项 `{raw, boxes:[[x0,y0,z0,x1,y1,z1], ...], reach}`；
+`shapes` 每项 `{id, name, mesh, asset, size, bmin, bmax, parts:[{name,color,verts,tris}], chain}`；
+`point_instances` 每项 `{id, shape, p, yaw, color, actor, key, reach}`，按 `id` 关联 2D 的 `points[]`；
+`open_shapes` 与 `shapes` 同构，`open_instances` 每项 `{shape, p, yaw, scale, reach}`；
+`reachable` 为 `{enabled, source, room_ids[], room_raws[], door_ids[], stair_ids[], point_ids[], excluded}`。
+带 `reach: 0` 的 3D 项属于本关不可达区域，前端按「仅可达区域」开关过滤。
+世界坐标**未做镜像**，镜像在渲染时按 2D 的 `flipx/flipy` 统一处理，所以切回 2D 时朝向一致。
 
 ### 操作
 
@@ -917,17 +945,25 @@ python map3d.py --all                            # 所有 2D 关卡；同一张�
 | `O` / `Esc` | 回 2D 叠加 / 清除选中 |
 
 右上角「3D 视图」面板：`俯视 / 斜视 / 平视`、`无 / 矮墙 / 全高`、
-`家具道具 / 原始墙体 / 房间体块 / 房间名 / 仅本层`。顶栏原有的
+`仅可达区域 / 房间地板 / 门窗洞 / 家具道具(默认关) / 任务道具 / 原始墙体 / 房间体块 / 房间名 / 仅本层`，
+以及 `道具倍率 1× / 2× / 3× / 5×`（默认 3×，**只是显示放大**，几何仍按资产实测尺寸；
+悬停 / 单击会显示真实尺寸）。「仅可达区域」默认开，关掉可对照全图；没有 `RBRoomGroup`
+的关卡此项自动禁用。做局部特写时可关掉「房间地板」避免被大面片挡住。顶栏原有的
 `门`、`楼梯`、`点位`、`图例(H)` 复选框在 3D 下同样生效。
 
-`?mode=3d` 可以直接以 3D 打开（`&view=top|iso|side` 指定初始视角），方便无头浏览器截图自检。
+`?mode=3d` 可以直接以 3D 打开（`&view=top|iso|side` 指定初始视角）。
+`&zoom=0.02`（缩小取景半径）与 `&focus=<点位 id>`（相机对准某个点位）用于局部特写，
+例如 `?mode=3d&view=iso&focus=0&zoom=0.025` 能看清 `PSB_MT03` 的第一个档案箱，
+方便无头浏览器截图自检。
 
 ### 新增文件
 
 ```
 ui/
-  map3d.py                  提取器：paks → data/3d/<关卡>.json
-  data/3d/CHJ_MT02.json     生成的粗略 3D 几何（其它关卡按需生成）
+  map3d.py                  提取器：关卡 JSON + 资产包 → data/3d/<关卡>.json
+  maplib/assetgeom.py       资产几何：蓝图链 → 网格资产 → 凸包 / 实测包围盒 / 多碰撞体门窗洞
+  data/3d/CHJ_MT02.json     粗略 3D 几何（旧格式，已补 reachable 标记）
+  data/3d/PSB_MT03.json     60 个档案箱 + 451 个门窗洞 + 42 间可达房间
   web/vendor/three.min.js   three.js r128，本地 vendor，离线可用
   web/3d.js                 3D 场景 / 相机 / 拾取 / 图层，通过 window.MapApp 桥接 2D 状态
 ```

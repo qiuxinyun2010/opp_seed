@@ -896,6 +896,17 @@ body.light-theme .seed-markers-bar {
   color: #fff;
 }
 
+#map3dShapeRow button {
+  flex: 0 0 32px;
+}
+
+.map3d-scale-note {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
 .map3d-checks {
   flex-wrap: wrap;
   gap: 4px 10px;
